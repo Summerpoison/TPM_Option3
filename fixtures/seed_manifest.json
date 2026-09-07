@@ -2,39 +2,80 @@
   "rng_seed": 20260907,
   "jobs": [
     {
-      "external_id": "saa-seed-01",
-      "paulsjob_job_id": "182680",
+      "external_id": "saa-seed-11",
+      "paulsjob_job_id": "182721",
       "title": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz",
-      "demonstrates": "High override rate at PreScreening: the AI's hard-criteria calls are being reversed.",
+      "demonstrates": "Security role with four hard criteria. Candidate profiles vary so that roughly 40% meet every requirement, 40% fail exactly one, 20% fail two.",
       "criteria": [
         "§34a certification",
         "German B2",
         "3 years experience",
         "shift availability"
       ],
-      "candidates": 3,
-      "assignments": 4,
+      "candidates": 5,
+      "assignments": 0,
       "expected": {
-        "PreScreening": {
-          "total": 3,
-          "positive": 1,
-          "negative": 2,
-          "opt_out": 0,
-          "malformed": 0,
-          "reviewed": 3,
-          "overrides": 2,
-          "off_criteria_reasons": 0
-        },
-        "AIVoiceInterview": {
-          "total": 1,
-          "positive": 0,
-          "negative": 0,
-          "opt_out": 1,
-          "malformed": 0,
-          "reviewed": 0,
-          "overrides": 0,
-          "off_criteria_reasons": 0
-        }
+        "mode": "real",
+        "required_years": 3,
+        "candidates": [
+          {
+            "email": "saa-seed-11-000@seed.invalid",
+            "person_slug": "01a07d14-c5de-7a3a-8465-8faa9ebea829",
+            "has_certificate": true,
+            "german_level": "C1",
+            "years_experience": 4,
+            "shift_available": true,
+            "meets_all_requirements": true,
+            "gaps": []
+          },
+          {
+            "email": "saa-seed-11-001@seed.invalid",
+            "person_slug": "01a07d14-cae3-7e8e-9ff6-4db0abf43f14",
+            "has_certificate": false,
+            "german_level": "C1",
+            "years_experience": 7,
+            "shift_available": true,
+            "meets_all_requirements": false,
+            "gaps": [
+              "certification"
+            ]
+          },
+          {
+            "email": "saa-seed-11-002@seed.invalid",
+            "person_slug": "01a07d14-cf11-765b-897d-0970b03814dc",
+            "has_certificate": true,
+            "german_level": "B2",
+            "years_experience": 4,
+            "shift_available": true,
+            "meets_all_requirements": true,
+            "gaps": []
+          },
+          {
+            "email": "saa-seed-11-003@seed.invalid",
+            "person_slug": "01a07d14-d342-7cdc-9225-de65559f7f6a",
+            "has_certificate": true,
+            "german_level": "B1",
+            "years_experience": 7,
+            "shift_available": true,
+            "meets_all_requirements": false,
+            "gaps": [
+              "language"
+            ]
+          },
+          {
+            "email": "saa-seed-11-004@seed.invalid",
+            "person_slug": "01a07d14-d79c-7724-818c-be51cbeaf4a4",
+            "has_certificate": true,
+            "german_level": "B2",
+            "years_experience": 1,
+            "shift_available": false,
+            "meets_all_requirements": false,
+            "gaps": [
+              "experience",
+              "availability"
+            ]
+          }
+        ]
       }
     }
   ]

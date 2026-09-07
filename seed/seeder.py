@@ -22,7 +22,8 @@ from typing import Any
 
 from analyzer.client import ApiError, HttpError, PaulsjobClient
 from analyzer.config import Settings
-from seed.scenarios import SCENARIOS, JobScenario, ReasonSpec
+from seed.profiles import Profile, build_population, cover_letter, profile_dict
+from seed.scenarios import SCENARIOS, JobScenario
 
 log = logging.getLogger("seeder")
 
@@ -55,6 +56,9 @@ class PlannedCandidate:
     email: str
     assignments: list[PlannedAssignment] = field(default_factory=list)
     person_slug: str | None = None
+    #: Real mode only: what this candidate claims, and the letter stating it.
+    profile: Profile | None = None
+    letter: str = ""
 
 
 @dataclass
@@ -89,6 +93,7 @@ class Seeder:
         self._cached_template: str | None = None
         self.skipped = 0
         self.muted = 0
+        self.screened = 0
 
     # -- planning (no network) --------------------------------------------
     def plan(self, scenarios: list[JobScenario]) -> list[PlannedJob]:
@@ -100,13 +105,22 @@ class Seeder:
         return [self._plan_job(s) for s in scenarios]
 
     def _plan_job(self, scenario: JobScenario) -> PlannedJob:
+        """Plan one job's candidates.
+
+        In real mode we plan *profiles*: the agent supplies the decisions, so
+        the only thing we author is what each candidate claims. In authored
+        mode we plan the decision records themselves.
+        """
         job = PlannedJob(
             external_id=scenario.external_id,
             title=scenario.title,
             demonstrates=scenario.demonstrates,
             criteria=list(scenario.criteria),
         )
-        malformed_left = scenario.malformed_decisions
+        profiles = (
+            [] if scenario.authored
+            else build_population(self.rng, scenario.candidates, required_years=scenario.required_years)
+        )
 
         for index in range(scenario.candidates):
             first = self.rng.choice(FIRST_NAMES)
@@ -118,16 +132,16 @@ class Seeder:
                 # cannot receive mail. No real person's address is ever used.
                 email=f"{scenario.external_id}-{index:03d}@seed.invalid",
             )
-
-            still_in_funnel = True
-            for category in ("PreScreening", "AIVoiceInterview", "HumanInterview"):
-                if not still_in_funnel or category not in scenario.pass_rates:
-                    break
-                assignment, still_in_funnel = self._plan_assignment(scenario, category, malformed_left)
-                if assignment.paul_decision in MALFORMED:
-                    malformed_left -= 1
-                candidate.assignments.append(assignment)
-
+            if not scenario.authored:
+                candidate.profile = profiles[index]
+                candidate.letter = cover_letter(
+                    candidate.profile,
+                    first_name=first,
+                    last_name=last,
+                    job_title=scenario.title,
+                    certificate=scenario.certificate,
+                    field_label=scenario.field_label,
+                )
             job.candidates.append(candidate)
         return job
 
@@ -590,18 +604,33 @@ class Seeder:
 
     def _seed_candidate(self, job: PlannedJob, candidate: PlannedCandidate) -> None:
         candidate.person_slug = self._ensure_person(candidate)
-        self._mute_paul(candidate.person_slug)
+
+        # Authored mode only: stop the live agent before writing our own
+        # decision records over the step. In real mode the agent MUST run --
+        # producing its real decisions is the entire point.
+        if candidate.profile is None:
+            self._mute_paul(candidate.person_slug)
+
         if self._already_assigned(candidate.person_slug, job.paulsjob_job_id):
             log.debug("%s already has history on %s, skipping", candidate.email, job.external_id)
             self.skipped += 1
             return
-        self.client.post(
-            f"/recruiting/{candidate.person_slug}/applications/",
-            json_body={
-                "JobPositionID": str(job.paulsjob_job_id),
-                "JobPositionTitle": job.title,
-            },
-        )
+
+        application: dict[str, Any] = {
+            "JobPositionID": str(job.paulsjob_job_id),
+            "JobPositionTitle": job.title,
+        }
+        if candidate.letter:
+            # The agent's pre-screening prompt reads the CV and cover letter.
+            # Without content it has nothing to assess and scores everyone the
+            # same, so the letter carries the candidate's checkable claims.
+            application["CoverLetterText"] = candidate.letter
+        self.client.post(f"/recruiting/{candidate.person_slug}/applications/", json_body=application)
+
+        if candidate.profile is not None:
+            self._start_screening(job, candidate)
+            return
+
         for assignment in candidate.assignments:
             step_id = job.steps.get(assignment.step_category)
             if not step_id:
@@ -623,6 +652,24 @@ class Seeder:
                 f"/recruiting/{candidate.person_slug}/jobs/{job.paulsjob_job_id}/steps/{step_id}",
                 json_body=body,
             )
+
+    def _start_screening(self, job: PlannedJob, candidate: PlannedCandidate) -> None:
+        """Hand the candidate to the agent and let it decide.
+
+        Deliberately sends no Paul* fields: the assignment moves the candidate
+        onto the pre-screening step, and the configured agent produces the
+        decision, the explanation and the routing itself. Everything after this
+        point in the pipeline is the platform's own behaviour, not ours.
+        """
+        step_id = job.steps.get("PreScreening")
+        if not step_id:
+            self.errors.append(f"{job.external_id}: no PreScreening step in this job's pipeline")
+            return
+        self.client.post(
+            f"/recruiting/{candidate.person_slug}/jobs/{job.paulsjob_job_id}/steps/{step_id}",
+            json_body={"AgentReview": True},
+        )
+        self.screened += 1
 
     def _ensure_person(self, candidate: PlannedCandidate) -> str | None:
         created = self.client.post(
@@ -665,7 +712,29 @@ def write_manifest(jobs: list[PlannedJob], path: str = MANIFEST_PATH) -> dict:
 
 
 def _expected(job: PlannedJob) -> dict:
-    """Per-step ground truth: what the analyzer should report for this job."""
+    """Ground truth for this job.
+
+    Real mode: what each candidate claims, and which mandatory requirements
+    they fail. The agent's decisions are NOT predicted here -- they are the
+    thing under observation. What this supports is checking whether a stated
+    rejection reason matches a requirement the candidate actually fails.
+    """
+    scenario = next(s for s in SCENARIOS if s.external_id == job.external_id)
+    if not scenario.authored:
+        return {
+            "mode": "real",
+            "required_years": scenario.required_years,
+            "candidates": [
+                {
+                    "email": c.email,
+                    "person_slug": c.person_slug,
+                    **profile_dict(c.profile, required_years=scenario.required_years),
+                }
+                for c in job.candidates
+                if c.profile is not None
+            ],
+        }
+
     by_step: dict[str, dict] = {}
     for candidate in job.candidates:
         for assignment in candidate.assignments:
@@ -688,15 +757,15 @@ def _expected(job: PlannedJob) -> dict:
                 cell["malformed"] += 1
             if assignment.assigner_decision:
                 cell["reviewed"] += 1
-                explicit_override = assignment.assigner_decision == "RejectPaulDecision"
-                independent_override = (
+                explicit = assignment.assigner_decision == "RejectPaulDecision"
+                independent = (
                     assignment.assigner_decision in ("PositiveDecision", "NegativeDecision")
                     and assignment.paul_decision_suggestion
                     and assignment.assigner_decision != assignment.paul_decision_suggestion
                 )
-                if explicit_override or independent_override:
+                if explicit or independent:
                     cell["overrides"] += 1
-    return by_step
+    return {"mode": "authored", "by_step": by_step}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -743,6 +812,8 @@ def main(argv: list[str] | None = None) -> int:
     seeder.run(jobs)
     manifest = write_manifest(jobs, args.manifest)
     print(f"\nRequests: {client.stats.requests} ({client.stats.retries} retried)")
+    if seeder.screened:
+        print(f"Handed {seeder.screened} candidate(s) to the agent for screening.")
     if seeder.muted:
         print(f"Muted Paul for {seeder.muted} candidate(s) before assigning (no agent runs, no credits).")
     if seeder.skipped:

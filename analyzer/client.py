@@ -312,6 +312,41 @@ class PaulsjobClient:
     def post(self, path: str, json_body: Any | None = None, **params: Any) -> Any:
         return self.request("POST", path, params=params, json_body=json_body)
 
+    def post_multipart(
+        self,
+        path: str,
+        *,
+        fields: dict[str, str] | None = None,
+        files: dict[str, tuple[str, bytes, str]] | None = None,
+        **params: Any,
+    ) -> Any:
+        """POST multipart/form-data. `files` maps field -> (filename, data, mime).
+
+        Needed for document upload, which has no JSON variant. Hand-rolled
+        rather than pulled in as a dependency: the tool has no runtime deps.
+        """
+        boundary = f"----saa{uuid.uuid4().hex}"
+        parts: list[bytes] = []
+        for name, value in (fields or {}).items():
+            parts.append(
+                f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"\r\n\r\n{value}\r\n'.encode()
+            )
+        for name, (filename, data, mime) in (files or {}).items():
+            parts.append(
+                f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"; '
+                f'filename="{filename}"\r\nContent-Type: {mime}\r\n\r\n'.encode()
+            )
+            parts.append(data)
+            parts.append(b"\r\n")
+        parts.append(f"--{boundary}--\r\n".encode())
+        return self.request(
+            "POST",
+            path,
+            params=params,
+            body=b"".join(parts),
+            content_type=f"multipart/form-data; boundary={boundary}",
+        )
+
     # -- pagination --------------------------------------------------------
     # The API uses two different styles and the client hides the difference.
     def paginate_cursor(
