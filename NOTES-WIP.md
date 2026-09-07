@@ -97,3 +97,40 @@ Behavioural findings:
   client can never see the agent's reasoning — only its concluded decision
 - Deleting a step silently orphaned another step's routing target; the UI
   surfaced it only as a disabled button with no message
+
+## "Profilaktivität" is character count (verified)
+
+The candidate list shows a Profilaktivität percentage. Its tooltip claims it
+measures overall participation and activity: how far a user has completed their
+profile, plus active interactions such as answering messages, reading content
+and contributing posts.
+
+It is `len(UnstructuredData) / 2000`. Exact to four decimal places across six
+candidates:
+
+| candidate  | score   | chars | populated fields |
+|------------|---------|-------|------------------|
+| Nadia      | 35.25%  | 705   | 15               |
+| Tomasz     | 28.70%  | 574   | 18               |
+| Agnieszka  | 23.35%  | 467   | 18               |
+| Katarzyna  | 22.15%  | 443   | 19               |
+| Piotr      | 20.45%  | 409   | 18               |
+| Magdalena  | 20.05%  | 401   | 18               |
+
+Each documented input falsified:
+- completeness -- Katarzyna has the most populated fields and the second
+  lowest score; Nadia has the fewest and the highest
+- answering messages -- every candidate has TotalSent 0 / TotalReceived 0
+- reading content, contributing posts -- @seed.invalid addresses, never
+  logged in, cannot have done either
+
+Consequence: a candidate scores higher for LACKING a requirement, because
+stating an absence takes more words than stating a qualification. Tomasz
+outscores every qualified candidate purely because his summary explains a
+missing certificate.
+
+Relevance to this tool: it is the same failure mode as the "Paul is talking to
+this candidate right now" warning shown while zero messages exist. Surface
+numbers assert things the underlying data does not support. That is the
+argument for computing metrics from decision records and stating the
+derivation -- which is what the analyzer does.
