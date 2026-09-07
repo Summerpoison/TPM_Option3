@@ -1,0 +1,74 @@
+{
+  "JobStepTemplates": [
+    {
+      "ID": "01a07cf4-5c5e-7c53-8e24-3379449c9c60",
+      "Name": "Neu",
+      "Category": "New",
+      "Color": "#9BD9B0",
+      "OrderIndex": 1,
+      "IsHidden": false,
+      "CreatedAt": "2026-09-07T17:39:44Z",
+      "UpdatedAt": "2026-09-07T17:39:44Z"
+    },
+    {
+      "ID": "01a07cf4-5cb1-721a-9b07-d05a2a324a58",
+      "Name": "Vorauswahl",
+      "Category": "PreScreening",
+      "Color": "#7FD8BE",
+      "OrderIndex": 2,
+      "IsHidden": false,
+      "CreatedAt": "2026-09-07T17:39:44Z",
+      "UpdatedAt": "2026-09-07T17:39:44Z"
+    },
+    {
+      "ID": "01a07cf4-5d06-748a-aeb7-af2911b796e5",
+      "Name": "KI-Voice-Interview",
+      "Category": "AIVoiceInterview",
+      "Color": "#BAE1FF",
+      "OrderIndex": 3,
+      "IsHidden": false,
+      "CreatedAt": "2026-09-07T17:39:44Z",
+      "UpdatedAt": "2026-09-07T17:39:44Z"
+    },
+    {
+      "ID": "01a07cf4-5d57-7a1d-886b-2433c4c0a219",
+      "Name": "Menschliches Interview",
+      "Category": "HumanInterview",
+      "Color": "#D2B3F3",
+      "OrderIndex": 4,
+      "IsHidden": false,
+      "CreatedAt": "2026-09-07T17:39:44Z",
+      "UpdatedAt": "2026-09-07T17:39:44Z"
+    },
+    {
+      "ID": "01a07cf4-5daf-7683-a3c3-a0dd180d904d",
+      "Name": "Teamdiskussion/Endgültige Entscheidung",
+      "Category": "TeamDiscussion",
+      "Color": "#FFDFBA",
+      "OrderIndex": 5,
+      "IsHidden": false,
+      "CreatedAt": "2026-09-07T17:39:44Z",
+      "UpdatedAt": "2026-09-07T17:39:44Z"
+    },
+    {
+      "ID": "01a07cf4-5e03-70a0-b719-1b03bb00f683",
+      "Name": "Ablehnen",
+      "Category": "Rejected",
+      "Color": "#FF6B6B",
+      "OrderIndex": 6,
+      "IsHidden": false,
+      "CreatedAt": "2026-09-07T17:39:44Z",
+      "UpdatedAt": "2026-09-07T17:39:44Z"
+    },
+    {
+      "ID": "01a07cf4-5e53-7b7d-acef-138d8286c6fb",
+      "Name": "Erledigt",
+      "Category": "TeamDiscussion",
+      "Color": "#FFDFBA",
+      "OrderIndex": 7,
+      "IsHidden": false,
+      "CreatedAt": "2026-09-07T17:39:44Z",
+      "UpdatedAt": "2026-09-07T17:39:44Z"
+    }
+  ]
+}

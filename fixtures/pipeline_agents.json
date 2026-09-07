@@ -1,0 +1,427 @@
+{
+  "PreScreening": [
+    {
+      "ID": "01a07cf4-5f99-79ca-830a-bfd8256f6756",
+      "StepTemplateID": "01a07cf4-5cb1-721a-9b07-d05a2a324a58",
+      "AgentType": "reactive_and_proactive",
+      "Name": "Vorauswahl",
+      "Description": "",
+      "Instructions": {
+        "SystemPrompt": "Überprüfen Sie den Lebenslauf und das Anschreiben des Kandidaten. Prüfen Sie auf relevante Erfahrung, Ausbildung und Fähigkeiten, die unseren Stellenanforderungen entsprechen. Bewerten Sie ihre Qualifikationen anhand der Positionskriterien."
+      },
+      "Tools": [
+        {
+          "Id": "AudioTranscription",
+          "ToolDetails": null
+        },
+        {
+          "Id": "DocumentParser",
+          "ToolDetails": null
+        }
+      ],
+      "DeliverySettings": {
+        "Limit": 5,
+        "Channels": [],
+        "FallbackChannels": [],
+        "Intervals": {
+          "Global": 1,
+          "AgentSpecific": 6
+        }
+      },
+      "QuietHours": {
+        "IsEnabled": false,
+        "Timezone": "Europe/Berlin",
+        "Days": []
+      },
+      "NextStepRules": [
+        {
+          "Name": "POSITIVE_CONCLUSION",
+          "TargetAudience": {
+            "Type": "filtered",
+            "FilterText": "Der Kandidat erfüllt alle zwingenden Anforderungen der Stellenausschreibung: erforderliche Qualifikation bzw. Zertifikat, gefordertes Sprachniveau, geforderte Berufserfahrung und Bereitschaft zum Schichtdienst.",
+            "FilterConditions": {
+              "And": null,
+              "Or": null
+            }
+          },
+          "Actions": {
+            "StatusChange": "01a07cf4-5d06-748a-aeb7-af2911b796e5",
+            "TagChanges": null,
+            "NoteContent": "",
+            "NotifySomeone": [],
+            "NotifyHiringManagers": false,
+            "NotifyJobOwner": false,
+            "NotifySomeoneAttachCandidatePublicPage": false
+          }
+        },
+        {
+          "Name": "NEGATIVE_CONCLUSION",
+          "TargetAudience": {
+            "Type": "filtered",
+            "FilterText": "Mindestens eine zwingende Anforderung der Stellenausschreibung ist nicht erfüllt: fehlende Qualifikation oder fehlendes Zertifikat, unzureichendes Sprachniveau, zu geringe Berufserfahrung, oder fehlende Schichtbereitschaft.",
+            "FilterConditions": {
+              "And": null,
+              "Or": null
+            }
+          },
+          "Actions": {
+            "StatusChange": "01a07cf4-5e03-70a0-b719-1b03bb00f683",
+            "TagChanges": null,
+            "NoteContent": "",
+            "NotifySomeone": [],
+            "NotifyHiringManagers": false,
+            "NotifyJobOwner": false,
+            "NotifySomeoneAttachCandidatePublicPage": false
+          }
+        }
+      ],
+      "HumanInLoop": {
+        "Setting": "always_off",
+        "NotifyHiringManagers": false,
+        "NotifyJobOwner": false,
+        "NotifySomeoneAttachCandidatePublicPage": false
+      },
+      "IsActive": true,
+      "CreatedBy": "3c1558c4-5371-4194-abcd-fa812d13a867",
+      "AdditionalFields": {
+        "IncludeATSQuestions": false,
+        "IncludeUploadedDocumentContent": true,
+        "IsLastPreScreeningStep": false,
+        "PaulGenerateQuestions": false,
+        "Questions": []
+      },
+      "CreatedAt": "2026-09-07T17:39:45Z",
+      "UpdatedAt": "2026-09-07T17:39:45Z"
+    }
+  ],
+  "AIVoiceInterview": [
+    {
+      "ID": "01a07cf4-5ff4-77d8-b5f4-b70c8a3caf73",
+      "StepTemplateID": "01a07cf4-5d06-748a-aeb7-af2911b796e5",
+      "AgentType": "reactive_and_proactive",
+      "Name": "KI-Voice-Interview",
+      "Description": "",
+      "Instructions": {
+        "SystemPrompt": "Verwenden Sie die Kandidateninformationen und Stellenanforderungen, um prägnante, stellenrelevante Fragen zu stellen, die die Fähigkeiten und Eignung des Kandidaten für die Rolle bewerten. Passen Sie Folgefragen basierend auf ihren Antworten an und behalten Sie dabei einen neutralen, professionellen Ton bei. Halten Sie das Interview innerhalb von 5 Minuten und vermeiden Sie persönliche oder nicht stellenbezogene Themen."
+      },
+      "Tools": [
+        {
+          "Id": "SearchKnowledgeBase",
+          "ToolDetails": null
+        }
+      ],
+      "DeliverySettings": {
+        "Limit": 5,
+        "Channels": [],
+        "FallbackChannels": [],
+        "Intervals": {
+          "Global": 1,
+          "AgentSpecific": 6
+        }
+      },
+      "QuietHours": {
+        "IsEnabled": false,
+        "Timezone": "Europe/Berlin",
+        "Days": []
+      },
+      "NextStepRules": [
+        {
+          "Name": "POSITIVE_CONCLUSION",
+          "TargetAudience": {
+            "Type": "filtered",
+            "FilterText": "Der Kandidat erfüllt alle zwingenden Anforderungen der Stellenausschreibung: erforderliche Qualifikation bzw. Zertifikat, gefordertes Sprachniveau, geforderte Berufserfahrung und Bereitschaft zum Schichtdienst.",
+            "FilterConditions": {
+              "And": null,
+              "Or": null
+            }
+          },
+          "Actions": {
+            "StatusChange": "01a07cf4-5d57-7a1d-886b-2433c4c0a219",
+            "TagChanges": null,
+            "NoteContent": "",
+            "NotifySomeone": [],
+            "NotifyHiringManagers": false,
+            "NotifyJobOwner": false,
+            "NotifySomeoneAttachCandidatePublicPage": false
+          }
+        },
+        {
+          "Name": "NEGATIVE_CONCLUSION",
+          "TargetAudience": {
+            "Type": "filtered",
+            "FilterText": "Mindestens eine zwingende Anforderung der Stellenausschreibung ist nicht erfüllt: fehlende Qualifikation oder fehlendes Zertifikat, unzureichendes Sprachniveau, zu geringe Berufserfahrung, oder fehlende Schichtbereitschaft.",
+            "FilterConditions": {
+              "And": null,
+              "Or": null
+            }
+          },
+          "Actions": {
+            "StatusChange": "01a07cf4-5e03-70a0-b719-1b03bb00f683",
+            "TagChanges": null,
+            "NoteContent": "",
+            "NotifySomeone": [],
+            "NotifyHiringManagers": false,
+            "NotifyJobOwner": false,
+            "NotifySomeoneAttachCandidatePublicPage": false
+          }
+        }
+      ],
+      "HumanInLoop": {
+        "Setting": "always_off",
+        "NotifyHiringManagers": false,
+        "NotifyJobOwner": false,
+        "NotifySomeoneAttachCandidatePublicPage": false
+      },
+      "IsActive": true,
+      "CreatedBy": "3c1558c4-5371-4194-abcd-fa812d13a867",
+      "AdditionalFields": {
+        "AIInterviewInvitationMessagePrompt": "Tell the candidate that you would like to do a short interview with the candidate as a next step. This helps candidate to speed up the process. To start the interview candidate can click on the link. Remind them that they can start the interview at any time they are ready, no scheduling is required. Also, inform them to ensure their microphone is working properly before starting the interview. IMPORTANT: When writing in German, always use the informal 'Du' form instead of the formal 'Sie' form.",
+        "CustomScores": [],
+        "EnableOutboundCall": false,
+        "EndOfCallProcedure": "Danken Sie dem Kandidaten für seine Zeit und Teilnahme am Interview. Teilen Sie ihnen mit, was als Nächstes im Einstellungsprozess zu erwarten ist und wann sie eine Rückmeldung erwarten können. Wünschen Sie ihnen alles Gute und beenden Sie das Gespräch professionell.",
+        "GreetingInstructions": "Begrüßen Sie den Kandidaten herzlich und stellen Sie sich vor. Erklären Sie, dass dies ein KI-gesteuertes Sprachinterview ist, um mehr über ihren Hintergrund und ihre Qualifikationen zu erfahren. Teilen Sie ihnen mit, dass das Gespräch gesprächsartig sein wird und sie natürlich sprechen können.",
+        "IncludeUploadedDocumentContent": true,
+        "InterviewAIVoiceID": "",
+        "InterviewLanguage": "auto",
+        "OutboundCallAgentInterval": 24,
+        "OutboundCallDays": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday"
+        ],
+        "OutboundCallDeliveryLimit": 3,
+        "OutboundCallGreetingInstruction": "Rufen Sie den Kandidaten im Namen des Unternehmens wegen seiner Bewerbung an.\n\nBestätigen Sie die Identität des Kandidaten, nennen Sie kurz den Grund des Anrufs und fragen Sie, ob jetzt ein guter Zeitpunkt für ein Gespräch ist.\n\n\nHalten Sie den Ton warm und prägnant.\n\nWenn der Kandidat nicht verfügbar ist, danken Sie ihm und beenden Sie das Gespräch höflich.",
+        "OutboundCallTimeToCall": [
+          {
+            "EndTime": "09:00",
+            "StartTime": "07:00"
+          },
+          {
+            "EndTime": "14:00",
+            "StartTime": "11:00"
+          }
+        ],
+        "PhoneCallImmediately": false,
+        "TriggerCallOption": "online_only"
+      },
+      "CreatedAt": "2026-09-07T17:39:45Z",
+      "UpdatedAt": "2026-09-07T17:39:45Z"
+    }
+  ],
+  "HumanInterview": [
+    {
+      "ID": "01a07cf4-6052-7a24-acb0-709d4c9e7b22",
+      "StepTemplateID": "01a07cf4-5d57-7a1d-886b-2433c4c0a219",
+      "AgentType": "reactive_and_proactive",
+      "Name": "Menschliches Interview",
+      "Description": "",
+      "Instructions": {
+        "SystemPrompt": "Senden Sie den Link, um das persönliche Interview zu planen, neu zu planen und abzusagen."
+      },
+      "Tools": [
+        {
+          "Id": "SearchKnowledgeBase",
+          "ToolDetails": null
+        }
+      ],
+      "DeliverySettings": {
+        "Limit": 5,
+        "Channels": [],
+        "FallbackChannels": [],
+        "Intervals": {
+          "Global": 1,
+          "AgentSpecific": 6
+        }
+      },
+      "MessagingSettingsEmployees": {
+        "DeliverySettings": {
+          "Limit": 5,
+          "Channels": [],
+          "FallbackChannels": [],
+          "Intervals": {
+            "Global": 1,
+            "AgentSpecific": 6
+          }
+        },
+        "MeetingConfirmation": {
+          "AttachCandidatePublicPage": false,
+          "NotifyJobOwner": false
+        },
+        "MeetingReschedule": {
+          "AttachCandidatePublicPage": false,
+          "NotifyJobOwner": false
+        },
+        "MeetingCancel": {
+          "AttachCandidatePublicPage": false,
+          "NotifyJobOwner": false
+        }
+      },
+      "QuietHours": {
+        "IsEnabled": false,
+        "Timezone": "Europe/Berlin",
+        "Days": []
+      },
+      "NextStepRules": [
+        {
+          "Name": "POSITIVE_CONCLUSION",
+          "TargetAudience": {
+            "Type": "filtered",
+            "FilterText": "Der Kandidat erfüllt alle zwingenden Anforderungen der Stellenausschreibung: erforderliche Qualifikation bzw. Zertifikat, gefordertes Sprachniveau, geforderte Berufserfahrung und Bereitschaft zum Schichtdienst.",
+            "FilterConditions": {
+              "And": null,
+              "Or": null
+            }
+          },
+          "Actions": {
+            "StatusChange": "01a07cf4-5daf-7683-a3c3-a0dd180d904d",
+            "TagChanges": null,
+            "NoteContent": "",
+            "NotifySomeone": [],
+            "NotifyHiringManagers": false,
+            "NotifyJobOwner": false,
+            "NotifySomeoneAttachCandidatePublicPage": false
+          }
+        },
+        {
+          "Name": "NEGATIVE_CONCLUSION",
+          "TargetAudience": {
+            "Type": "filtered",
+            "FilterText": "Mindestens eine zwingende Anforderung der Stellenausschreibung ist nicht erfüllt: fehlende Qualifikation oder fehlendes Zertifikat, unzureichendes Sprachniveau, zu geringe Berufserfahrung, oder fehlende Schichtbereitschaft.",
+            "FilterConditions": {
+              "And": null,
+              "Or": null
+            }
+          },
+          "Actions": {
+            "StatusChange": "01a07cf4-5e03-70a0-b719-1b03bb00f683",
+            "TagChanges": null,
+            "NoteContent": "",
+            "NotifySomeone": [],
+            "NotifyHiringManagers": false,
+            "NotifyJobOwner": false,
+            "NotifySomeoneAttachCandidatePublicPage": false
+          }
+        }
+      ],
+      "HumanInLoop": {
+        "Setting": "always_on",
+        "NotifyHiringManagers": false,
+        "NotifyJobOwner": false,
+        "NotifySomeoneAttachCandidatePublicPage": false
+      },
+      "IsActive": true,
+      "CreatedBy": "3c1558c4-5371-4194-abcd-fa812d13a867",
+      "AdditionalFields": {
+        "AdditionalAttendeeSlugs": [],
+        "AllowCandidateDateRequests": false,
+        "CustomScores": [],
+        "FallbackOrganizerSlugs": [],
+        "HumanInterviewInvitationMessagePrompt": "",
+        "IncludeUploadedDocumentContent": true,
+        "InviteHiringManagers": false,
+        "InviteNotetaker": false,
+        "JobOwnerAsOrganizer": true,
+        "Location": "",
+        "MaximumBookingNoticeInHour": 0,
+        "MeetingBody": "Wir freuen uns darauf, Ihre Qualifikationen zu besprechen und mehr über Ihre Erfahrung zu erfahren. Bitte kommen Sie vorbereitet, um über Ihren Hintergrund zu sprechen und alle Fragen zu stellen, die Sie zur Position haben.",
+        "MeetingDuration": 60,
+        "MeetingName": "Vorstellungsgespräch",
+        "MinimumBookingNoticeInHour": 0,
+        "OrganizerSlug": "",
+        "PostInterviewSurvey": {
+          "AnonymityPolicy": "forced_identified",
+          "Anonymous": false,
+          "DeliverySettings": {
+            "Channels": [
+              "email"
+            ],
+            "FallbackChannels": [],
+            "Intervals": {
+              "AgentSpecific": 6,
+              "Global": 1
+            },
+            "Limit": 5
+          },
+          "Enabled": false,
+          "Questions": []
+        },
+        "ReminderTimeBefore": 0,
+        "UseJobLocation": false,
+        "UseOrganizerLocation": false
+      },
+      "CreatedAt": "2026-09-07T17:39:45Z",
+      "UpdatedAt": "2026-09-07T17:39:45Z"
+    }
+  ],
+  "TeamDiscussion": [],
+  "Rejected": [
+    {
+      "ID": "01a07cf4-60ba-7c3a-9c45-b76829eba6c5",
+      "StepTemplateID": "01a07cf4-5e03-70a0-b719-1b03bb00f683",
+      "AgentType": "reactive_and_proactive",
+      "Name": "Ablehnen",
+      "Description": "",
+      "Instructions": {
+        "SystemPrompt": "Senden Sie Ablehnungsnachrichten an Kandidaten, die für die Position abgelehnt wurden. Seien Sie professionell, respektvoll und geben Sie gegebenenfalls angemessenes Feedback."
+      },
+      "DeliverySettings": {
+        "Limit": 1,
+        "Channels": [],
+        "FallbackChannels": [],
+        "Intervals": {
+          "Global": 1,
+          "AgentSpecific": 6
+        }
+      },
+      "QuietHours": {
+        "IsEnabled": false,
+        "Timezone": "Europe/Berlin",
+        "Days": []
+      },
+      "NextStepRules": [
+        {
+          "Name": "POSITIVE_CONCLUSION",
+          "TargetAudience": {
+            "Type": "filtered",
+            "FilterConditions": {
+              "And": null,
+              "Or": null
+            }
+          },
+          "Actions": {
+            "StatusChange": "01a07cf4-5e53-7b7d-acef-138d8286c6fb",
+            "TagChanges": null,
+            "NoteContent": "",
+            "NotifySomeone": [],
+            "NotifyHiringManagers": false,
+            "NotifyJobOwner": false,
+            "NotifySomeoneAttachCandidatePublicPage": false
+          }
+        }
+      ],
+      "HumanInLoop": {
+        "Setting": "always_off",
+        "NotifyHiringManagers": false,
+        "NotifyJobOwner": false,
+        "NotifySomeoneAttachCandidatePublicPage": false
+      },
+      "IsActive": true,
+      "CreatedBy": "3c1558c4-5371-4194-abcd-fa812d13a867",
+      "AdditionalFields": {
+        "CustomMessageTemplate": "",
+        "CustomSubjectTemplate": "",
+        "IncludeUploadedDocumentContent": true,
+        "InitialSendTimeDelayHours": 1,
+        "LetPaulDecide": true,
+        "PositionFilledLetPaulDecide": true,
+        "PositionFilledMessageTemplate": "<div><p></p></div>",
+        "PositionFilledSubjectTemplate": "",
+        "SilentReject": false
+      },
+      "CreatedAt": "2026-09-07T17:39:45Z",
+      "UpdatedAt": "2026-09-07T17:39:45Z"
+    }
+  ]
+}

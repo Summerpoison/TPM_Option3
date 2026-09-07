@@ -1,0 +1,41 @@
+{
+  "rng_seed": 20260907,
+  "jobs": [
+    {
+      "external_id": "saa-seed-01",
+      "paulsjob_job_id": "182680",
+      "title": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz",
+      "demonstrates": "High override rate at PreScreening: the AI's hard-criteria calls are being reversed.",
+      "criteria": [
+        "§34a certification",
+        "German B2",
+        "3 years experience",
+        "shift availability"
+      ],
+      "candidates": 3,
+      "assignments": 4,
+      "expected": {
+        "PreScreening": {
+          "total": 3,
+          "positive": 1,
+          "negative": 2,
+          "opt_out": 0,
+          "malformed": 0,
+          "reviewed": 3,
+          "overrides": 2,
+          "off_criteria_reasons": 0
+        },
+        "AIVoiceInterview": {
+          "total": 1,
+          "positive": 0,
+          "negative": 0,
+          "opt_out": 1,
+          "malformed": 0,
+          "reviewed": 0,
+          "overrides": 0,
+          "off_criteria_reasons": 0
+        }
+      }
+    }
+  ]
+}

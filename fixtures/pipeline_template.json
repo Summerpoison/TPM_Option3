@@ -1,0 +1,22 @@
+{
+  "ID": "01a07cf4-5bea-7a88-a560-77ac73733139",
+  "Name": "SAA Seed Pipeline",
+  "Version": 1,
+  "VersionRootPipelineTemplateID": "01a07cf4-5bea-7a88-a560-77ac73733139",
+  "IsDefault": false,
+  "FilterRulesElastic": {
+    "Must": [
+      {
+        "Key": "job_position_title",
+        "Operator": "contains",
+        "Value": "(m/w/d)"
+      }
+    ]
+  },
+  "ApplicationConfirmationEmail": {
+    "Enabled": false
+  },
+  "IncludeUploadedDocumentContent": true,
+  "CreatedAt": "2026-09-07T17:39:44Z",
+  "UpdatedAt": "2026-09-07T17:39:44Z"
+}
