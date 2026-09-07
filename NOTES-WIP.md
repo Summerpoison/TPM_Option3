@@ -129,8 +129,30 @@ stating an absence takes more words than stating a qualification. Tomasz
 outscores every qualified candidate purely because his summary explains a
 missing certificate.
 
-Relevance to this tool: it is the same failure mode as the "Paul is talking to
-this candidate right now" warning shown while zero messages exist. Surface
-numbers assert things the underlying data does not support. That is the
-argument for computing metrics from decision records and stating the
-derivation -- which is what the analyzer does.
+IMPORTANT CAVEAT -- this may be a dev stub, not the production implementation.
+`EngagementScore` appears in `PersonSyncPayloadAttributesToSync`, so it can be
+populated from external systems. A dev account has no logins, no messages and
+no integrations, so there may be nothing real to compute from and a cheap
+deterministic proxy may be substituted so the column renders something. We
+cannot tell the difference from inside dev.
+
+What holds either way:
+- in this environment the displayed number does not reflect the inputs its
+  tooltip names
+- the completeness claim is falsified regardless of mechanism: field count
+  runs backwards to the score
+- if it IS a stub, the observation becomes smaller but still real -- the
+  tooltip is shown unchanged in an environment where the metric is simulated
+
+How to raise it: as a QUESTION, not a finding. "Is Profilaktivitaet stubbed in
+the dev environment? In my account it is exactly len(profile_text)/2000, and
+the tooltip describes message and reading activity that cannot exist there."
+That invites an explanation and cannot be wrong-footed. Asserting the metric is
+fake, and then being told it is a dev fixture, would undercut everything else.
+
+Relevance to this tool: the same shape as the "Paul is talking to this
+candidate right now" warning shown while zero messages exist -- surface numbers
+asserting things the underlying data does not support. That is the argument for
+computing metrics from decision records and stating the derivation, which is
+what the analyzer does. Note the same caveat applies: some of this may be dev
+behaviour rather than product behaviour, and the write-up should say so.
