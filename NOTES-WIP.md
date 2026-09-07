@@ -156,3 +156,37 @@ asserting things the underlying data does not support. That is the argument for
 computing metrics from decision records and stating the derivation, which is
 what the analyzer does. Note the same caveat applies: some of this may be dev
 behaviour rather than product behaviour, and the write-up should say so.
+
+## The screening agent produced no decisions at all (account-wide check)
+
+Every decision in the account is one we wrote. Verified by pulling
+steps-assignment-history for every application:
+
+- 17 history records total
+- 4 carry a PaulDecision -- all on job 182680, all authored by the seeder
+- 13 are null: every case where the decision was left to the agent
+
+The four explanations are verbatim string literals from our own source
+(`scenarios.py:82,83` and `seeder.py:147,151`), so their provenance is not in
+doubt. What the UI renders as "Paul Entscheidung - nicht empfohlen" is a
+NegativeDecision we POSTed.
+
+Nulls include: a fully populated profile (Nadia), five imported candidates with
+rich profiles from the Excel import, and one with an uploaded CV -- across
+multiple configurations, over an hour elapsed, with no error surfaced anywhere.
+
+Scope of the claim:
+- some AI IS connected -- profile extraction on person creation and job
+  description processing both ran and produced output, and both cost credits
+- the screening agent specifically has never concluded, 13 attempts, zero
+  output, no partial state
+- whether that is deliberate (evaluation not wired up in dev) or a config gate
+  we did not find cannot be determined from outside
+
+Consequence for the submission: authored decision records are not a shortcut,
+they are the only available path. Wording for the README/tech note:
+
+  "The dev environment produced no AI screening decisions across 13 candidates
+  and multiple pipeline configurations, so the analyzer is exercised against
+  decision records seeded through the same write endpoints the platform uses.
+  Human review decisions are genuine."
