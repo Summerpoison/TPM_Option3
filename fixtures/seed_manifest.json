@@ -2,80 +2,101 @@
   "rng_seed": 20260907,
   "jobs": [
     {
-      "external_id": "saa-seed-11",
-      "paulsjob_job_id": "182721",
+      "external_id": "saa-seed-21",
+      "paulsjob_job_id": "182760",
       "title": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz",
-      "demonstrates": "Security role with four hard criteria. Candidate profiles vary so that roughly 40% meet every requirement, 40% fail exactly one, 20% fail two.",
+      "demonstrates": "The problem job. High override rate at pre-screening, ragged bilingual rejection text that forces keyword bucketing, an opt-out cluster at the voice interview, and malformed decision values for the data-quality section.",
       "criteria": [
         "§34a certification",
         "German B2",
         "3 years experience",
         "shift availability"
       ],
-      "candidates": 5,
-      "assignments": 0,
+      "candidates": 20,
+      "assignments": 28,
       "expected": {
-        "mode": "real",
-        "required_years": 3,
-        "candidates": [
-          {
-            "email": "saa-seed-11-000@seed.invalid",
-            "person_slug": "01a07d14-c5de-7a3a-8465-8faa9ebea829",
-            "has_certificate": true,
-            "german_level": "C1",
-            "years_experience": 4,
-            "shift_available": true,
-            "meets_all_requirements": true,
-            "gaps": []
+        "mode": "authored",
+        "by_step": {
+          "PreScreening": {
+            "total": 20,
+            "positive": 7,
+            "negative": 10,
+            "opt_out": 2,
+            "malformed": 1,
+            "reviewed": 12,
+            "overrides": 5,
+            "off_criteria_reasons": 0
           },
-          {
-            "email": "saa-seed-11-001@seed.invalid",
-            "person_slug": "01a07d14-cae3-7e8e-9ff6-4db0abf43f14",
-            "has_certificate": false,
-            "german_level": "C1",
-            "years_experience": 7,
-            "shift_available": true,
-            "meets_all_requirements": false,
-            "gaps": [
-              "certification"
-            ]
+          "AIVoiceInterview": {
+            "total": 7,
+            "positive": 1,
+            "negative": 4,
+            "opt_out": 2,
+            "malformed": 0,
+            "reviewed": 3,
+            "overrides": 0,
+            "off_criteria_reasons": 0
           },
-          {
-            "email": "saa-seed-11-002@seed.invalid",
-            "person_slug": "01a07d14-cf11-765b-897d-0970b03814dc",
-            "has_certificate": true,
-            "german_level": "B2",
-            "years_experience": 4,
-            "shift_available": true,
-            "meets_all_requirements": true,
-            "gaps": []
-          },
-          {
-            "email": "saa-seed-11-003@seed.invalid",
-            "person_slug": "01a07d14-d342-7cdc-9225-de65559f7f6a",
-            "has_certificate": true,
-            "german_level": "B1",
-            "years_experience": 7,
-            "shift_available": true,
-            "meets_all_requirements": false,
-            "gaps": [
-              "language"
-            ]
-          },
-          {
-            "email": "saa-seed-11-004@seed.invalid",
-            "person_slug": "01a07d14-d79c-7724-818c-be51cbeaf4a4",
-            "has_certificate": true,
-            "german_level": "B2",
-            "years_experience": 1,
-            "shift_available": false,
-            "meets_all_requirements": false,
-            "gaps": [
-              "experience",
-              "availability"
-            ]
+          "HumanInterview": {
+            "total": 1,
+            "positive": 0,
+            "negative": 1,
+            "opt_out": 0,
+            "malformed": 0,
+            "reviewed": 1,
+            "overrides": 0,
+            "off_criteria_reasons": 0
           }
-        ]
+        }
+      }
+    },
+    {
+      "external_id": "saa-seed-22",
+      "paulsjob_job_id": "182761",
+      "title": "Pflegefachkraft (m/w/d) - Intensivstation",
+      "demonstrates": "The control job. Fixed vocabulary, near-total review coverage, low override -- the analyzer must NOT flag it for those. Its one real fault is rejections citing criteria absent from the listing, which the anomaly check should catch.",
+      "criteria": [
+        "nursing qualification",
+        "German B2",
+        "2 years experience",
+        "shift availability"
+      ],
+      "candidates": 20,
+      "assignments": 32,
+      "expected": {
+        "mode": "authored",
+        "by_step": {
+          "PreScreening": {
+            "total": 20,
+            "positive": 9,
+            "negative": 10,
+            "opt_out": 1,
+            "malformed": 0,
+            "reviewed": 19,
+            "overrides": 0,
+            "off_criteria_reasons": 6
+          },
+          "AIVoiceInterview": {
+            "total": 9,
+            "positive": 3,
+            "negative": 5,
+            "opt_out": 1,
+            "malformed": 0,
+            "reviewed": 7,
+            "overrides": 0,
+            "off_criteria_reasons": 1
+          },
+          "HumanInterview": {
+            "total": 3,
+            "positive": 3,
+            "negative": 0,
+            "opt_out": 0,
+            "malformed": 0,
+            "reviewed": 3,
+            "overrides": 0,
+            "off_criteria_reasons": 0
+          }
+        }
       }
     }
   ]

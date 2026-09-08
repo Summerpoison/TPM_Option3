@@ -23,7 +23,7 @@ from typing import Any
 from analyzer.client import ApiError, HttpError, PaulsjobClient
 from analyzer.config import Settings
 from seed.profiles import Profile, build_population, cover_letter, profile_dict
-from seed.scenarios import SCENARIOS, JobScenario
+from seed.scenarios import DECISION_STEPS, SCENARIOS, JobScenario, ReasonSpec
 
 log = logging.getLogger("seeder")
 
@@ -35,7 +35,10 @@ POSITIVE = "PositiveDecision"
 NEGATIVE = "NegativeDecision"
 OPT_OUTS = ("OptOutNoAnswer", "OptOutDeclineToTalkWithAI", "OptOutDeclineToContinueApplication")
 #: Values that should NOT normalise, to give the data-quality section content.
-MALFORMED = ("Escalated", "PendingReview", "", "Unklar")
+#: An empty value is NOT malformed -- it means "not evaluated", which the
+#: normaliser maps to NONE. These are values that are present and
+#: genuinely unmappable, which is a different data-quality finding.
+MALFORMED = ("Escalated", "PendingReview", "Unklar", "In Klaerung")
 
 
 @dataclass
@@ -117,6 +120,7 @@ class Seeder:
             demonstrates=scenario.demonstrates,
             criteria=list(scenario.criteria),
         )
+        malformed_left = scenario.malformed_decisions
         profiles = (
             [] if scenario.authored
             else build_population(self.rng, scenario.candidates, required_years=scenario.required_years)
@@ -142,6 +146,21 @@ class Seeder:
                     certificate=scenario.certificate,
                     field_label=scenario.field_label,
                 )
+            else:
+                # Walk the candidate down the funnel: each step's decision
+                # determines whether they reach the next one, so the deeper
+                # cells thin out the way a real pipeline's do.
+                still_in_funnel = True
+                for category in DECISION_STEPS:
+                    if not still_in_funnel or category not in scenario.pass_rates:
+                        break
+                    assignment, still_in_funnel = self._plan_assignment(
+                        scenario, category, malformed_left
+                    )
+                    if assignment.paul_decision in MALFORMED:
+                        malformed_left -= 1
+                    candidate.assignments.append(assignment)
+
             job.candidates.append(candidate)
         return job
 
@@ -152,7 +171,7 @@ class Seeder:
         pass_rate = scenario.pass_rates.get(category, 0.5)
 
         reason: ReasonSpec | None = None
-        if malformed_left > 0 and self.rng.random() < 0.05:
+        if malformed_left > 0 and self.rng.random() < 0.25:
             decision = self.rng.choice(MALFORMED)
             explanation = "Decision recorded with a non-standard status value."
             advanced = False
