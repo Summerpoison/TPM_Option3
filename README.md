@@ -288,7 +288,7 @@ analyzer/
   model.py       decision vocabulary and human/AI agreement — pure functions
   fetch.py       API → flat records; knows the endpoints, does no analysis
   reasons.py     rejection-reason aggregation, tiered
-  analysis.py    cells, roll-ups, anomalies — pure functions
+  analysis.py    cells, roll-ups, findings and priority — pure functions
   report.py      text, JSON and per-candidate rendering
 analyze.py       CLI
 seed/            test-data creation
