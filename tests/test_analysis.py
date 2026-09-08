@@ -1,5 +1,6 @@
 """Analysis tests. Records are built by hand, so no network and no fixtures."""
 from analyzer.analysis import (
+    ACT_MIN_PEOPLE,
     HIGH_OPT_OUT_RATE,
     LOW_CONFIDENCE_N,
     analyse,
@@ -132,67 +133,183 @@ class TestLowConfidence:
         assert not result.cells[0].low_confidence
 
 
-class TestAnomalies:
-    def test_high_override_rate_is_flagged(self):
+class TestFindings:
+    """One card per (job, step); priority from people affected and confidence."""
+
+    @staticmethod
+    def people(n, **kw):
+        return [record(person=f"Person {i:02d}", **kw) for i in range(n)]
+
+    @staticmethod
+    def signals(result):
+        return [s for f in result.findings for s in f.signals]
+
+    # -- reversals ----------------------------------------------------------
+    def test_many_reversals_are_act_now_and_name_the_people(self):
         records = (
-            [record(agreement=Agreement.OVERRIDE, basis="explicit_reject")] * 5
-            + [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 5
+            self.people(5, agreement=Agreement.OVERRIDE, basis="explicit_reject")
+            + [record(agreement=Agreement.AGREE, basis="explicit_approve", person=f"Ok {i}")
+               for i in range(5)]
         )
-        anomalies = analyse(dataset(records), CONFIG).anomalies
-        assert any("reversed Paul" in a.headline for a in anomalies)
+        result = analyse(dataset(records), CONFIG)
+        assert len(result.findings) == 1
+        card = result.findings[0]
+        assert card.priority == "act"
+        signal = card.signals[0]
+        assert "reversed Paul on 5 of the 10" in signal.headline
+        assert signal.people == [f"Person {i:02d}" for i in range(5)]
 
-    def test_agreement_does_not_fire_the_override_flag(self):
-        """The control case: a healthy step must produce no finding."""
+    def test_few_reversals_on_enough_reviews_is_check(self):
+        records = (
+            self.people(3, agreement=Agreement.OVERRIDE, basis="explicit_reject")
+            + [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 7
+        )
+        result = analyse(dataset(records), CONFIG)
+        assert result.findings[0].priority == "check"
+
+    def test_reversals_on_too_few_reviews_only_watched(self):
+        """40% of 5 is two people: listed, never a priority."""
+        records = (
+            self.people(2, agreement=Agreement.OVERRIDE, basis="explicit_reject")
+            + [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 3
+        )
+        result = analyse(dataset(records), CONFIG)
+        assert result.findings == []
+        assert any("reversed" in s.headline for _scope, s in result.watch)
+
+    def test_agreement_produces_no_finding(self):
+        """The control case: a healthy step must produce nothing."""
         records = [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 20
-        anomalies = analyse(dataset(records), CONFIG).anomalies
-        assert not any("reversed Paul" in a.headline for a in anomalies)
+        result = analyse(dataset(records), CONFIG)
+        assert result.findings == [] and result.watch == []
 
-    def test_unreviewed_only_flagged_when_the_step_requires_review(self):
+    # -- approval gaps on always_on steps ------------------------------------
+    def test_gap_only_counts_when_the_step_requires_review(self):
         records = [record(agreement=Agreement.UNREVIEWED)] * 20
         off = analyse(dataset(records, jobs=[job(steps=[step(hil="always_off")])]), CONFIG)
         on = analyse(dataset(records, jobs=[job(steps=[step(hil="always_on")])]), CONFIG)
-        assert not any("requires recruiter approval" in a.headline for a in off.anomalies)
-        assert any("requires recruiter approval" in a.headline for a in on.anomalies)
+        assert off.findings == []
+        assert on.findings and "without the recruiter approval" in on.findings[0].signals[0].headline
 
-    def test_opt_out_cluster_is_flagged_as_a_channel_problem(self):
+    def test_nobody_reviewing_is_a_notification_problem(self):
+        records = self.people(20, agreement=Agreement.UNREVIEWED)
+        result = analyse(dataset(records, jobs=[job(steps=[step(hil="always_on")])]), CONFIG)
+        signal = result.findings[0].signals[0]
+        assert result.findings[0].priority == "act"
+        assert signal.kind == "config"
+        assert "notified" in signal.action
+        assert len(signal.people) == 20
+
+    def test_a_few_missed_is_a_review_list_not_a_notification_problem(self):
+        """16 of 20 reviewed proves notification works; the action is the four names."""
+        records = (
+            self.people(4, agreement=Agreement.UNREVIEWED)
+            + [record(agreement=Agreement.AGREE, basis="explicit_approve", person=f"Seen {i}")
+               for i in range(16)]
+        )
+        result = analyse(dataset(records, jobs=[job(steps=[step(hil="always_on")])]), CONFIG)
+        card = result.findings[0]
+        signal = card.signals[0]
+        assert card.priority == "check"
+        assert signal.kind == "review"
+        assert "notified" not in signal.action
+        assert signal.people == [f"Person {i:02d}" for i in range(4)]
+        assert "4 of 20" in signal.headline
+
+    def test_opt_outs_unevaluated_and_unrecognised_are_not_missed_reviews(self):
+        records = (
+            [record(outcome=Outcome.OPT_OUT)] * 3
+            + [record(outcome=Outcome.NONE)] * 2
+            + [record(outcome=Outcome.UNKNOWN)] * 2
+            + [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 15
+        )
+        result = analyse(dataset(records, jobs=[job(steps=[step(hil="always_on")])]), CONFIG)
+        cell = result.cells[0]
+        assert cell.reviewable == 15 and cell.approval_gap == 0
+        assert cell.review_coverage == 1.0
+        assert result.findings == []
+
+    # -- opt-outs -------------------------------------------------------------
+    def test_opt_out_cluster_is_check_never_act(self):
         records = [record(outcome=Outcome.OPT_OUT)] * 5 + [record(outcome=Outcome.POSITIVE)] * 5
-        anomalies = analyse(dataset(records), CONFIG).anomalies
-        flagged = [a for a in anomalies if "dropped out" in a.headline]
-        assert flagged and flagged[0].severity == "medium"
+        result = analyse(dataset(records), CONFIG)
+        signal = result.findings[0].signals[0]
+        assert signal.kind == "contact" and signal.priority == "check"
         assert 5 / 10 >= HIGH_OPT_OUT_RATE
 
-    def test_reason_citing_an_unstated_requirement_is_flagged(self):
+    def test_two_opt_outs_of_seven_is_only_watched(self):
+        records = [record(outcome=Outcome.OPT_OUT)] * 2 + [record(outcome=Outcome.POSITIVE)] * 5
+        result = analyse(dataset(records), CONFIG)
+        assert result.findings == []
+        assert any("dropped out" in s.headline for _scope, s in result.watch)
+
+    # -- reasons outside the listing ------------------------------------------
+    def test_reasons_citing_an_unstated_requirement_name_the_topic_and_people(self):
         steps = [step(negative_criteria="Zertifikat fehlt oder Sprachniveau zu niedrig")]
-        records = [record(explanation="Gehaltsvorstellung zu hoch")] * 3
-        anomalies = analyse(dataset(records, jobs=[job(steps=steps)]), CONFIG).anomalies
-        assert any("never asks for" in a.headline for a in anomalies)
+        records = self.people(3, explanation="Gehaltsvorstellung zu hoch")
+        result = analyse(dataset(records, jobs=[job(steps=steps)]), CONFIG)
+        signal = result.findings[0].signals[0]
+        assert "cite salary" in signal.headline and "never asks for" in signal.headline
+        assert signal.priority == "check"
+        assert len(signal.people) == 3
 
-    def test_unmappable_values_are_flagged(self):
+    def test_a_single_off_criteria_reason_is_only_watched(self):
+        steps = [step(negative_criteria="Zertifikat fehlt")]
+        records = [record(explanation="Gehaltsvorstellung zu hoch")]
+        result = analyse(dataset(records, jobs=[job(steps=steps)]), CONFIG)
+        assert result.findings == [] and len(result.watch) == 1
+
+    def test_many_off_criteria_reasons_are_act_now(self):
+        steps = [step(negative_criteria="Zertifikat fehlt")]
+        records = self.people(ACT_MIN_PEOPLE, explanation="Gehaltsvorstellung zu hoch")
+        result = analyse(dataset(records, jobs=[job(steps=steps)]), CONFIG)
+        assert result.findings[0].priority == "act"
+
+    # -- shape ----------------------------------------------------------------
+    def test_unmappable_values_are_data_quality_not_a_finding(self):
         records = [record(outcome=Outcome.UNKNOWN)] * 2
-        assert any("does not recognise" in a.headline
-                   for a in analyse(dataset(records), CONFIG).anomalies)
+        result = analyse(dataset(records), CONFIG)
+        assert result.findings == []
+        assert result.cells[0].unmappable == 2
 
-    def test_every_anomaly_carries_an_action_and_a_number(self):
+    def test_one_card_per_step_carries_all_its_signals(self):
         records = (
-            [record(agreement=Agreement.OVERRIDE, basis="explicit_reject")] * 5
-            + [record(agreement=Agreement.AGREE)] * 5
+            self.people(5, agreement=Agreement.OVERRIDE, basis="explicit_reject")
+            + [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 5
             + [record(outcome=Outcome.OPT_OUT)] * 5
         )
-        for anomaly in analyse(dataset(records), CONFIG).anomalies:
-            assert anomaly.action.strip() and anomaly.n > 0
-            assert anomaly.severity in ("high", "medium", "low")
+        result = analyse(dataset(records), CONFIG)
+        assert len(result.findings) == 1
+        kinds = {s.kind for s in result.findings[0].signals}
+        assert kinds == {"listing", "contact"}
 
-    def test_findings_are_ordered_by_severity(self):
+    def test_every_signal_carries_an_action_and_a_number(self):
         records = (
-            [record(agreement=Agreement.OVERRIDE, basis="explicit_reject")] * 5
-            + [record(agreement=Agreement.AGREE)] * 5
-            + [record(outcome=Outcome.UNKNOWN)] * 2
+            self.people(5, agreement=Agreement.OVERRIDE, basis="explicit_reject")
+            + [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 5
+            + [record(outcome=Outcome.OPT_OUT)] * 5
         )
-        order = [a.severity for a in analyse(dataset(records), CONFIG).anomalies]
-        assert order == sorted(order, key=lambda s: {"high": 0, "medium": 1, "low": 2}[s])
+        result = analyse(dataset(records), CONFIG)
+        for signal in self.signals(result) + [s for _scope, s in result.watch]:
+            assert signal.action.strip() and signal.n > 0
+            assert signal.priority in ("act", "check", "watch")
+
+    def test_cards_are_ordered_act_first_then_by_people_affected(self):
+        steps = [step("s1", "PreScreening", 1, hil="always_on"),
+                 step("s2", "AIVoiceInterview", 2, hil="always_on")]
+        records = (
+            # s1: four missed reviews -> check
+            [record(step_id="s1", agreement=Agreement.UNREVIEWED, person=f"A{i}") for i in range(4)]
+            + [record(step_id="s1", agreement=Agreement.AGREE, basis="explicit_approve")] * 16
+            # s2: nobody reviewing -> act
+            + [record(step_id="s2", agreement=Agreement.UNREVIEWED, person=f"B{i}") for i in range(12)]
+        )
+        result = analyse(dataset(records, jobs=[job(steps=steps)]), CONFIG)
+        assert [f.priority for f in result.findings] == ["act", "check"]
+        assert result.findings[0].step_id == "s2"
 
 
 class TestEmptyInput:
     def test_no_records_produces_no_cells_and_no_crash(self):
         result = analyse(Dataset(jobs=[job()], records=[]), CONFIG)
-        assert result.cells == [] and result.anomalies == []
+        assert result.cells == [] and result.findings == [] and result.watch == []

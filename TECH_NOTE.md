@@ -175,11 +175,18 @@ blind spot so it cannot regress unnoticed.
 ### Thresholds are judgement calls
 
 `HIGH_OVERRIDE_RATE = 0.25`, `HIGH_OPT_OUT_RATE = 0.25`,
-`LARGE_OTHER_SHARE = 0.30`, `LOW_CONFIDENCE_N = 10`. Named constants, printed
-alongside the number each fired on, so a reader can disagree with the threshold
-rather than the finding. `LOW_REVIEW_WHEN_REQUIRED = 0.90` is the exception and
-is not tuned: `always_on` means every action needs approval, so the expected
-value is 100% and the allowance is for timing.
+`LARGE_OTHER_SHARE = 0.30`, `LOW_CONFIDENCE_N = 10`, `ACT_MIN_PEOPLE = 5`,
+`NOTIFICATION_GAP = 0.50`. Named constants, printed alongside the number each
+fired on, so a reader can disagree with the threshold rather than the finding.
+
+A rate alone never sets priority. It has to clear a minimum number of people
+(`ACT_MIN_PEOPLE`) to be *act now* and a minimum n (`LOW_CONFIDENCE_N`) to be
+*check*; below both it is listed as worth watching and carries no action.
+Opt-outs never reach *act now*, because the fix is a conversation about contact
+timing, not a configuration change. On an `always_on` step, coverage below
+`NOTIFICATION_GAP` means recruiters are probably not seeing the step, and the
+action is to check notifications; above it the action is the list of missed
+candidates, since the reviewed ones prove notification works.
 
 ### Not implemented
 

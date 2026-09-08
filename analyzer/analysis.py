@@ -1,4 +1,4 @@
-"""Aggregation and anomaly detection. Pure functions over plain data.
+"""Aggregation and findings. Pure functions over plain data.
 
 Nothing here touches the network, so every number in the report can be
 reproduced from a fixture.
@@ -12,33 +12,46 @@ volume the step-level figure describes that job rather than the stage. The
 actionable statement is "*this* job's pre-screening rejects 80% while the
 others sit near 35%", which only exists if cells are computed first.
 
-The per-step view still earns its place for things that are properties of the
-channel rather than the listing: opt-out rate, review coverage, config drift.
+Findings are built per cell too, one card per (job, step), and each card
+carries the people it is about. A finding is a piece of work for the person
+who configured the pipeline, not a statistic: "review these four candidates",
+"compare this step's criteria with the listing", "check that recruiters see
+this step". Priority comes from how many people are affected and how sure we
+can be, not from which rule happened to fire.
 """
 from __future__ import annotations
 
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
-from analyzer.fetch import Dataset, JobInfo, StepConfig
+from analyzer.fetch import Dataset, DecisionRecord, JobInfo, StepConfig
 from analyzer.model import Agreement, Outcome
 from analyzer.reasons import BucketConfig, ReasonSummary, cites_no_criterion, summarize
 
 #: Below this many decisions a percentage is noise. Cells under it are still
 #: reported -- the brief is explicit that small-n insights are not hidden --
-#: but marked low-confidence with n visible.
+#: but marked low-confidence with n visible, and no finding built on fewer
+#: than this can be more than "worth watching".
 LOW_CONFIDENCE_N = 10
 
-#: Thresholds for anomalies. Named and stated so a reader can disagree with
-#: them; every flag prints the number it fired on.
+#: A finding is "act now" only when at least this many people are affected.
+#: Two people leaving a step is not a pattern, whatever the percentage says.
+ACT_MIN_PEOPLE = 5
+
+#: Rate thresholds. Named and stated so a reader can disagree with them;
+#: every finding prints the numbers it fired on.
 HIGH_OVERRIDE_RATE = 0.25
-#: `always_on` means every agent action needs human approval, so the expected
-#: coverage is 100%. Anything materially below that is a gap between how the
-#: step is configured and how it is actually being used -- not a tuned
-#: threshold, just an allowance for timing.
-LOW_REVIEW_WHEN_REQUIRED = 0.90
 HIGH_OPT_OUT_RATE = 0.25
 LARGE_OTHER_SHARE = 0.30
+
+#: On an always_on step every decision should be approved. Below this share of
+#: reviewed decisions the gap is no longer a few missed candidates; recruiters
+#: are probably not seeing the step at all, which is a different problem with
+#: a different fix.
+NOTIFICATION_GAP = 0.50
+
+PRIORITY_ORDER = {"act": 0, "check": 1, "watch": 2}
+PRIORITY_LABEL = {"act": "act now", "check": "check", "watch": "watch"}
 
 
 @dataclass
@@ -57,6 +70,7 @@ class Cell:
     explanations: list[str] = field(default_factory=list)
     reasons: ReasonSummary | None = None
     off_criteria: list[str] = field(default_factory=list)
+    records: list[DecisionRecord] = field(default_factory=list)
 
     # -- counts ------------------------------------------------------------
     @property
@@ -102,6 +116,16 @@ class Cell:
 
     # -- human review ------------------------------------------------------
     @property
+    def reviewable(self) -> int:
+        """Decisions a recruiter could have acted on: positive or negative.
+
+        An opt-out has nothing to approve, an unevaluated step has no decision
+        yet, and an unrecognised value is not a decision we can vouch for (it
+        is reported in data quality instead). None of them is a missed review.
+        """
+        return self.judged
+
+    @property
     def reviewed(self) -> int:
         return sum(
             self.agreements.get(a, 0)
@@ -111,6 +135,11 @@ class Cell:
     @property
     def unreviewed(self) -> int:
         return self.agreements.get(Agreement.UNREVIEWED, 0)
+
+    @property
+    def approval_gap(self) -> int:
+        """Reviewable decisions nobody reviewed."""
+        return max(0, self.reviewable - self.reviewed)
 
     @property
     def overrides(self) -> int:
@@ -125,46 +154,85 @@ class Cell:
         return self.overrides - self.explicit_overrides
 
     @property
-    def override_rate(self) -> float | None:
-        """Share of REVIEWED decisions a human reversed.
+    def comparable(self) -> int:
+        """Reviews where the human had an AI opinion to agree or disagree with."""
+        return self.agreements.get(Agreement.AGREE, 0) + self.overrides
 
-        Denominator is reviewed, not total: this measures agreement on the
-        slice a human actually looked at. It is not accuracy -- see the
-        selection-bias note in the report.
+    @property
+    def override_rate(self) -> float | None:
+        """Share of COMPARABLE reviews a human reversed.
+
+        Denominator is reviews with an AI opinion to compare against, not all
+        decisions: this measures agreement on the slice a human actually
+        looked at. It is not accuracy -- see the selection-bias note.
         """
-        comparable = self.agreements.get(Agreement.AGREE, 0) + self.overrides
-        return self.overrides / comparable if comparable else None
+        return self.overrides / self.comparable if self.comparable else None
 
     @property
     def review_coverage(self) -> float | None:
-        return self.reviewed / self.total if self.total else None
+        """Share of reviewable decisions a recruiter opened."""
+        return min(1.0, self.reviewed / self.reviewable) if self.reviewable else None
 
     @property
     def low_confidence(self) -> bool:
         return self.total < LOW_CONFIDENCE_N
 
     @property
+    def override_low_confidence(self) -> bool:
+        """The reversal rate rests on `comparable`, which is smaller than `total`."""
+        return self.comparable < LOW_CONFIDENCE_N
+
+    @property
     def requires_review(self) -> bool:
         return bool(self.step and self.step.human_in_loop == "always_on")
 
+    # -- people ------------------------------------------------------------
+    def people(self, predicate) -> list[str]:
+        names = {r.person_name for r in self.records if predicate(r)}
+        return sorted(names)
+
 
 @dataclass
-class Anomaly:
-    """A finding, with the number it fired on and what to do about it."""
+class Signal:
+    """One observation on one cell, and the work it implies."""
 
-    severity: str  # "high" | "medium" | "low"
-    scope: str
+    priority: str  # "act" | "check" | "watch"
+    kind: str  # "review" | "listing" | "config" | "contact"
     headline: str
-    detail: str
+    evidence: str
     action: str
-    n: int
-    low_confidence: bool = False
+    people: list[str] = field(default_factory=list)
+    n: int = 0  # the denominator the headline rests on
+
+
+@dataclass
+class Finding:
+    """One card per (job, step): everything worth doing there."""
+
+    job_id: str
+    job_title: str
+    step_id: str
+    step_name: str
+    signals: list[Signal] = field(default_factory=list)
+
+    @property
+    def scope(self) -> str:
+        return f"{self.job_title} / {self.step_name}"
+
+    @property
+    def priority(self) -> str:
+        return min((s.priority for s in self.signals), key=PRIORITY_ORDER.get, default="watch")
+
+    @property
+    def affected(self) -> int:
+        return len({p for s in self.signals for p in s.people})
 
 
 @dataclass
 class Analysis:
     cells: list[Cell] = field(default_factory=list)
-    anomalies: list[Anomaly] = field(default_factory=list)
+    findings: list[Finding] = field(default_factory=list)
+    watch: list[tuple[str, Signal]] = field(default_factory=list)
     jobs: dict[str, JobInfo] = field(default_factory=dict)
 
     def by_job(self, job_id: str) -> list[Cell]:
@@ -190,6 +258,7 @@ def _rollup(cells: list[Cell], **identity: str) -> Cell:
         merged.bases.update(cell.bases)
         merged.explanations.extend(cell.explanations)
         merged.off_criteria.extend(cell.off_criteria)
+        merged.records.extend(cell.records)
     return merged
 
 
@@ -233,6 +302,7 @@ def analyse(dataset: Dataset, config: BucketConfig) -> Analysis:
             step_name=records[0].step_name,
             step_category=records[0].step_category,
             step=step,
+            records=list(records),
         )
         for record in records:
             cell.outcomes[record.outcome] += 1
@@ -247,94 +317,161 @@ def analyse(dataset: Dataset, config: BucketConfig) -> Analysis:
         analysis.cells.append(cell)
 
     analysis.cells.sort(key=lambda c: (c.job_title, c.step.order if c.step else 10**6))
-    analysis.anomalies = detect_anomalies(analysis)
+    analysis.findings, analysis.watch = detect_findings(analysis, config)
     return analysis
 
 
-def detect_anomalies(analysis: Analysis) -> list[Anomaly]:
-    found: list[Anomaly] = []
+# -- findings ----------------------------------------------------------------
 
-    for cell in analysis.cells:
-        where = f"{cell.job_title} / {cell.step_name}"
+def _plural(count: int, word: str) -> str:
+    return f"{count} {word}" if count == 1 else f"{count} {word}s"
 
-        rate = cell.override_rate
-        if rate is not None and rate >= HIGH_OVERRIDE_RATE:
-            detail = (
-                f"a recruiter disagreed with Paul on {cell.overrides} of the "
-                f"{cell.agreements.get(Agreement.AGREE, 0) + cell.overrides} decisions they opened"
+
+def _signals_for(cell: Cell, config: BucketConfig) -> list[Signal]:
+    signals: list[Signal] = []
+
+    # 1. An always_on step whose decisions were not all approved. Two
+    #    different situations hide behind one number: a few slipped through
+    #    (review them), or recruiters are not seeing the step at all (fix
+    #    notification). Coverage decides which one this is.
+    gap = cell.approval_gap
+    if cell.requires_review and gap:
+        coverage = cell.review_coverage or 0.0
+        unreviewed = cell.people(
+            lambda r: r.agreement is Agreement.UNREVIEWED
+            and r.outcome in (Outcome.POSITIVE, Outcome.NEGATIVE)
+        )
+        headline = (
+            f"{gap} of {cell.reviewable} decisions went through without the "
+            f"recruiter approval this step requires"
+        )
+        if cell.reviewable < LOW_CONFIDENCE_N:
+            priority = "watch"
+        elif gap >= ACT_MIN_PEOPLE:
+            priority = "act"
+        else:
+            priority = "check"
+        if coverage < NOTIFICATION_GAP and gap >= ACT_MIN_PEOPLE:
+            signals.append(Signal(
+                priority, "config", headline,
+                evidence=(
+                    f"the step is configured HumanInLoop=always_on, but only {coverage:.0%} "
+                    f"of its decisions were reviewed; at that level recruiters are probably not "
+                    f"seeing this step at all"
+                ),
+                action=(
+                    "Check that recruiters are notified for this step (or set it to always_off "
+                    "if approval is not wanted), then review the candidates who went through"
+                ),
+                people=unreviewed, n=cell.reviewable,
+            ))
+        else:
+            signals.append(Signal(
+                priority, "review", headline,
+                evidence=(
+                    f"the step is configured HumanInLoop=always_on; recruiters did review the "
+                    f"other {cell.reviewed}, so notification works and these are the ones missed"
+                ),
+                action="Review these candidates",
+                people=unreviewed, n=cell.reviewable,
+            ))
+
+    # 2. Recruiters disagree with the agent often, where they look.
+    rate = cell.override_rate
+    if rate is not None and rate >= HIGH_OVERRIDE_RATE:
+        if cell.overrides >= ACT_MIN_PEOPLE:
+            priority = "act"
+        elif cell.comparable >= LOW_CONFIDENCE_N:
+            priority = "check"
+        else:
+            priority = "watch"
+        evidence = f"{rate:.0%} of the decisions a recruiter compared against Paul's were reversed"
+        if cell.inferred_overrides:
+            evidence += (
+                f" ({cell.explicit_overrides} explicit rejections of Paul's suggestion, "
+                f"{cell.inferred_overrides} inferred from the recruiter's own decision)"
             )
-            if cell.inferred_overrides:
-                detail += (
-                    f" ({cell.explicit_overrides} where they explicitly rejected Paul's "
-                    f"suggestion, {cell.inferred_overrides} inferred from their own decision)"
-                )
-            found.append(Anomaly(
-                severity="high", scope=where,
-                headline=f"Recruiters reversed Paul on {rate:.0%} of the decisions they reviewed here",
-                detail=detail,
-                action="Compare this step's conclusion criteria with the listing's mandatory requirements.",
-                n=cell.total, low_confidence=cell.low_confidence,
-            ))
+        signals.append(Signal(
+            priority, "listing",
+            headline=(
+                f"Recruiters reversed Paul on {cell.overrides} of the {cell.comparable} "
+                f"decisions they reviewed"
+            ),
+            evidence=evidence,
+            action=(
+                "Compare this step's conclusion criteria with the listing's mandatory "
+                "requirements; start with the reversed candidates"
+            ),
+            people=cell.people(lambda r: r.agreement is Agreement.OVERRIDE), n=cell.comparable,
+        ))
 
-        coverage = cell.review_coverage
-        if cell.requires_review and coverage is not None and coverage < LOW_REVIEW_WHEN_REQUIRED:
-            found.append(Anomaly(
-                severity="high", scope=where,
-                headline=(
-                    f"This step requires recruiter approval, but "
-                    f"{cell.total - cell.reviewed} of {cell.total} decision(s) did not get it"
-                ),
-                detail=(
-                    f"the step is configured HumanInLoop=always_on, so every decision should be "
-                    f"approved by a recruiter; {cell.reviewed} of {cell.total} ({coverage:.0%}) were"
-                ),
-                action="Check that recruiters are being notified, or change the step to always_off if approval is not wanted.",
-                n=cell.total, low_confidence=cell.low_confidence,
-            ))
+    # 3. Rejections that cite something the listing never asks for. A fact
+    #    about configuration rather than a rate, so it needs no minimum n --
+    #    but a single one is as likely a bucket gap as a config gap.
+    off = len(cell.off_criteria)
+    if off:
+        off_set = set(cell.off_criteria)
+        topics = sorted({config.classify(e) for e in off_set})
+        priority = "act" if off >= ACT_MIN_PEOPLE else "check" if off >= 2 else "watch"
+        examples = "; ".join(sorted(off_set)[:3])
+        signals.append(Signal(
+            priority, "listing",
+            headline=(
+                f"{_plural(off, 'rejection')} cite {' / '.join(topics)}, which this listing "
+                f"never asks for"
+            ),
+            evidence=f"for example: {examples}",
+            action=(
+                "Either add the requirement to the listing, or correct the step's conclusion "
+                "criteria; then decide whether these candidates should be re-evaluated"
+            ),
+            people=cell.people(
+                lambda r: r.outcome is Outcome.NEGATIVE and r.explanation in off_set
+            ),
+            n=cell.negative,
+        ))
 
-        opt_out = cell.opt_out_rate
-        if opt_out is not None and opt_out >= HIGH_OPT_OUT_RATE:
-            found.append(Anomaly(
-                severity="medium", scope=where,
-                headline=f"{opt_out:.0%} of candidates dropped out here before Paul could judge them",
-                detail=(
-                    f"{cell.opt_out} of {cell.total} stopped responding, declined to continue, or "
-                    f"declined to speak to Paul. They are counted as opt-outs, separately "
-                    f"from the rejection rate."
-                ),
-                action="Look at how and when candidates are contacted at this step, rather than at the criteria.",
-                n=cell.total, low_confidence=cell.low_confidence,
-            ))
+    # 4. Candidates leave before a decision. A channel problem, not a criteria
+    #    problem, and never "act now": the fix is a conversation about contact
+    #    timing, not a config change.
+    opt_rate = cell.opt_out_rate
+    if opt_rate is not None and opt_rate >= HIGH_OPT_OUT_RATE and cell.opt_out:
+        enough = cell.opt_out >= ACT_MIN_PEOPLE and cell.total >= LOW_CONFIDENCE_N
+        signals.append(Signal(
+            "check" if enough else "watch", "contact",
+            headline=(
+                f"{cell.opt_out} of {cell.total} candidates dropped out here before Paul "
+                f"could judge them"
+            ),
+            evidence=(
+                "they stopped responding, declined to continue, or declined to speak to Paul; "
+                "counted as opt-outs, separately from the rejection rate"
+            ),
+            action=(
+                "Look at how and when candidates are contacted at this step, rather than "
+                "at the criteria"
+            ),
+            people=[], n=cell.total,
+        ))
 
-        if cell.off_criteria:
-            examples = "; ".join(sorted(set(cell.off_criteria))[:2])
-            found.append(Anomaly(
-                severity="medium", scope=where,
-                headline=f"{len(cell.off_criteria)} rejection(s) name a requirement this listing never asks for",
-                detail=f"for example: {examples}",
-                action="Either add the requirement to the listing, or correct the step's conclusion criteria.",
-                n=cell.negative, low_confidence=cell.low_confidence,
-            ))
+    return signals
 
-        summary = cell.reasons
-        if summary and summary.total >= 5 and summary.other_share >= LARGE_OTHER_SHARE:
-            found.append(Anomaly(
-                severity="low", scope=where,
-                headline=f"{summary.other_share:.0%} of rejection reasons did not match any known topic",
-                detail=f"{summary.buckets.get('other', 0)} of {summary.total} fell into 'other'",
-                action="Add the missing wording to reason_buckets.json; this is a gap in the config, not the data.",
-                n=summary.total, low_confidence=cell.low_confidence,
-            ))
 
-        if cell.unmappable:
-            found.append(Anomaly(
-                severity="low", scope=where,
-                headline=f"{cell.unmappable} decision(s) used a status this tool does not recognise",
-                detail="a value was recorded, but it is not one the platform documents",
-                action="See the data-quality section for the exact values and candidates.",
-                n=cell.total, low_confidence=cell.low_confidence,
-            ))
-
-    order = {"high": 0, "medium": 1, "low": 2}
-    found.sort(key=lambda a: (order.get(a.severity, 3), a.low_confidence, -a.n))
-    return found
+def detect_findings(
+    analysis: Analysis, config: BucketConfig
+) -> tuple[list[Finding], list[tuple[str, Signal]]]:
+    """One card per cell for anything worth doing; one line per thing to watch."""
+    findings: list[Finding] = []
+    watch: list[tuple[str, Signal]] = []
+    for cell in analysis.cells:
+        card = Finding(cell.job_id, cell.job_title, cell.step_id, cell.step_name)
+        for signal in _signals_for(cell, config):
+            if signal.priority == "watch":
+                watch.append((card.scope, signal))
+            else:
+                card.signals.append(signal)
+        if card.signals:
+            card.signals.sort(key=lambda s: (PRIORITY_ORDER[s.priority], -len(s.people)))
+            findings.append(card)
+    findings.sort(key=lambda f: (PRIORITY_ORDER[f.priority], -f.affected, f.scope))
+    return findings, watch

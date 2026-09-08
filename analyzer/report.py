@@ -1,17 +1,17 @@
 """Rendering. Turns analysis results into something a colleague can act on.
 
-Two rules from the brief drive everything here:
+The report is a to-do list with the evidence attached, in that order:
 
-  * insights are sentences with numbers, not bare counts
-  * every insight implies an action
+  1. What to do          -- one card per (job, step), naming the candidates
+  2. Worth watching      -- too few decisions to act on; one line each
+  3. The numbers         -- per job and step, the funnel, rejection reasons
+  4. Skipped or suspect  -- everything the fetch could not use
+  5. What it cannot tell you
 
-So a finding reads "Recruiters reversed Paul on 40% of the decisions they
-reviewed at this step (4 of 10) -- check the step's criteria against the
-listing", not "override_rate: 0.4".
-
-Percentages always appear next to the n they came from, and any cell below the
-low-confidence threshold says so. A number without its denominator is how you
-end up with a dashboard nobody trusts.
+Two rules from the brief drive the wording: insights are sentences with the
+numbers they rest on, and every insight implies an action. Percentages always
+appear next to the n they came from; anything under the low-confidence
+threshold says so, keyed on the denominator of that rate, not the row total.
 
 The agent is called Paul throughout, because that is what the people reading
 this call it.
@@ -19,12 +19,16 @@ this call it.
 from __future__ import annotations
 
 import json
+import textwrap
 from datetime import datetime, timezone
 
 from analyzer.analysis import (
     LOW_CONFIDENCE_N,
+    PRIORITY_LABEL,
     Analysis,
     Cell,
+    Finding,
+    Signal,
     category_totals,
     job_totals,
 )
@@ -34,7 +38,7 @@ RULE = "=" * 78
 THIN = "-" * 78
 COLUMNS = (
     f"  {'step':<24}{'total':>6}{'passed':>8}{'rejected':>10}"
-    f"{'opt-out':>9}{'reviewed':>10}{'reversed':>10}"
+    f"{'opt-out':>9}{'reviewed':>10}{'reversed':>13}"
 )
 
 
@@ -50,12 +54,23 @@ def _confidence(cell: Cell) -> str:
     return f"   (only {_plural(cell.total)})" if cell.low_confidence else ""
 
 
+def _reversed(cell: Cell) -> str:
+    """The reversal rate rests on a smaller n than the row, so it carries its own."""
+    if cell.override_rate is None:
+        return "n/a"
+    return f"{cell.override_rate:.0%} ({cell.comparable})"
+
+
 def _row(label: str, cell: Cell) -> str:
     return (
         f"  {label[:22]:<24}{cell.total:>6}{cell.positive:>8}{cell.negative:>10}"
         f"{cell.opt_out:>9}{_pct(cell.review_coverage):>10}"
-        f"{_pct(cell.override_rate):>10}{_confidence(cell)}"
+        f"{_reversed(cell):>13}{_confidence(cell)}"
     )
+
+
+def _wrap(text: str, indent: str, width: int = 78) -> list[str]:
+    return textwrap.wrap(text, width=width, initial_indent=indent, subsequent_indent=indent)
 
 
 def funnel_notes(analysis: Analysis) -> list[str]:
@@ -71,12 +86,21 @@ def funnel_notes(analysis: Analysis) -> list[str]:
     if not totals:
         return notes
 
-    judged = [(c, t) for c, t in totals if t.rejection_rate is not None]
-    if judged:
+    # Where the most people leave, counted, not the highest rate: a 69% rate
+    # on 13 people loses fewer candidates than a 48% rate on 40.
+    cat, cell = max(totals, key=lambda kv: kv[1].negative + kv[1].opt_out)
+    lost = cell.negative + cell.opt_out
+    if lost:
+        notes.append(
+            f"{cat} is where the most candidates leave: {cell.negative} rejected and "
+            f"{cell.opt_out} opted out, of the {cell.total} who reached it."
+        )
+    judged = [(c, t) for c, t in totals if t.rejection_rate is not None and t.judged >= LOW_CONFIDENCE_N]
+    if len(judged) > 1:
         cat, cell = max(judged, key=lambda kv: kv[1].rejection_rate)
         notes.append(
-            f"Most candidates are lost at {cat}: Paul rejected {cell.rejection_rate:.0%} "
-            f"of the {cell.judged} he judged there."
+            f"The strictest step is {cat}: Paul rejected {cell.rejection_rate:.0%} of the "
+            f"{cell.judged} he judged there."
         )
 
     covered = [(c, t) for c, t in totals if t.review_coverage is not None]
@@ -89,25 +113,40 @@ def funnel_notes(analysis: Analysis) -> list[str]:
                 f"to {high[1].review_coverage:.0%} at {high[0]}."
             )
 
-    reversible = [(c, t) for c, t in totals if t.override_rate is not None]
-    if reversible:
-        cat, cell = max(reversible, key=lambda kv: kv[1].override_rate)
-        if cell.override_rate:
-            notes.append(
-                f"Disagreement concentrates at {cat}: {cell.override_rate:.0%} of the "
-                f"decisions reviewed there were reversed, out of "
-                f"{sum(t.overrides for _, t in totals)} reversals in total."
-            )
-        else:
-            notes.append("No reviewed decision was reversed at any step.")
+    reversals = sum(t.overrides for _, t in totals)
+    if reversals:
+        cat, cell = max(totals, key=lambda kv: kv[1].overrides)
+        notes.append(
+            f"{cell.overrides} of the {reversals} reversals in total happened at {cat}."
+        )
 
     rates = {round(c.override_rate, 2) for c in analysis.cells if c.override_rate is not None}
     if len(rates) > 1:
         notes.append(
-            "These rates differ by job, so the table above describes the mix of jobs "
-            "analysed rather than the steps themselves. Act on the per-job table."
+            "These rates differ by job, so this table describes the mix of jobs analysed "
+            "rather than the steps themselves. Act on the per-job table."
         )
     return notes
+
+
+HOW_TO_READ = (
+    "How to read these tables: every rate belongs to one listing at one step. "
+    "'reviewed' is the share of decisions a recruiter opened, among those that could be "
+    "reviewed (opt-outs and not-yet-evaluated steps are excluded). 'reversed' is the share "
+    "of reviewed decisions the recruiter disagreed with, and the number in brackets is how "
+    "many reviews it rests on. The reversal rate covers only decisions a recruiter opened; "
+    "candidates Paul rejects early are rarely opened, so mistakes there never show up in it. "
+    "Read it as how often recruiters disagree when they look, not as how often Paul is right."
+)
+
+
+def _render_signal(signal: Signal, out: list[str]) -> None:
+    out.extend(_wrap(f"· {signal.headline}", "   "))
+    out.extend(_wrap(f"why: {signal.evidence}", "       "))
+    action = signal.action
+    if signal.people:
+        action += ": " + ", ".join(signal.people)
+    out.extend(_wrap(f"-> {action}", "       "))
 
 
 def render_text(analysis: Analysis, dataset: Dataset) -> str:
@@ -116,12 +155,6 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
 
     candidates = len({(r.job_id, r.person_slug) for r in dataset.records})
     total = sum(c.total for c in analysis.cells)
-    judged = sum(c.judged for c in analysis.cells)
-    positive = sum(c.positive for c in analysis.cells)
-    negative = sum(c.negative for c in analysis.cells)
-    opt_out = sum(c.opt_out for c in analysis.cells)
-    reviewed = sum(c.reviewed for c in analysis.cells)
-    overrides = sum(c.overrides for c in analysis.cells)
 
     add(RULE)
     add("SCREENING ACCURACY REPORT")
@@ -136,53 +169,38 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
         add(f"      {people} candidate(s), {sum(c.total for c in cells)} decision(s), "
             f"{len(cells)} step(s) with a screening agent")
 
-    # -- headline ----------------------------------------------------------
+    # -- what to do --------------------------------------------------------
     add("")
-    add("WHAT PAUL DECIDED")
+    add("WHAT TO DO")
     add(THIN)
-    if judged:
-        # `judged` counts DECISIONS, not people: one candidate is judged again at
-        # each step they reach. Saying "candidates" here produced a number larger
-        # than the candidate pool.
-        add(f"Paul reached a decision {judged} time(s) across {candidates} candidate(s): "
-            f"{positive} passed, {negative} were rejected ({negative / judged:.0%} rejected).")
-    if opt_out:
-        add(f"Another {opt_out} candidate(s) are counted as opt-outs: they stopped responding "
-            f"or declined to")
-        add("continue, so Paul never judged them. They are excluded from the rejection rate above.")
+    add("One card per job and step. 'Act now' means at least five people are affected;")
+    add("'check' means the pattern is real but small. Names are the candidates concerned.")
     add("")
-    if reviewed:
-        add(f"A recruiter reviewed {reviewed} of {total} decision(s) ({reviewed / total:.0%}) "
-            f"and reversed Paul on {overrides}.")
-        add("")
-        add("Reading the reversal rate: it covers only decisions a recruiter opened. Candidates")
-        add("Paul rejects early are rarely opened, so mistakes there never show up in it. Read it")
-        add("as how often recruiters disagree when they look, not as how often Paul is right.")
-    else:
-        add("No decision has been reviewed by a recruiter, so agreement cannot be measured.")
-
-    # -- findings ----------------------------------------------------------
-    add("")
-    add("FINDINGS")
-    add(THIN)
-    add("Priority means how urgently this needs attention. It is not a score for Paul.")
-    add("")
-    if not analysis.anomalies:
-        add("Nothing flagged. Every step is within the thresholds documented in TECH_NOTE.md.")
-    for index, anomaly in enumerate(analysis.anomalies, start=1):
-        thin = f"   (only {_plural(anomaly.n)} -- treat as a hint)" if anomaly.low_confidence else ""
-        add(f"{index}. [{anomaly.severity.upper()} PRIORITY]  {anomaly.scope}")
-        add(f"   What    {anomaly.headline}{thin}")
-        add(f"   Why     {anomaly.detail}")
-        add(f"   Action  {anomaly.action}")
+    if not analysis.findings:
+        add("Nothing. Every step is within the thresholds documented in TECH_NOTE.md.")
+    for finding in analysis.findings:
+        add(f"[{PRIORITY_LABEL[finding.priority].upper()}]  {finding.scope}")
+        for signal in finding.signals:
+            _render_signal(signal, out)
         add("")
 
-    # -- per job and step --------------------------------------------------
-    add("EACH JOB, STEP BY STEP")
+    # -- watch list --------------------------------------------------------
+    if analysis.watch:
+        add("WORTH WATCHING")
+        add(THIN)
+        add(f"Too few decisions to act on yet (under {LOW_CONFIDENCE_N}, or fewer than five people).")
+        add("Listed so they are not lost; revisit when there is more data.")
+        add("")
+        for scope, signal in analysis.watch:
+            out.extend(_wrap(f"· {scope}: {signal.headline}.", "  "))
+        add("")
+
+    # -- the numbers -------------------------------------------------------
+    add("THE NUMBERS")
     add(THIN)
-    add("The view to act on: every rate here belongs to one listing at one step.")
-    add("'reviewed' is the share a recruiter opened; 'reversed' is the share of those they")
-    add("disagreed with.")
+    out.extend(_wrap(HOW_TO_READ, ""))
+    add("")
+    add("Each job, step by step")
     add("")
     add(COLUMNS)
     for job_id, job in sorted(analysis.jobs.items(), key=lambda kv: kv[1].title):
@@ -195,11 +213,8 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
             add(_row(cell.step_name, cell))
         add(_row("all steps", job_totals(analysis, job_id)))
 
-    # -- per step across jobs ---------------------------------------------
     add("")
-    add("THE FUNNEL: ALL JOBS COMBINED")
-    add(THIN)
-    add("Where candidates are lost, and how thin review coverage gets further down.")
+    add("The funnel, all jobs combined")
     add("")
     add(COLUMNS)
     for category in analysis.categories:
@@ -208,41 +223,40 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
     if notes:
         add("")
         for note in notes:
-            add(f"  · {note}")
+            out.extend(_wrap(f"· {note}", "  "))
 
     # -- rejection reasons -------------------------------------------------
     add("")
-    add("WHY PAUL REJECTED PEOPLE")
-    add(THIN)
+    add("Why Paul rejected people, per job and step")
     from analyzer.reasons import BucketConfig, summarize  # local import: rendering only
 
     config = BucketConfig.load()
     for job_id, job in sorted(analysis.jobs.items(), key=lambda kv: kv[1].title):
-        merged = job_totals(analysis, job_id)
-        summary = summarize(merged.explanations, config)
-        if not summary.total:
-            continue
-        add("")
-        add(f"{job.title}  --  {summary.total} rejection(s)")
-        if summary.vocabulary_is_fixed:
-            add(f"  Paul reuses the same {summary.distinct_exact} phrases here, so these are exact")
-            add("  counts of what he wrote.")
-            for text, count in summary.exact.most_common(6):
-                add(f"    {count:>3}  {text[:62]}")
-        else:
-            add(f"  Paul phrases these {summary.distinct_exact} different ways across "
-                f"{summary.total} rejections, so they")
-            add("  are grouped by topic, with one real example of each.")
-            for bucket, count in summary.top(6):
-                example = summary.examples.get(bucket, "")
-                add(f"    {count:>3}  {bucket:<14}{count / summary.total:>5.0%}   "
-                    f"e.g. {example[:40]!r}")
-        if summary.other_share:
-            add(f"  {summary.buckets.get('other', 0)} rejection(s) matched no topic "
-                f"({summary.other_share:.0%}). Add their")
-            add("  wording to reason_buckets.json so they stop landing in 'other'.")
-        if summary.missing:
-            add(f"  {summary.missing} rejection(s) carried no explanation at all.")
+        for cell in analysis.by_job(job_id):
+            summary = summarize(cell.explanations, config)
+            if not summary.total:
+                continue
+            add("")
+            add(f"{job.title} / {cell.step_name}  --  {_plural(summary.total, 'rejection')}")
+            if summary.vocabulary_is_fixed:
+                add(f"  Paul reuses the same {summary.distinct_exact} phrases here, so these are exact")
+                add("  counts of what he wrote.")
+                for text, count in summary.exact.most_common(6):
+                    add(f"    {count:>3}  {text[:64]}")
+            else:
+                add(f"  Paul phrases these {summary.distinct_exact} different ways across "
+                    f"{summary.total} rejections, so they")
+                add("  are grouped by topic, with one real example of each.")
+                for bucket, count in summary.top(6):
+                    example = summary.examples.get(bucket, "")
+                    add(f"    {count:>3}  {bucket:<14}{count / summary.total:>5.0%}   "
+                        f"e.g. {example[:60]}")
+            if summary.other_share:
+                add(f"  {summary.buckets.get('other', 0)} rejection(s) matched no topic "
+                    f"({summary.other_share:.0%}). Add their")
+                add("  wording to reason_buckets.json so they stop landing in 'other'.")
+            if summary.missing:
+                add(f"  {summary.missing} rejection(s) carried no explanation at all.")
 
     # -- data quality ------------------------------------------------------
     add("")
@@ -287,6 +301,23 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
     return "\n".join(out)
 
 
+def _finding_json(finding: Finding) -> dict:
+    return {
+        "priority": finding.priority,
+        "job_id": finding.job_id, "job_title": finding.job_title,
+        "step_id": finding.step_id, "step_name": finding.step_name,
+        "people_affected": finding.affected,
+        "items": [
+            {
+                "priority": s.priority, "kind": s.kind, "what": s.headline,
+                "why": s.evidence, "action": s.action, "candidates": s.people,
+                "based_on": s.n,
+            }
+            for s in finding.signals
+        ],
+    }
+
+
 def render_json(analysis: Analysis, dataset: Dataset) -> str:
     """Machine-readable form of the same numbers."""
     payload = {
@@ -308,6 +339,11 @@ def render_json(analysis: Analysis, dataset: Dataset) -> str:
             }
             for job in dataset.jobs
         ],
+        "what_to_do": [_finding_json(f) for f in analysis.findings],
+        "worth_watching": [
+            {"scope": scope, "kind": s.kind, "what": s.headline, "why": s.evidence, "based_on": s.n}
+            for scope, s in analysis.watch
+        ],
         "by_job_and_step": [
             {
                 "job_id": c.job_id, "job_title": c.job_title,
@@ -315,10 +351,11 @@ def render_json(analysis: Analysis, dataset: Dataset) -> str:
                 "decisions": c.total, "passed": c.positive, "rejected": c.negative,
                 "opt_out": c.opt_out, "unevaluated": c.unevaluated, "unmappable": c.unmappable,
                 "rejection_rate": c.rejection_rate, "opt_out_rate": c.opt_out_rate,
-                "reviewed": c.reviewed, "unreviewed": c.unreviewed,
-                "review_coverage": c.review_coverage,
+                "reviewable": c.reviewable, "reviewed": c.reviewed, "unreviewed": c.unreviewed,
+                "review_coverage": c.review_coverage, "approval_gap": c.approval_gap,
                 "reversals": c.overrides, "reversals_explicit": c.explicit_overrides,
-                "reversals_inferred": c.inferred_overrides, "reversal_rate": c.override_rate,
+                "reversals_inferred": c.inferred_overrides,
+                "reversal_rate": c.override_rate, "reversal_rate_based_on": c.comparable,
                 "low_confidence": c.low_confidence,
                 "step_requires_review": c.requires_review,
                 "reason_topics": dict(c.reasons.buckets) if c.reasons else {},
@@ -326,14 +363,6 @@ def render_json(analysis: Analysis, dataset: Dataset) -> str:
                 "reasons_citing_unstated_requirements": c.off_criteria,
             }
             for c in analysis.cells
-        ],
-        "findings": [
-            {
-                "priority": a.severity, "scope": a.scope, "what": a.headline,
-                "why": a.detail, "action": a.action, "based_on_decisions": a.n,
-                "low_confidence": a.low_confidence,
-            }
-            for a in analysis.anomalies
         ],
         "skipped_or_suspect": {
             "job_failures": dataset.quality.job_failures,

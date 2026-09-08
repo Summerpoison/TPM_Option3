@@ -16,6 +16,9 @@ Example output: [`examples/report.html`](examples/report.html) ·
 [`examples/report.json`](examples/report.json) ·
 [`examples/per_candidate.txt`](examples/per_candidate.txt)
 
+> Every finding in the example output was planted by the seeder and recovered by
+> the analyzer. They demonstrate the tool, not the platform — see *Data provenance*.
+
 ---
 
 ## The problem it solves, and who it's for
@@ -78,7 +81,7 @@ python analyze.py --job saa-seed-2     # jobs whose external id starts with this
 python analyze.py --json out.json      # machine-readable alongside the text
 python analyze.py --html report.html   # self-contained HTML report
 python analyze.py --candidates         # per-candidate detail, verbatim
-python -m pytest tests/ -q             # 102 tests, no network needed
+python -m pytest tests/ -q             # no network needed
 ```
 
 Supporting scripts: `probe.py` (connectivity and inventory), `discover.py`
@@ -216,18 +219,38 @@ Write (seeder only): `POST /recruiting/jobs`, `.../hiring-managers`,
 
 ## How to read the output
 
-* **Percentages always appear next to their n.** Any cell below n=10 is marked
-  low confidence rather than dropped — deep pipeline steps are small by nature.
-* **Findings are ordered by severity** and each one states the number it fired on
-  and what to do about it.
+The report is a to-do list with the evidence attached, in that order:
+
+1. **What to do.** One card per job and step, naming the candidates concerned.
+   Three kinds of work cover everything the tool finds: review these candidates,
+   fix this step's configuration, look at this listing's criteria.
+2. **Worth watching.** Patterns on too few decisions to act on, one line each.
+3. **The numbers.** Per job and step, the funnel, and rejection reasons per step.
+4. **What was skipped or looked wrong**, and what the report cannot tell you.
+
+Priority comes from how many people are affected and how sure we can be, not
+from which rule fired. *Act now* needs at least five people affected; *check*
+needs at least ten decisions behind the rate; anything smaller is only watched.
+So two candidates opting out of seven is a watch item, never a priority — and a
+step where 16 of 20 decisions were reviewed does not get told to check its
+notifications, because the other 16 prove they work. It gets the four names.
+
+* **Percentages always appear next to their n**, and the reversal rate carries
+  its own n because it rests on the reviewed slice, not the row total. Any cell
+  below n=10 is marked low confidence rather than dropped — deep pipeline steps
+  are small by nature.
+* **Review coverage is measured over reviewable decisions.** An opt-out has
+  nothing to approve and an unevaluated step has no decision yet, so neither
+  counts as a missed review.
 * **The by-job view is the primary one.** The per-step view is limited to things
   that belong to the channel rather than the listing — opt-out rate, review
   coverage — because averaging rejection rates across different listings
   describes the mix of jobs, not the stage.
-* **The HTML view is the same numbers, easier to scan.** One self-contained file
-  with no CDN and no framework, so it opens from `file://` with no network. Tables
-  sort on click; the outcome-mix bars carry their counts in adjacent columns, so
-  no value exists only as a colour. Its categorical palette is *not* the product's
+* **The HTML view is the same content, easier to scan.** One self-contained file
+  with no CDN, no framework and no JavaScript, so it opens from `file://` with no
+  network. The numbers sit in collapsible sections under the action cards; the
+  outcome-mix bars carry their counts in adjacent columns, so no value exists only
+  as a colour. Its categorical palette is *not* the product's
   UI colours: a green/red pair separates by only 3.3 delta-E under deuteranopia,
   so the four outcome colours were re-stepped and validated for lightness, chroma,
   colour-vision separation and contrast on both light and dark surfaces.
@@ -263,7 +286,7 @@ analyzer/
   report.py      text, JSON and per-candidate rendering
 analyze.py       CLI
 seed/            test-data creation
-tests/           102 tests, no network
+tests/           no network
 ```
 
 The split matters for one reason: `analysis.py` and `model.py` never import the
