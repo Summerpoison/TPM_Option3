@@ -19,6 +19,13 @@ Example output: [`examples/report.html`](examples/report.html) ·
 > Every finding in the example output was planted by the seeder and recovered by
 > the analyzer. They demonstrate the tool, not the platform — see *Data provenance*.
 
+The plan this was built from is in
+[`paulsjob_option3_brief.md`](paulsjob_option3_brief.md): what I intended to
+build, the questions I could not answer before starting, and what I expected the
+code to look like. The code was written with an AI agent from that plan; the
+decisions in it are mine, and the tech note records where the platform forced
+them to change.
+
 ---
 
 ## The problem it solves, and who it's for
