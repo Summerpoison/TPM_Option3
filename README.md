@@ -11,7 +11,8 @@ misconfigured.
 python analyze.py --job saa-seed-2
 ```
 
-Example output: [`examples/report.txt`](examples/report.txt) ·
+Example output: [`examples/report.html`](examples/report.html) ·
+[`examples/report.txt`](examples/report.txt) ·
 [`examples/report.json`](examples/report.json) ·
 [`examples/per_candidate.txt`](examples/per_candidate.txt)
 
@@ -71,6 +72,7 @@ logging deliberately records method, path and attempt number but never headers.
 python analyze.py                      # every job
 python analyze.py --job saa-seed-2     # jobs whose external id starts with this
 python analyze.py --json out.json      # machine-readable alongside the text
+python analyze.py --html report.html   # self-contained HTML report
 python analyze.py --candidates         # per-candidate detail, verbatim
 python -m pytest tests/ -q             # 102 tests, no network needed
 ```
@@ -218,6 +220,13 @@ Write (seeder only): `POST /recruiting/jobs`, `.../hiring-managers`,
   that belong to the channel rather than the listing — opt-out rate, review
   coverage — because averaging rejection rates across different listings
   describes the mix of jobs, not the stage.
+* **The HTML view is the same numbers, easier to scan.** One self-contained file
+  with no CDN and no framework, so it opens from `file://` with no network. Tables
+  sort on click; the outcome-mix bars carry their counts in adjacent columns, so
+  no value exists only as a colour. Its categorical palette is *not* the product's
+  UI colours: a green/red pair separates by only 3.3 delta-E under deuteranopia,
+  so the four outcome colours were re-stepped and validated for lightness, chroma,
+  colour-vision separation and contrast on both light and dark surfaces.
 * **Overrides are split into explicit and inferred.** A `RejectPaulDecision` is a
   fact; an independent human decision that happens to contradict the AI's
   suggestion is an inference, and the two are not equally certain.

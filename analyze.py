@@ -3,6 +3,7 @@
     python analyze.py                      # text report for every job
     python analyze.py --job saa-seed-21    # one job, by external id
     python analyze.py --json out.json      # machine-readable alongside the text
+    python analyze.py --html report.html   # self-contained HTML report
     python analyze.py --candidates         # per-candidate detail, verbatim
 
 Reads PAULSJOB_API_KEY from the environment (or .env). The key is never printed.
@@ -30,6 +31,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="only analyse jobs whose external id starts with this (e.g. saa-seed-)",
     )
     parser.add_argument("--json", metavar="PATH", help="also write the full results as JSON")
+    parser.add_argument("--html", metavar="PATH",
+                        help="also write a self-contained HTML report (no network needed to view)")
     parser.add_argument("--candidates", action="store_true",
                         help="append the per-candidate decision list, verbatim")
     parser.add_argument("--buckets", default=DEFAULT_CONFIG,
@@ -78,6 +81,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.candidates:
         print()
         print(report.render_candidates(result, dataset))
+
+    if args.html:
+        from analyzer.html_report import render_html
+        with open(args.html, "w", encoding="utf-8") as handle:
+            handle.write(render_html(result, dataset, report.funnel_notes(result)))
+        print(f"\nHTML written to {args.html}")
 
     if args.json:
         with open(args.json, "w", encoding="utf-8") as handle:

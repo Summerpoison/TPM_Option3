@@ -58,7 +58,7 @@ def _row(label: str, cell: Cell) -> str:
     )
 
 
-def _funnel_notes(analysis: Analysis) -> list[str]:
+def funnel_notes(analysis: Analysis) -> list[str]:
     """Short comparisons, so a number has something to be measured against.
 
     Deliberately relative. There is no industry benchmark here for what a
@@ -201,7 +201,7 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
     add(COLUMNS)
     for category in analysis.categories:
         add(_row(category, category_totals(analysis, category)))
-    notes = _funnel_notes(analysis)
+    notes = funnel_notes(analysis)
     if notes:
         add("")
         for note in notes:
