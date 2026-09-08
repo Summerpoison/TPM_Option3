@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from urllib.parse import urlsplit
 
 DEFAULT_BASE_URL = "https://api.paulsjob.ai/dev/v1"
 
@@ -38,4 +39,25 @@ class Settings:
                 "  Copy .env.example to .env and add your key, or export it in your shell.\n"
                 "  The key is read from the environment only and is never written to output."
             )
-        return cls(api_key=key, base_url=os.environ.get("PAULSJOB_BASE_URL", DEFAULT_BASE_URL).strip())
+        base_url = os.environ.get("PAULSJOB_BASE_URL", DEFAULT_BASE_URL).strip()
+        return cls(api_key=key, base_url=require_https(base_url))
+
+
+_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+
+
+def require_https(base_url: str) -> str:
+    """Refuse a base URL that would send the API key in cleartext.
+
+    Plain http is allowed only towards the local machine, for running against
+    a stub server in tests.
+    """
+    parts = urlsplit(base_url)
+    if parts.scheme == "https" and parts.netloc:
+        return base_url
+    if parts.scheme == "http" and parts.hostname in _LOOPBACK_HOSTS:
+        return base_url
+    raise SystemExit(
+        f"PAULSJOB_BASE_URL must start with https:// (got {base_url!r}).\n"
+        "  The API key travels in a request header and must not be sent over plain http."
+    )

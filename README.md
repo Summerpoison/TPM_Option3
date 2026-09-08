@@ -65,6 +65,10 @@ PAULSJOB_BASE_URL=https://api.paulsjob.ai/dev/v1
 The key is read from the environment only. It is never logged, never printed and
 never placed in a URL — it travels in the `x-company-api-key` header, and request
 logging deliberately records method, path and attempt number but never headers.
+The client refuses to follow a redirect to any other origin, so the key can only
+ever reach the host in `PAULSJOB_BASE_URL`, and that URL must be `https://`
+(plain http is accepted only for localhost). Ids and slugs taken from API
+responses are URL-encoded before they are placed in a request path.
 
 ### Commands
 

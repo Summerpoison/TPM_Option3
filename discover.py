@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 import sys
 
-from analyzer.client import ApiError, PaulsjobClient
+from analyzer.client import ApiError, PaulsjobClient, path_segment
 from analyzer.config import Settings
 
 
@@ -85,7 +85,7 @@ def main() -> int:
                 continue
             print(f"\n  {template.get('Name', '?')}  (ID={template.get('ID', '?')})")
             try:
-                full = client.get(f"/recruiting/job-step-templates/pipelines/{template.get('ID')}")
+                full = client.get(f"/recruiting/job-step-templates/pipelines/{path_segment(template.get('ID'))}")
                 show_pipeline(str(template.get("Name")), full)
             except ApiError as exc:
                 print(f"    could not expand: {exc}")

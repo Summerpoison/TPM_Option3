@@ -28,6 +28,20 @@ USER_AGENT = "screening-accuracy-analyzer/0.1"
 #: we cannot know the real policy and must not assume there is none.
 RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
 
+#: Upper bound on an honoured Retry-After, in seconds. Without one a single
+#: bad header could park a run for hours.
+MAX_RETRY_AFTER = 60.0
+
+
+def path_segment(value: object) -> str:
+    """Encode one value for use as a single URL path segment.
+
+    Ids and slugs come from API responses, so they are data, not paths. A
+    value containing `/`, `?` or `..` must not be allowed to change which
+    endpoint the request reaches.
+    """
+    return urllib.parse.quote(str(value), safe="")
+
 
 class ApiError(Exception):
     """Base for every failure this client raises."""
@@ -113,6 +127,7 @@ class PaulsjobClient:
         sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         self._base = base_url.rstrip("/")
+        self._origin = urllib.parse.urlsplit(self._base)[:2]  # (scheme, host)
         self._key = api_key
         self._timeout = timeout
         self._max_retries = max_retries
@@ -190,7 +205,19 @@ class PaulsjobClient:
                 location = exc.headers.get("Location") if exc.headers else None
                 if exc.code in (301, 302, 303, 307, 308) and location and redirects_left > 0:
                     redirects_left -= 1
-                    url = urllib.parse.urljoin(url, location)
+                    target = urllib.parse.urljoin(url, location)
+                    # The API key rides in a header on every request. Following
+                    # a redirect to another origin would hand it to that origin,
+                    # so a cross-origin redirect is refused rather than followed.
+                    if urllib.parse.urlsplit(target)[:2] != self._origin:
+                        raise HttpError(
+                            exc.code,
+                            f"refused redirect to a different origin ({target}); "
+                            f"the API key is only ever sent to {self._base}",
+                            path,
+                            text,
+                        ) from exc
+                    url = target
                     if exc.code in (301, 302, 303) and method != "GET":
                         # Legacy redirects downgrade to GET; 307/308 do not.
                         method, payload = "GET", None
@@ -226,7 +253,7 @@ class PaulsjobClient:
             retry_after = exc.headers.get("Retry-After") if exc.headers else None
             if retry_after:
                 try:
-                    return max(0.0, float(retry_after))
+                    return min(MAX_RETRY_AFTER, max(0.0, float(retry_after)))
                 except ValueError:
                     pass
         return (2**attempt) + random.uniform(0, 0.5)

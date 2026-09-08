@@ -141,3 +141,31 @@ class TestDuplicateNoteScope:
         records = fetcher._records_from_history(job(steps), "slug", "Ann", history)
         assert records == []
         assert fetcher.quality.superseded_records == []
+
+
+class TestPathEncoding:
+    """Ids and slugs from API responses are data, not path structure."""
+
+    class _Client:
+        def __init__(self):
+            self.paths = []
+
+        def get(self, path, **params):
+            self.paths.append(path)
+            return {}
+
+        def paginate_cursor(self, path, items_key, **params):
+            self.paths.append(path)
+            return iter(())
+
+    def test_history_path_encodes_slug(self):
+        client = self._Client()
+        fetcher = Fetcher(client=client)
+        fetcher.applications = lambda job_id: iter([{"Person": {"Slug": "x/../../admin"}}])
+        fetcher.records_for_job(job())
+        assert client.paths == ["/recruiting/x%2F..%2F..%2Fadmin/jobs/182760/steps-assignment-history"]
+
+    def test_steps_path_encodes_job_id(self):
+        client = self._Client()
+        Fetcher(client=client)._steps("1/2")
+        assert client.paths == ["/recruiting/jobs/1%2F2/steps"]

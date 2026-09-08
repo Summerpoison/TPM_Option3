@@ -31,7 +31,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Iterator
 
-from analyzer.client import ApiError, PaulsjobClient
+from analyzer.client import ApiError, PaulsjobClient, path_segment
 from analyzer.model import Agreement, Outcome, derive_agreement, normalize_outcome
 
 log = logging.getLogger(__name__)
@@ -205,7 +205,7 @@ class Fetcher:
         return str(description or "")
 
     def _steps(self, job_id: str) -> tuple[StepConfig, ...]:
-        raw_steps = _as_list(self.client.get(f"/recruiting/jobs/{job_id}/steps"), "Steps", "JobSteps")
+        raw_steps = _as_list(self.client.get(f"/recruiting/jobs/{path_segment(job_id)}/steps"), "Steps", "JobSteps")
         configs: list[StepConfig] = []
         for step in raw_steps:
             step_id = step.get("ID")
@@ -236,7 +236,7 @@ class Fetcher:
 
     def _agent(self, job_id: str, step_id: str) -> dict | None:
         try:
-            payload = self.client.get(f"/recruiting/jobs/{job_id}/steps/{step_id}/agents")
+            payload = self.client.get(f"/recruiting/jobs/{path_segment(job_id)}/steps/{path_segment(step_id)}/agents")
         except ApiError as exc:
             self.quality.job_failures.append(f"job {job_id} step {step_id}: agents unreadable -- {exc}")
             return None
@@ -294,7 +294,8 @@ class Fetcher:
             try:
                 history = list(
                     self.client.paginate_cursor(
-                        f"/recruiting/{slug}/jobs/{job.job_id}/steps-assignment-history", "History"
+                        f"/recruiting/{path_segment(slug)}/jobs/{path_segment(job.job_id)}/steps-assignment-history",
+                        "History",
                     )
                 )
             except ApiError as exc:

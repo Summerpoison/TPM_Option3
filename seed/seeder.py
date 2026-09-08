@@ -20,7 +20,7 @@ import sys
 from dataclasses import dataclass, field, replace
 from typing import Any
 
-from analyzer.client import ApiError, HttpError, PaulsjobClient
+from analyzer.client import ApiError, HttpError, PaulsjobClient, path_segment
 from analyzer.config import Settings
 from seed.profiles import Profile, build_population, cover_letter, profile_dict
 from seed.scenarios import DECISION_STEPS, SCENARIOS, JobScenario, ReasonSpec
@@ -286,7 +286,7 @@ class Seeder:
 
     def _find_job(self, external_id: str) -> str | None:
         try:
-            found = self.client.get(f"/recruiting/jobs/by-external-id/{external_id}")
+            found = self.client.get(f"/recruiting/jobs/by-external-id/{path_segment(external_id)}")
         except HttpError as exc:
             if exc.status == 404:
                 return None
@@ -384,7 +384,7 @@ class Seeder:
             return
         try:
             self.client.post(
-                f"/recruiting/jobs/{job.paulsjob_job_id}/hiring-managers",
+                f"/recruiting/jobs/{path_segment(job.paulsjob_job_id)}/hiring-managers",
                 json_body={"PersonSlug": slug, "IsJobOwner": True},
             )
             log.debug("job %s owner set to %s", job.external_id, slug)
@@ -404,7 +404,7 @@ class Seeder:
             template_id = os.environ.get("PAULSJOB_PIPELINE_TEMPLATE_ID", "").strip()
             if template_id:
                 self.client.post(
-                    f"/recruiting/jobs/{job.paulsjob_job_id}/steps/init",
+                    f"/recruiting/jobs/{path_segment(job.paulsjob_job_id)}/steps/init",
                     json_body={"PipelineTemplateID": template_id},
                 )
             else:
@@ -415,7 +415,7 @@ class Seeder:
                 # it -- which keeps the environment reproducible from code, with
                 # no manual UI setup for a reviewer.
                 self.client.post(
-                    f"/recruiting/jobs/{job.paulsjob_job_id}/steps/init",
+                    f"/recruiting/jobs/{path_segment(job.paulsjob_job_id)}/steps/init",
                     json_body={"PipelineTemplateID": self._ensure_template()},
                 )
             steps = self._list_steps(job.paulsjob_job_id)
@@ -528,7 +528,7 @@ class Seeder:
                 continue
             try:
                 listing = self.client.get(
-                    f"/recruiting/jobs/{job.paulsjob_job_id}/steps/{step['ID']}/agents"
+                    f"/recruiting/jobs/{path_segment(job.paulsjob_job_id)}/steps/{path_segment(step['ID'])}/agents"
                 )
             except HttpError as exc:
                 self.errors.append(f"{job.external_id}: could not read agents on {category_id}: {exc}")
@@ -550,7 +550,7 @@ class Seeder:
                 try:
                     self.client.request(
                         "PUT",
-                        f"/recruiting/jobs/{job.paulsjob_job_id}/steps/{step['ID']}/agents/{agent_id}",
+                        f"/recruiting/jobs/{path_segment(job.paulsjob_job_id)}/steps/{path_segment(step['ID'])}/agents/{path_segment(agent_id)}",
                         json_body=body,
                     )
                     log.info("%s/%s HumanInLoop -> %s", job.external_id, category_id, setting)
@@ -562,7 +562,7 @@ class Seeder:
                     )
 
     def _list_steps(self, job_id: str | None) -> list[dict]:
-        data = self.client.get(f"/recruiting/jobs/{job_id}/steps")
+        data = self.client.get(f"/recruiting/jobs/{path_segment(job_id)}/steps")
         if isinstance(data, list):
             return data
         if isinstance(data, dict):
@@ -582,7 +582,7 @@ class Seeder:
         """
         try:
             data = self.client.get(
-                f"/recruiting/{person_slug}/jobs/{job_id}/steps-assignment-history", PerPage=1
+                f"/recruiting/{path_segment(person_slug)}/jobs/{path_segment(job_id)}/steps-assignment-history", PerPage=1
             )
         except ApiError:
             return False  # can't tell: prefer seeding over silently skipping
@@ -601,7 +601,7 @@ class Seeder:
         """
         try:
             self.client.post(
-                f"/company/person/{person_slug}/paul-mute-events",
+                f"/company/person/{path_segment(person_slug)}/paul-mute-events",
                 json_body={
                     "DisabledByType": "manual",
                     "DisabledByPersonSlug": self._owner_slug(),
@@ -644,7 +644,7 @@ class Seeder:
             # Without content it has nothing to assess and scores everyone the
             # same, so the letter carries the candidate's checkable claims.
             application["CoverLetterText"] = candidate.letter
-        self.client.post(f"/recruiting/{candidate.person_slug}/applications/", json_body=application)
+        self.client.post(f"/recruiting/{path_segment(candidate.person_slug)}/applications/", json_body=application)
 
         if candidate.profile is not None:
             self._start_screening(job, candidate)
@@ -668,7 +668,7 @@ class Seeder:
             if assignment.paul_decision_suggestion:
                 body["PaulDecisionSuggestion"] = assignment.paul_decision_suggestion
             self.client.post(
-                f"/recruiting/{candidate.person_slug}/jobs/{job.paulsjob_job_id}/steps/{step_id}",
+                f"/recruiting/{path_segment(candidate.person_slug)}/jobs/{path_segment(job.paulsjob_job_id)}/steps/{path_segment(step_id)}",
                 json_body=body,
             )
 
@@ -685,7 +685,7 @@ class Seeder:
             self.errors.append(f"{job.external_id}: no PreScreening step in this job's pipeline")
             return
         self.client.post(
-            f"/recruiting/{candidate.person_slug}/jobs/{job.paulsjob_job_id}/steps/{step_id}",
+            f"/recruiting/{path_segment(candidate.person_slug)}/jobs/{path_segment(job.paulsjob_job_id)}/steps/{path_segment(step_id)}",
             json_body={"AgentReview": True},
         )
         self.screened += 1

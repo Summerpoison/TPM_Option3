@@ -296,3 +296,80 @@ class TestRedirects:
         ])
         assert client.post("/a", json_body={}) == {"ok": True}
         assert client.stats.retries == 1
+
+
+class TestRedirectSafety:
+    """The API key is a header on every request, so a redirect to another
+    origin would hand the key to that origin. Refuse, do not follow."""
+
+    def _client(self, responses):
+        seq = iter(responses)
+        seen = []
+
+        def opener(request, timeout):
+            seen.append((request.get_method(), request.full_url, dict(request.header_items())))
+            item = next(seq, responses[-1])
+            if isinstance(item, Exception):
+                raise item
+            return FakeResponse(item)
+
+        return PaulsjobClient("https://x/v1", "k", opener=opener, sleep=lambda _s: None), seen
+
+    def test_cross_host_redirect_is_refused(self):
+        client, seen = self._client([
+            http_error(307, "", {"Location": "https://evil.example/v1/company/person"}),
+            envelope({"Slug": "abc"}),
+        ])
+        with pytest.raises(HttpError) as info:
+            client.post("/company/person", json_body={"FirstName": "Anna"})
+        assert "different origin" in str(info.value)
+        assert len(seen) == 1  # nothing was sent to the other host
+
+    def test_scheme_downgrade_is_refused(self):
+        client, seen = self._client([
+            http_error(301, "", {"Location": "http://x/v1/thing"}),
+            envelope({"ok": True}),
+        ])
+        with pytest.raises(HttpError):
+            client.get("/thing")
+        assert len(seen) == 1
+
+    def test_same_origin_redirect_still_followed(self):
+        client, seen = self._client([
+            http_error(307, "", {"Location": "/v1/company/person/"}),
+            envelope({"Slug": "abc"}),
+        ])
+        assert client.post("/company/person", json_body={}) == {"Slug": "abc"}
+        assert seen[1][1] == "https://x/v1/company/person/"
+        assert seen[1][2].get("X-company-api-key") == "k"
+
+
+class TestRetryAfterCap:
+    def test_retry_after_is_capped(self):
+        from analyzer.client import MAX_RETRY_AFTER
+        slept = []
+        client, _ = make_client(
+            [http_error(503, "", {"Retry-After": "86400"}), envelope({"ok": True})]
+        )
+        client._sleep = slept.append
+        assert client.get("/x") == {"ok": True}
+        assert slept == [MAX_RETRY_AFTER]
+
+    def test_small_retry_after_is_honoured(self):
+        slept = []
+        client, _ = make_client(
+            [http_error(429, "", {"Retry-After": "2"}), envelope({"ok": True})]
+        )
+        client._sleep = slept.append
+        client.get("/x")
+        assert slept == [2.0]
+
+
+class TestPathSegment:
+    def test_encodes_separators_and_traversal(self):
+        from analyzer.client import path_segment
+        assert path_segment("a/b") == "a%2Fb"
+        assert path_segment("../x") == "..%2Fx"
+        assert path_segment("id?x=1") == "id%3Fx%3D1"
+        assert path_segment(182760) == "182760"
+        assert path_segment("plain-slug_1") == "plain-slug_1"
