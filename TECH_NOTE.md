@@ -140,10 +140,21 @@ pre-screening and still show a flawless override rate, because nobody reviewed
 the rejections. The report says this in its own limitations section rather than
 only here. Fixing it needs deliberate sampling — see next steps.
 
-### The data is authored
+### The data is authored -- both halves of it
 
-Covered in the README. The analyzer is validated for correctness against known
-ground truth; it is not validated against real agent behaviour.
+Covered in the README. The AI decisions are authored because the dev
+environment's screening agent never concludes. The human review decisions are
+authored too: no candidate in this dataset was actually reviewed by a person in
+the UI.
+
+So the analyzer is validated for correctness against known ground truth, and is
+validated against neither real agent behaviour nor real reviewer behaviour. The
+override rate demonstrates that the metric is computed correctly; it says
+nothing about whether humans in fact disagree with this agent.
+
+Reviewing the seeded candidates in the UI would fix the second half without
+touching any code -- the analyzer reads a genuine `AssignerDecision` identically
+to an authored one.
 
 ### Small cells are inherent, not a sampling artefact
 

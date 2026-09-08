@@ -141,7 +141,15 @@ What this means for the numbers:
   client needs is an open question. The tiering exists precisely so the answer
   can change without touching code.
 
-Human review decisions are genuine where a human made them in the UI.
+**The human review decisions are authored too.** `AssignerDecision` values in this
+dataset were written by the seeder alongside the AI decisions they refer to. They
+are not records of anyone actually clicking approve or reject.
+
+That is worth being explicit about, because it is the one thing that could still
+be made real here: reviewing these candidates in the UI would produce genuine
+`AssignerDecision` records on top of authored suggestions, and the analyzer reads
+them identically. It has not been done, so nothing in the output should be read
+as evidence about how real reviewers behave.
 
 ---
 
