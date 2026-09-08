@@ -103,7 +103,7 @@ The dev account starts empty, so the repo can recreate its own data.
 **One manual step first.** A pipeline template must exist, and it cannot be
 created reliably from the API — a template is only valid once every
 agent-requiring step has an agent with conclusion rules and routing targets, and
-`POST /recruiting/jobs/{id}/steps` is documented but returns 404. Create one in
+`POST /recruiting/jobs/{id}/steps` is deprecated and already returns 404. Create one in
 the UI named **`SAA Seed Pipeline`** with these steps:
 
 ```
@@ -175,7 +175,7 @@ Read:
 
 | Endpoint | Why |
 |---|---|
-| `POST /recruiting/jobs/search-jobs` | list jobs (the `GET` variant is documented but deleted) |
+| `POST /recruiting/jobs/search-jobs` | list jobs (the `GET` variant is deprecated and already removed) |
 | `GET /recruiting/jobs/{id}/steps` | pipeline structure |
 | `GET /recruiting/jobs/{id}/steps/{step}/agents` | agent config: `HumanInLoop`, conclusion criteria, routing |
 | `POST /recruiting/applications/search-applications` | candidates per job |

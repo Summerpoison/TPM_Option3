@@ -79,16 +79,19 @@ first file written, so no commit has ever contained a `.env`.
 All found by calling. They are why the fetch layer is as tolerant as it is.
 
 1. `data.Categories`, not `data`, as the array
-2. `GET /recruiting/jobs` is documented and deleted (plain-text 404)
-3. `POST /recruiting/jobs/{id}/steps` is documented and deleted
-4. Error `message` is sometimes a string, sometimes a list
-5. `JobPositionDescription` is an object, not a string
-6. Write endpoints redirect 307
-7. Template agents come back under `JobStepAgentTemplates`, not `Agents`
-8. Create-person returns `user_slug`, snake_case in a PascalCase API
-9. `EmployeeOrCandidate` must be lowercase; every other enum is PascalCase
-10. Application filtering needs `paulsjob_job_id` with the `in` operator and
-    an integer; `eq` is rejected and a string id fails validation
+2. Error `message` is sometimes a string, sometimes a list
+3. `JobPositionDescription` is an object, not a string
+4. Write endpoints redirect 307
+5. Template agents come back under `JobStepAgentTemplates`, not `Agents`
+6. Create-person returns `user_slug`, snake_case in a PascalCase API
+7. `EmployeeOrCandidate` must be lowercase; every other enum is PascalCase
+8. Application filtering needs `paulsjob_job_id` with the `in` operator and
+   an integer; `eq` is rejected and a string id fails validation
+
+Not a disagreement, but worth knowing: the spec marks `GET /recruiting/jobs`
+and `POST /recruiting/jobs/{id}/steps` as deprecated, and both already return
+a plain-text 404 rather than still working. The client uses the replacements
+(`search-jobs`, `steps/init`) from the start.
 
 Behaviour that changed the design:
 
@@ -215,5 +218,5 @@ In the order I would do them.
 `analyzer/fetch.py` carries both orchestration and response-shape tolerance.
 If the API stabilised, the shape-guessing helpers should collapse into typed
 parsers with explicit validation. Today the tolerance earns its place, since
-the shapes genuinely varied across the ten cases above, but it is the code
+the shapes genuinely varied across the cases above, but it is the code
 most likely to become superstition once the API is predictable.
