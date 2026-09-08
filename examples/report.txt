@@ -1,6 +1,6 @@
 ==============================================================================
 SCREENING ACCURACY REPORT
-Paul's screening decisions  ·  08 September 2026, 13:43 UTC
+Paul's screening decisions  ·  08 September 2026, 14:08 UTC
 ==============================================================================
 
 Analysed 2 job(s), 40 candidate(s), 60 decision(s).

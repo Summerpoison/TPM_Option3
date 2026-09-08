@@ -36,17 +36,39 @@ from analyzer.model import Agreement, Outcome, derive_agreement, normalize_outco
 
 log = logging.getLogger(__name__)
 
-#: Categories that can hold a decision-making agent. Everything else is a
-#: state or a destination. Confirmed against GET /recruiting/job-step-categories
-#: where these are exactly the categories with AllowChangeConfig true and
-#: conclusion rules; New/TeamDiscussion/ContractOffer/Onboarding have neither.
-DECISION_CATEGORIES = frozenset({
-    "PreScreening", "AIVoiceInterview", "HumanInterview",
-    "RecruitingDay", "CodeExecution", "DataCollection",
-})
-#: Terminal destinations. Not analysed as decisions, but used to check that
-#: negatively-decided candidates actually land somewhere sensible.
+#: Terminal destinations. They are configurable (they carry messaging) but
+#: hold no screening decision, so they are subtracted from whatever the
+#: platform reports as configurable.
 TERMINAL_CATEGORIES = frozenset({"Rejected", "Outreach"})
+
+#: Fallback only. The real list is read from GET /recruiting/job-step-categories
+#: at run time (see `decision_categories`): every category the platform marks
+#: `AllowChangeConfig` can hold a decision-making agent, and a custom pipeline
+#: step is always an instance of one of these categories. This snapshot is
+#: used when that call fails, and the report says so.
+DEFAULT_DECISION_CATEGORIES = frozenset({
+    "PreScreening", "AIVoiceInterview", "HumanInterview",
+    "RecruitingDay", "CodeExecution", "DataCollection", "JobRecommendation",
+})
+#: Kept for callers that only need a reasonable static answer (tests, tools).
+DECISION_CATEGORIES = DEFAULT_DECISION_CATEGORIES
+
+
+def decision_categories(payload: object) -> frozenset[str] | None:
+    """Derive the decision-producing categories from the platform's metadata.
+
+    Returns None when the payload carries no usable category list, so the
+    caller can fall back and record that it did.
+    """
+    categories = _as_list(payload, "Categories", "JobStepCategories")
+    if not categories:
+        return None
+    found = {
+        str(cat.get("ID"))
+        for cat in categories
+        if cat.get("ID") and cat.get("AllowChangeConfig") is True
+    }
+    return frozenset(found - TERMINAL_CATEGORIES) or None
 
 
 @dataclass(frozen=True)
@@ -66,10 +88,15 @@ class StepConfig:
     negative_criteria: str = ""
     #: NextStepRule name -> target step id, from Actions.StatusChange.
     routing: dict[str, str] = field(default_factory=dict)
+    #: Set by the fetcher from the platform's category metadata. None means
+    #: "not told", in which case the static fallback list decides.
+    decides: bool | None = None
 
     @property
     def produces_decisions(self) -> bool:
-        return self.category in DECISION_CATEGORIES
+        if self.decides is not None:
+            return self.decides
+        return self.category in DEFAULT_DECISION_CATEGORIES
 
     @property
     def is_terminal(self) -> bool:
@@ -123,6 +150,8 @@ class DataQuality:
     superseded_records: list[str] = field(default_factory=list)
     steps_without_agent: list[str] = field(default_factory=list)
     skipped_records: list[str] = field(default_factory=list)
+    #: Things about the run itself the reader should know, e.g. a fallback taken.
+    notes: list[str] = field(default_factory=list)
 
     @property
     def total(self) -> int:
@@ -130,6 +159,7 @@ class DataQuality:
             len(v) for v in (
                 self.job_failures, self.candidate_failures, self.malformed_decisions,
                 self.superseded_records, self.steps_without_agent, self.skipped_records,
+                self.notes,
             )
         )
 
@@ -165,6 +195,31 @@ class Fetcher:
     def __init__(self, client: PaulsjobClient) -> None:
         self.client = client
         self.quality = DataQuality()
+        self.decision_categories: frozenset[str] = DEFAULT_DECISION_CATEGORIES
+
+    def discover_categories(self) -> frozenset[str]:
+        """Ask the platform which step categories can hold a screening agent.
+
+        Done once per run, before any job is read, so a category this code has
+        never heard of is still analysed. Falls back to the static list -- and
+        says so in the report -- if the call fails or returns nothing usable.
+        """
+        try:
+            derived = decision_categories(self.client.get("/recruiting/job-step-categories"))
+        except ApiError as exc:
+            derived = None
+            reason = str(exc)
+        else:
+            reason = "the response carried no category list"
+        if derived is None:
+            self.quality.notes.append(
+                "could not read the platform's step categories, so the built-in list "
+                f"({', '.join(sorted(DEFAULT_DECISION_CATEGORIES))}) decided which steps "
+                f"count as screening steps -- {reason}"
+            )
+            derived = DEFAULT_DECISION_CATEGORIES
+        self.decision_categories = derived
+        return derived
 
     # -- jobs and their configuration --------------------------------------
     def jobs(self, external_id_prefix: str | None = None) -> list[JobInfo]:
@@ -213,8 +268,9 @@ class Fetcher:
                 continue
             category = _category_id(step)
             order = step.get("OrderIndex")
-            agent = self._agent(job_id, str(step_id)) if category in DECISION_CATEGORIES else None
-            if category in DECISION_CATEGORIES and agent is None:
+            decides = category in self.decision_categories
+            agent = self._agent(job_id, str(step_id)) if decides else None
+            if decides and agent is None:
                 self.quality.steps_without_agent.append(
                     f"step '{step.get('Name')}' ({category}) has no agent configured"
                 )
@@ -230,6 +286,7 @@ class Fetcher:
                     positive_criteria=self._criteria(agent, "POSITIVE_CONCLUSION"),
                     negative_criteria=self._criteria(agent, "NEGATIVE_CONCLUSION"),
                     routing=self._routing(agent),
+                    decides=decides,
                 )
             )
         return tuple(sorted(configs, key=lambda s: s.order))
@@ -331,7 +388,7 @@ class Fetcher:
 
             if step and not step.produces_decisions:
                 continue  # terminal or state step: not an AI decision
-            if not step and category not in DECISION_CATEGORIES:
+            if not step and category not in self.decision_categories:
                 continue
 
             # Reported only for steps we actually analyse. Warning about
@@ -380,6 +437,7 @@ def load(client: PaulsjobClient, *, external_id_prefix: str | None = None) -> Da
     """Fetch everything the analysis needs, isolating failures per job."""
     fetcher = Fetcher(client)
     dataset = Dataset(quality=fetcher.quality)
+    fetcher.discover_categories()
     dataset.jobs = fetcher.jobs(external_id_prefix)
     for job in dataset.jobs:
         try:

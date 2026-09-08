@@ -184,6 +184,13 @@ class Cell:
 
     @property
     def requires_review(self) -> bool:
+        """Only `always_on` is treated as requiring review.
+
+        `conditional` means review is required when a condition the agent
+        evaluates holds, and that condition is not exposed in a way this tool
+        can re-evaluate, so it is treated like `always_off`: no finding, rather
+        than a finding built on a guess. Stated in TECH_NOTE.md.
+        """
         return bool(self.step and self.step.human_in_loop == "always_on")
 
     # -- people ------------------------------------------------------------

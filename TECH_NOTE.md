@@ -172,6 +172,16 @@ requirement inside a category the job does use: a driving licence on a role
 asking for a nursing qualification are both `certification`. A test pins this
 blind spot so it cannot regress unnoticed.
 
+### `conditional` review is treated as no review
+
+`HumanInLoop` has three settings. `always_on` is checked: every decision on
+such a step should carry a recruiter action, and the gap is a finding.
+`conditional` means review is required when a condition the agent evaluates
+holds, and that condition is not exposed in a form this tool can re-evaluate.
+It is therefore treated like `always_off` — no finding, rather than a finding
+built on a guess. A step whose condition never fires would look identical to a
+step with review switched off.
+
 ### Thresholds are judgement calls
 
 `HIGH_OVERRIDE_RATE = 0.25`, `HIGH_OPT_OUT_RATE = 0.25`,

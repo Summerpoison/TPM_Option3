@@ -1,7 +1,8 @@
 """Fetch-layer tests. The client is faked, so nothing touches the network."""
 import pytest
 
-from analyzer.fetch import Fetcher, JobInfo, StepConfig
+from analyzer.client import HttpError
+from analyzer.fetch import DEFAULT_DECISION_CATEGORIES, Fetcher, JobInfo, StepConfig, decision_categories
 from analyzer.model import Agreement, Outcome
 
 
@@ -169,3 +170,53 @@ class TestPathEncoding:
         client = self._Client()
         Fetcher(client=client)._steps("1/2")
         assert client.paths == ["/recruiting/jobs/1%2F2/steps"]
+
+
+class TestCategoryDiscovery:
+    """Which categories produce decisions comes from the platform, not from code."""
+
+    PAYLOAD = {"Categories": [
+        {"ID": "New", "AllowChangeConfig": False},
+        {"ID": "PreScreening", "AllowChangeConfig": True},
+        {"ID": "TeamDiscussion", "AllowChangeConfig": False},
+        {"ID": "Rejected", "AllowChangeConfig": True},
+        {"ID": "Outreach", "AllowChangeConfig": True},
+        {"ID": "BrandNewCategory", "AllowChangeConfig": True},
+    ]}
+
+    def test_derives_from_allow_change_config_minus_terminals(self):
+        assert decision_categories(self.PAYLOAD) == frozenset({"PreScreening", "BrandNewCategory"})
+
+    def test_unusable_payload_returns_none(self):
+        assert decision_categories({}) is None
+        assert decision_categories({"Categories": []}) is None
+        assert decision_categories([{"ID": "X"}]) is None  # nothing configurable
+
+    def test_fetcher_uses_the_platform_list_and_leaves_no_note(self):
+        class Client:
+            def get(self, path, **params):
+                assert path == "/recruiting/job-step-categories"
+                return TestCategoryDiscovery.PAYLOAD
+
+        fetcher = Fetcher(client=Client())
+        fetcher.discover_categories()
+        assert "BrandNewCategory" in fetcher.decision_categories
+        assert "AIVoiceInterview" not in fetcher.decision_categories
+        assert fetcher.quality.notes == []
+
+    def test_fetcher_falls_back_and_says_so(self):
+        class Client:
+            def get(self, path, **params):
+                raise HttpError(500, "boom", path)
+
+        fetcher = Fetcher(client=Client())
+        fetcher.discover_categories()
+        assert fetcher.decision_categories == DEFAULT_DECISION_CATEGORIES
+        assert len(fetcher.quality.notes) == 1
+        assert "built-in list" in fetcher.quality.notes[0]
+
+    def test_step_config_honours_the_discovered_flag(self):
+        assert StepConfig("s", "n", "BrandNewCategory", 1, decides=True).produces_decisions
+        assert not StepConfig("s", "n", "PreScreening", 1, decides=False).produces_decisions
+        # untold: the static fallback decides
+        assert StepConfig("s", "n", "PreScreening", 1).produces_decisions

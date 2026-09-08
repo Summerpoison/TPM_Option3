@@ -190,12 +190,14 @@ Write (seeder only): `POST /recruiting/jobs`, `.../hiring-managers`,
 ## Assumptions
 
 1. **A step produces a screening decision if its category can hold a
-   configurable agent.** Taken from the platform's own metadata rather than a
-   hardcoded list: `GET /recruiting/job-step-categories` marks `New`,
-   `TeamDiscussion`, `ContractOffer` and `Onboarding` with
-   `AllowChangeConfig: false`, so they structurally cannot. `Rejected` and
-   `Outreach` are configurable but carry only messaging, so they are treated as
-   destinations and used to sanity-check routing, not counted as decisions.
+   configurable agent.** Read from the platform at the start of every run:
+   `GET /recruiting/job-step-categories` marks each category with
+   `AllowChangeConfig`, and every configurable one except the two terminal
+   destinations (`Rejected`, `Outreach`, which carry only messaging) counts.
+   A custom pipeline step is always an instance of one of these categories,
+   so custom steps need no special handling — they are keyed on step id and
+   carry their category as an attribute. If the metadata call fails, a
+   built-in snapshot of the list is used and the report says so.
 2. **Opt-outs are not rejections.** `NextStepRule.Name` has five values, three of
    them `OPT_OUT_*`. Those candidates withdrew; the AI never judged them.
    Counting them as rejections inflates the rate, so they are a separate bucket

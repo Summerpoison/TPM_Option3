@@ -275,6 +275,7 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
         ("candidate(s) had more than one record for the same step", quality.superseded_records),
         ("step(s) expect a screening agent but have none", quality.steps_without_agent),
         ("record(s) were unusable and skipped", quality.skipped_records),
+        ("note(s) about this run", quality.notes),
     ):
         if not items:
             continue
@@ -365,6 +366,7 @@ def render_json(analysis: Analysis, dataset: Dataset) -> str:
             "duplicate_step_records": dataset.quality.superseded_records,
             "steps_without_agent": dataset.quality.steps_without_agent,
             "skipped_records": dataset.quality.skipped_records,
+            "run_notes": dataset.quality.notes,
         },
     }
     return json.dumps(payload, indent=2, ensure_ascii=False)

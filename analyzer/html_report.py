@@ -373,6 +373,7 @@ def render_html(analysis: Analysis, dataset: Dataset, funnel_notes: list[str]) -
         ("candidate(s) had more than one record for the same step", quality.superseded_records),
         ("step(s) expect a screening agent but have none", quality.steps_without_agent),
         ("record(s) were unusable and skipped", quality.skipped_records),
+        ("note(s) about this run", quality.notes),
     ):
         if not items:
             continue
