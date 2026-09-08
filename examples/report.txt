@@ -1,6 +1,6 @@
 ==============================================================================
 SCREENING ACCURACY REPORT
-Paul's screening decisions  ·  08 September 2026, 10:25 UTC
+Paul's screening decisions  ·  08 September 2026, 13:43 UTC
 ==============================================================================
 
 Analysed 2 job(s), 40 candidate(s), 60 decision(s).
@@ -9,109 +9,133 @@ Analysed 2 job(s), 40 candidate(s), 60 decision(s).
   · Sicherheitsmitarbeiter (m/w/d) - Objektschutz   [saa-seed-21]
       20 candidate(s), 28 decision(s), 3 step(s) with a screening agent
 
-WHAT PAUL DECIDED
+WHAT TO DO
 ------------------------------------------------------------------------------
-Paul reached a decision 51 time(s) across 40 candidate(s): 22 passed, 29 were rejected (57% rejected).
-Another 5 candidate(s) are counted as opt-outs: they stopped responding or declined to
-continue, so Paul never judged them. They are excluded from the rejection rate above.
+One card per job and step. 'Act now' means at least five people are affected;
+'check' means the pattern is real but small. Names are the candidates concerned.
 
-A recruiter reviewed 40 of 60 decision(s) (67%) and reversed Paul on 4.
+[ACT NOW]  Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl
+   · 5 of 15 decisions went through without the recruiter approval this step
+   requires
+       why: the step is configured HumanInLoop=always_on; recruiters did
+       review the other 10, so notification works and these are the ones
+       missed
+       -> Review these candidates: Aisha Haddad, Felix Fischer, Lukas Kaya,
+       Mehmet Schmidt, Nina Lange
+   · Recruiters reversed Paul on 4 of the 10 decisions they reviewed
+       why: 40% of the decisions a recruiter compared against Paul's were
+       reversed (2 explicit rejections of Paul's suggestion, 2 inferred from
+       the recruiter's own decision)
+       -> Compare this step's conclusion criteria with the listing's mandatory
+       requirements; start with the reversed candidates: Aisha Braun, Amara
+       Schmidt, David Becker, Stefan Weber
 
-Reading the reversal rate: it covers only decisions a recruiter opened. Candidates
-Paul rejects early are rarely opened, so mistakes there never show up in it. Read it
-as how often recruiters disagree when they look, not as how often Paul is right.
+[CHECK]  Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl
+   · 3 of 19 decisions went through without the recruiter approval this step
+   requires
+       why: the step is configured HumanInLoop=always_on; recruiters did
+       review the other 16, so notification works and these are the ones
+       missed
+       -> Review these candidates: Fatima Okafor, Piotr Kaya, Sofia Weber
+   · 3 rejections cite location / salary, which this listing never asks for
+       why: for example: Gehaltsvorstellung deutlich ueber dem Budget;
+       Gehaltsvorstellung passt nicht zum Budget der Stelle; Wohnort zu weit
+       entfernt, Umzug nicht moeglich
+       -> Either add the requirement to the listing, or correct the step's
+       conclusion criteria; then decide whether these candidates should be re-
+       evaluated: Fatima Okafor, Piotr Kaya, Sofia Weber
 
-FINDINGS
+WORTH WATCHING
 ------------------------------------------------------------------------------
-Priority means how urgently this needs attention. It is not a score for Paul.
+Too few decisions to act on yet (under 10, or fewer than five people).
+Listed so they are not lost; revisit when there is more data.
 
-1. [HIGH PRIORITY]  Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl
-   What    This step requires recruiter approval, but 4 of 20 decision(s) did not get it
-   Why     the step is configured HumanInLoop=always_on, so every decision should be approved by a recruiter; 16 of 20 (80%) were
-   Action  Check that recruiters are being notified, or change the step to always_off if approval is not wanted.
+  · Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview: 2 of 7
+  candidates dropped out here before Paul could judge them.
 
-2. [HIGH PRIORITY]  Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl
-   What    Recruiters reversed Paul on 40% of the decisions they reviewed here
-   Why     a recruiter disagreed with Paul on 4 of the 10 decisions they opened (2 where they explicitly rejected Paul's suggestion, 2 inferred from their own decision)
-   Action  Compare this step's conclusion criteria with the listing's mandatory requirements.
-
-3. [HIGH PRIORITY]  Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl
-   What    This step requires recruiter approval, but 10 of 20 decision(s) did not get it
-   Why     the step is configured HumanInLoop=always_on, so every decision should be approved by a recruiter; 10 of 20 (50%) were
-   Action  Check that recruiters are being notified, or change the step to always_off if approval is not wanted.
-
-4. [MEDIUM PRIORITY]  Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl
-   What    3 rejection(s) name a requirement this listing never asks for
-   Why     for example: Gehaltsvorstellung deutlich ueber dem Budget; Gehaltsvorstellung passt nicht zum Budget der Stelle
-   Action  Either add the requirement to the listing, or correct the step's conclusion criteria.
-
-5. [MEDIUM PRIORITY]  Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview
-   What    29% of candidates dropped out here before Paul could judge them   (only 7 decisions -- treat as a hint)
-   Why     2 of 7 stopped responding, declined to continue, or declined to speak to Paul. They are counted as opt-outs, separately from the rejection rate.
-   Action  Look at how and when candidates are contacted at this step, rather than at the criteria.
-
-6. [LOW PRIORITY]  Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl
-   What    3 decision(s) used a status this tool does not recognise
-   Why     a value was recorded, but it is not one the platform documents
-   Action  See the data-quality section for the exact values and candidates.
-
-EACH JOB, STEP BY STEP
+THE NUMBERS
 ------------------------------------------------------------------------------
-The view to act on: every rate here belongs to one listing at one step.
-'reviewed' is the share a recruiter opened; 'reversed' is the share of those they
-disagreed with.
+Counts, per listing and step; every row adds up to its total.
 
-  step                     total  passed  rejected  opt-out  reviewed  reversed
+Each job, step by step
+
+  step                     total passed rejected opt-out  none reviewed reversed
 
   Pflegefachkraft (m/w/d) - Intensivstation
-  Vorauswahl                  20       8        11        1       80%        0%
-  KI-Voice-Interview           9       3         5        1       78%        0%   (only 9 decisions)
-  Menschliches Interview       3       3         0        0      100%        0%   (only 3 decisions)
-  all steps                   32      14        16        2       81%        0%
+  Vorauswahl                  20      8       11       1     0       16        0
+  KI-Voice-Interview           9      3        5       1     0        7        0
+  Menschliches Interview       3      3        0       0     0        3        0
+  all steps                   32     14       16       2     0       26        0
 
   Sicherheitsmitarbeiter (m/w/d) - Objektschutz
-  Vorauswahl                  20       7         8        1       50%       40%
-  KI-Voice-Interview           7       1         4        2       43%        0%   (only 7 decisions)
-  Menschliches Interview       1       0         1        0      100%        0%   (only 1 decision)
-  all steps                   28       8        13        3       50%       29%
+  Vorauswahl                  20      7        8       1     4       10        4
+  KI-Voice-Interview           7      1        4       2     0        3        0
+  Menschliches Interview       1      0        1       0     0        1        0
+  all steps                   28      8       13       3     4       14        4
 
-THE FUNNEL: ALL JOBS COMBINED
-------------------------------------------------------------------------------
-Where candidates are lost, and how thin review coverage gets further down.
+  none      no usable decision: the step was not evaluated, or the value recorded
+            is not one the platform documents (listed under 'skipped')
+  reviewed  decisions a recruiter opened, out of passed + rejected
+  reversed  reviewed decisions the recruiter disagreed with. Only opened decisions
+            count, and early rejections are rarely opened, so this says how often
+            recruiters disagree when they look, not how often Paul is right
 
-  step                     total  passed  rejected  opt-out  reviewed  reversed
-  PreScreening                40      15        19        2       65%       15%
-  AIVoiceInterview            16       4         9        3       62%        0%
-  HumanInterview               4       3         1        0      100%        0%   (only 4 decisions)
+The funnel, all jobs combined
 
-  · Most candidates are lost at AIVoiceInterview: Paul rejected 69% of the 13 he judged there.
-  · Review coverage ranges from 62% at AIVoiceInterview to 100% at HumanInterview.
-  · Disagreement concentrates at PreScreening: 15% of the decisions reviewed there were reversed, out of 4 reversals in total.
-  · These rates differ by job, so the table above describes the mix of jobs analysed rather than the steps themselves. Act on the per-job table.
+  step                     total passed rejected opt-out  none reviewed reversed
+  PreScreening                40     15       19       2     4       26        4
+  AIVoiceInterview            16      4        9       3     0       10        0
+  HumanInterview               4      3        1       0     0        4        0
 
-WHY PAUL REJECTED PEOPLE
-------------------------------------------------------------------------------
+  · PreScreening is where the most candidates leave: 19 rejected and 2 opted
+  out, of the 40 who reached it.
+  · The strictest step is AIVoiceInterview: Paul rejected 69% of the 13 he
+  judged there.
+  · Review coverage ranges from 76% at PreScreening to 100% at HumanInterview.
+  · 4 of the 4 reversals in total happened at PreScreening.
+  · These rates differ by job, so this table describes the mix of jobs
+  analysed rather than the steps themselves. Act on the per-job table.
 
-Pflegefachkraft (m/w/d) - Intensivstation  --  16 rejection(s)
-  Paul phrases these 9 different ways across 16 rejections, so they
+Why Paul rejected people, per job and step
+
+Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl  --  11 rejections
+  Paul phrases these 7 different ways across 11 rejections, so they
   are grouped by topic, with one real example of each.
-      6  certification   38%   e.g. 'No driving licence class C provided'
-      4  experience      25%   e.g. 'Insufficient years of experience'
-      2  availability    12%   e.g. 'Not available for shift work'
-      2  salary          12%   e.g. 'Gehaltsvorstellung passt nicht zum Budge'
-      1  location         6%   e.g. 'Wohnort zu weit entfernt, Umzug nicht mo'
-      1  language         6%   e.g. 'German language level below B2'
+      3  experience      27%   e.g. Insufficient years of experience
+      3  certification   27%   e.g. No driving licence class C provided
+      2  availability    18%   e.g. Not available for shift work
+      2  salary          18%   e.g. Gehaltsvorstellung passt nicht zum Budget der Stelle
+      1  location         9%   e.g. Wohnort zu weit entfernt, Umzug nicht moeglich
 
-Sicherheitsmitarbeiter (m/w/d) - Objektschutz  --  13 rejection(s)
-  Paul phrases these 8 different ways across 13 rejections, so they
+Pflegefachkraft (m/w/d) - Intensivstation / KI-Voice-Interview  --  5 rejections
+  Paul phrases these 3 different ways across 5 rejections, so they
   are grouped by topic, with one real example of each.
-      6  certification   46%   e.g. 'no §34a certificate provided'
-      3  language        23%   e.g. 'insufficient german, estimated A2'
-      2  availability    15%   e.g. 'Keine Bereitschaft zur Nachtschicht'
-      1  experience       8%   e.g. 'too little relevant experience'
-      1  other            8%   e.g. 'general fit concerns'
-  1 rejection(s) matched no topic (8%). Add their
+      3  certification   60%   e.g. Missing required certification
+      1  experience      20%   e.g. Candidate has no prior management experience
+      1  language        20%   e.g. German language level below B2
+
+Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl  --  8 rejections
+  Paul phrases these 5 different ways across 8 rejections, so they
+  are grouped by topic, with one real example of each.
+      5  certification   62%   e.g. no §34a certificate provided
+      1  availability    12%   e.g. Keine Bereitschaft zur Nachtschicht
+      1  experience      12%   e.g. too little relevant experience
+      1  language        12%   e.g. insufficient german, estimated A2
+
+Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview  --  4 rejections
+  Paul phrases these 4 different ways across 4 rejections, so they
+  are grouped by topic, with one real example of each.
+      1  language        25%   e.g. Sprachniveau zu niedrig für die Position
+      1  availability    25%   e.g. cannot work weekends
+      1  other           25%   e.g. general fit concerns
+      1  certification   25%   e.g. Sachkundenachweis fehlt
+  1 rejection(s) matched no topic (25%). Add their
   wording to reason_buckets.json so they stop landing in 'other'.
+
+Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Menschliches Interview  --  1 rejection
+  Paul reuses the same 1 phrase here, so these are exact
+  counts of what he wrote.
+      1  insufficient german estimated a2
 
 WHAT WAS SKIPPED OR LOOKED WRONG
 ------------------------------------------------------------------------------
@@ -129,17 +153,13 @@ WHAT WAS SKIPPED OR LOOKED WRONG
     · Jonas Becker on 'Sicherheitsmitarbeiter (m/w/d) - Objektschutz' at step 'Vorauswahl': 2 assignment records, kept the most recent one with a decision
     ... and 1 more
 
-WHAT THIS REPORT CANNOT TELL YOU
+ONE THING TO KEEP IN MIND
 ------------------------------------------------------------------------------
-· Whether Paul is right. Only reviewed decisions can be checked, and recruiters
-  mostly review candidates who got through. Rejections are the blind spot.
-· Much from small numbers. Anything under 10 decisions is marked. Late steps are
-  small by nature, so read those rows as direction rather than measurement.
-· Whether a rejection reason is fair. The report groups reasons by topic and checks
-  the topic against the step's criteria; it cannot judge the reasoning itself.
-· How certain a reversal is. Ones inferred from a recruiter's own decision are
-  weaker evidence than an explicit rejection of Paul's suggestion; the JSON
-  output separates the two counts.
+This report shows what Paul decided and where recruiters disagreed with him.
+It cannot say whether a decision was right: only decisions a recruiter opened
+can be checked, and those are mostly the candidates who got through. Rejection
+reasons are grouped and compared with what the listing asks for, not with what
+the candidate actually offered.
 
 ==============================================================================
 

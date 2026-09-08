@@ -7,8 +7,8 @@
   --surface:#ffffff; --page:#fbfaf7; --line:#e9e6e0;
   --dark:#17161c; --accent:#d4f04f; --primary:#6b4de6;
   --pass:#3178a8; --reject:#c2365c; --optout:#b07d18; --none:#6f5fa8;
-  --high:#c2365c; --medium:#b07d18; --low:#5a6675;
-  --high-bg:#fdeef1; --medium-bg:#fdf4e3; --low-bg:#eef1f4;
+  --act:#c2365c; --check:#b07d18; --watch:#5a6675;
+  --act-bg:#fdeef1; --check-bg:#fdf4e3; --watch-bg:#eef1f4;
   --radius:14px;
 }
 @media (prefers-color-scheme:dark){
@@ -16,8 +16,8 @@
     --ink:#f2f0f5; --ink-2:#bdb9c6; --ink-3:#8a8794;
     --surface:#201f26; --page:#161519; --line:#332f3a;
     --pass:#4a92c4; --reject:#d14f70; --optout:#b8862a; --none:#8878c8;
-    --high:#d14f70; --medium:#b8862a; --low:#8a95a5;
-    --high-bg:#341f27; --medium-bg:#33291a; --low-bg:#23262b;
+    --act:#d14f70; --check:#b8862a; --watch:#8a95a5;
+    --act-bg:#341f27; --check-bg:#33291a; --watch-bg:#23262b;
   }
 }
 *{box-sizing:border-box}
@@ -44,11 +44,6 @@ h2 + .sub{margin:0 0 18px;color:var(--ink-3);font-size:13.5px;max-width:74ch}
 h3{margin:22px 0 8px;font-size:14px;font-weight:620;color:var(--ink-2)}
 p{margin:0 0 10px;max-width:80ch}
 .muted{color:var(--ink-3)}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin:4px 0 6px}
-.tile{background:var(--page);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
-.tile .n{font-size:26px;font-weight:660;letter-spacing:-.4px;line-height:1.15}
-.tile .k{font-size:12px;color:var(--ink-3);margin-top:3px}
-.tile .of{font-size:12px;color:var(--ink-3)}
 .jobs{list-style:none;margin:10px 0 0;padding:0}
 .jobs li{padding:9px 0;border-top:1px solid var(--line)}
 .jobs .t{font-weight:600}
@@ -56,32 +51,42 @@ p{margin:0 0 10px;max-width:80ch}
 .tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;
   color:var(--ink-3);background:var(--page);border:1px solid var(--line);
   border-radius:6px;padding:1px 6px;margin-left:7px}
-.finding{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 11px;
+.card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 12px;
   background:var(--surface)}
-.finding.high{border-left:4px solid var(--high)}
-.finding.medium{border-left:4px solid var(--medium)}
-.finding.low{border-left:4px solid var(--low)}
+.card.act{border-left:4px solid var(--act)}
+.card.check{border-left:4px solid var(--check)}
+.card .scope{font-weight:600;margin-left:9px}
+.card ul{margin:10px 0 0;padding:0;list-style:none}
+.card li{padding:8px 0 4px;border-top:1px solid var(--line)}
+.card li:first-child{border-top:none;padding-top:6px}
+.card .what{font-weight:600;margin:0 0 4px}
+.card .why{color:var(--ink-2);font-size:13.5px;margin:0 0 6px}
+.card .do{font-size:13.5px;margin:0}
+.card .do b{font-weight:640}
+.card .people{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
+.card .person{font-size:12.5px;background:var(--page);border:1px solid var(--line);
+  border-radius:999px;padding:2px 9px}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:640;
   letter-spacing:.4px;text-transform:uppercase;border-radius:999px;padding:3px 10px;
   border:1px solid transparent}
-.pill.high{color:var(--high);background:var(--high-bg);border-color:var(--high)}
-.pill.medium{color:var(--medium);background:var(--medium-bg);border-color:var(--medium)}
-.pill.low{color:var(--low);background:var(--low-bg);border-color:var(--low)}
+.pill.act{color:var(--act);background:var(--act-bg);border-color:var(--act)}
+.pill.check{color:var(--check);background:var(--check-bg);border-color:var(--check)}
+.pill.watch{color:var(--watch);background:var(--watch-bg);border-color:var(--watch)}
 .pill.thin{color:var(--ink-3);background:var(--page);border-color:var(--line);
   text-transform:none;letter-spacing:0;font-weight:560}
-.finding .scope{color:var(--ink-3);font-size:13px;margin-left:9px}
-.finding .what{font-weight:600;margin:9px 0 6px}
-.finding dl{display:grid;grid-template-columns:64px 1fr;gap:3px 12px;margin:0;font-size:13.5px}
-.finding dt{color:var(--ink-3)}
-.finding dd{margin:0}
+.watch{margin:8px 0 0;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+.watch li{margin:5px 0}
+.scroll{overflow-x:auto;max-width:100%}
 table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
 th,td{padding:8px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th[title]{cursor:help;text-decoration:underline dotted var(--ink-3);text-underline-offset:3px}
 th:first-child,td:first-child{text-align:left;white-space:normal}
 thead th{color:var(--ink-3);font-weight:600;font-size:12px;text-transform:uppercase;
   letter-spacing:.5px;border-bottom:1px solid var(--line)}
 tbody tr:hover{background:var(--page)}
 tr.total td{font-weight:640;border-bottom:2px solid var(--line)}
 tr.jobhead td{padding-top:16px;font-weight:640;border-bottom:none;color:var(--ink)}
+td .n{color:var(--ink-3);font-size:12px;margin-left:4px}
 .mix{display:flex;height:9px;border-radius:4px;overflow:hidden;min-width:104px;gap:2px;background:transparent}
 .mix i{display:block;height:100%}
 .mix i:first-child{border-radius:4px 0 0 4px}
@@ -105,83 +110,92 @@ details summary::before{content:"▸ ";color:var(--ink-3)}
 details[open] summary::before{content:"▾ "}
 details ul{margin:10px 0 4px;padding-left:20px;color:var(--ink-2);font-size:13.5px}
 details li{margin:4px 0}
+details .body{padding:6px 0 4px}
 footer{color:var(--ink-3);font-size:12.5px;text-align:center;padding:8px 0 28px}
-@media print{.wash{background:none}section{break-inside:avoid;box-shadow:none}}
+@media print{.wash{background:none}section{break-inside:avoid;box-shadow:none}details{display:block}}
 </style></head><body><div class='wash'>
-<header class='bar'><h1>Screening Accuracy Report <span class='dot'>·</span> Paul's decisions</h1><div class='meta'>08 September 2026, 10:25 UTC</div></header><main>
+<header class='bar'><h1>Screening Accuracy Report <span class='dot'>·</span> Paul's decisions</h1><div class='meta'>08 September 2026, 13:43 UTC</div></header><main>
 <section><h2>What was analysed</h2>
 <p class='sub'>2 job(s), 40 candidate(s), 60 decision(s) that Paul recorded at a screening step.</p>
 <ul class='jobs'>
 <li><div class='t'>Pflegefachkraft (m/w/d) - Intensivstation<span class='tag'>saa-seed-22</span></div><div class='d'>20 candidate(s) · 32 decision(s) · 3 step(s) with a screening agent</div></li>
 <li><div class='t'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz<span class='tag'>saa-seed-21</span></div><div class='d'>20 candidate(s) · 28 decision(s) · 3 step(s) with a screening agent</div></li>
 </ul></section>
-<section><h2>What Paul decided</h2>
-<div class='tiles'>
-<div class='tile'><div class='n'>51</div><div class='k'>decisions Paul concluded <span class='of'>(across 40 candidates)</span></div></div>
-<div class='tile'><div class='n' style='color:var(--reject)'>57%</div><div class='k'>rejected <span class='of'>(29 of 51)</span></div></div>
-<div class='tile'><div class='n' style='color:var(--optout)'>5</div><div class='k'>opted out before judgement</div></div>
-<div class='tile'><div class='n'>67%</div><div class='k'>reviewed by a recruiter <span class='of'>(40 of 60)</span></div></div>
-<div class='tile'><div class='n'>4</div><div class='k'>reversed by a recruiter</div></div>
-</div>
-<p class='muted'>The 5 opt-out(s) stopped responding or declined to continue, so Paul never judged them. They are counted separately and excluded from the rejection rate.</p>
-<p class='muted'><strong>Reading the reversal rate:</strong> it covers only decisions a recruiter opened. Candidates Paul rejects early are rarely opened, so mistakes there never show up in it. Read it as how often recruiters disagree when they look — not as how often Paul is right.</p>
-</section>
-<section><h2>Findings</h2>
-<p class='sub'>Priority is how urgently this needs attention. It is not a score for Paul.</p>
-<div class='finding high'><span class='pill high'>high priority</span><span class='scope'>Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl</span><div class='what'>This step requires recruiter approval, but 4 of 20 decision(s) did not get it</div><dl><dt>Why</dt><dd>the step is configured HumanInLoop=always_on, so every decision should be approved by a recruiter; 16 of 20 (80%) were</dd><dt>Action</dt><dd>Check that recruiters are being notified, or change the step to always_off if approval is not wanted.</dd></dl></div>
-<div class='finding high'><span class='pill high'>high priority</span><span class='scope'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl</span><div class='what'>Recruiters reversed Paul on 40% of the decisions they reviewed here</div><dl><dt>Why</dt><dd>a recruiter disagreed with Paul on 4 of the 10 decisions they opened (2 where they explicitly rejected Paul&#x27;s suggestion, 2 inferred from their own decision)</dd><dt>Action</dt><dd>Compare this step&#x27;s conclusion criteria with the listing&#x27;s mandatory requirements.</dd></dl></div>
-<div class='finding high'><span class='pill high'>high priority</span><span class='scope'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl</span><div class='what'>This step requires recruiter approval, but 10 of 20 decision(s) did not get it</div><dl><dt>Why</dt><dd>the step is configured HumanInLoop=always_on, so every decision should be approved by a recruiter; 10 of 20 (50%) were</dd><dt>Action</dt><dd>Check that recruiters are being notified, or change the step to always_off if approval is not wanted.</dd></dl></div>
-<div class='finding medium'><span class='pill medium'>medium priority</span><span class='scope'>Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl</span><div class='what'>3 rejection(s) name a requirement this listing never asks for</div><dl><dt>Why</dt><dd>for example: Gehaltsvorstellung deutlich ueber dem Budget; Gehaltsvorstellung passt nicht zum Budget der Stelle</dd><dt>Action</dt><dd>Either add the requirement to the listing, or correct the step&#x27;s conclusion criteria.</dd></dl></div>
-<div class='finding medium'><span class='pill medium'>medium priority</span><span class='scope'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview</span><div class='what'>29% of candidates dropped out here before Paul could judge them <span class='pill thin'>only 7 decisions — treat as a hint</span></div><dl><dt>Why</dt><dd>2 of 7 stopped responding, declined to continue, or declined to speak to Paul. They are counted as opt-outs, separately from the rejection rate.</dd><dt>Action</dt><dd>Look at how and when candidates are contacted at this step, rather than at the criteria.</dd></dl></div>
-<div class='finding low'><span class='pill low'>low priority</span><span class='scope'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl</span><div class='what'>3 decision(s) used a status this tool does not recognise</div><dl><dt>Why</dt><dd>a value was recorded, but it is not one the platform documents</dd><dt>Action</dt><dd>See the data-quality section for the exact values and candidates.</dd></dl></div>
-</section>
-<section><h2>Each job, step by step</h2>
-<p class='sub'>The view to act on: every rate here belongs to one listing at one step. <em>Reviewed</em> is the share a recruiter opened; <em>reversed</em> is the share of those they disagreed with.</p>
-<div class="legend"><span><i class="swatch" style="background:var(--pass)"></i>passed</span><span><i class="swatch" style="background:var(--reject)"></i>rejected</span><span><i class="swatch" style="background:var(--optout)"></i>opted out</span><span><i class="swatch" style="background:var(--none)"></i>not evaluated</span></div>
-<table><thead><tr><th>step</th><th>mix</th><th>total</th><th>passed</th><th>rejected</th><th>opt-out</th><th>reviewed</th><th>reversed</th></tr></thead><tbody>
-<tr class='jobhead'><td colspan='8'>Pflegefachkraft (m/w/d) - Intensivstation</td></tr>
-<tr class=""><td>Vorauswahl</td><td><span class="mix" title="8 passed, 11 rejected, 1 opted out"><i style="width:40.00%;background:var(--pass)"></i><i style="width:55.00%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i></span></td><td>20</td><td>8</td><td>11</td><td>1</td><td>80%</td><td>0%</td></tr>
-<tr class=""><td>KI-Voice-Interview <span class="pill thin">only 9 decisions</span></td><td><span class="mix" title="3 passed, 5 rejected, 1 opted out"><i style="width:33.33%;background:var(--pass)"></i><i style="width:55.56%;background:var(--reject)"></i><i style="width:11.11%;background:var(--optout)"></i></span></td><td>9</td><td>3</td><td>5</td><td>1</td><td>78%</td><td>0%</td></tr>
-<tr class=""><td>Menschliches Interview <span class="pill thin">only 3 decisions</span></td><td><span class="mix" title="3 passed"><i style="width:100.00%;background:var(--pass)"></i></span></td><td>3</td><td>3</td><td>0</td><td>0</td><td>100%</td><td>0%</td></tr>
-<tr class="total"><td>all steps</td><td><span class="mix" title="14 passed, 16 rejected, 2 opted out"><i style="width:43.75%;background:var(--pass)"></i><i style="width:50.00%;background:var(--reject)"></i><i style="width:6.25%;background:var(--optout)"></i></span></td><td>32</td><td>14</td><td>16</td><td>2</td><td>81%</td><td>0%</td></tr>
-<tr class='jobhead'><td colspan='8'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz</td></tr>
-<tr class=""><td>Vorauswahl</td><td><span class="mix" title="7 passed, 8 rejected, 1 opted out, 4 not evaluated"><i style="width:35.00%;background:var(--pass)"></i><i style="width:40.00%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i><i style="width:20.00%;background:var(--none)"></i></span></td><td>20</td><td>7</td><td>8</td><td>1</td><td>50%</td><td>40%</td></tr>
-<tr class=""><td>KI-Voice-Interview <span class="pill thin">only 7 decisions</span></td><td><span class="mix" title="1 passed, 4 rejected, 2 opted out"><i style="width:14.29%;background:var(--pass)"></i><i style="width:57.14%;background:var(--reject)"></i><i style="width:28.57%;background:var(--optout)"></i></span></td><td>7</td><td>1</td><td>4</td><td>2</td><td>43%</td><td>0%</td></tr>
-<tr class=""><td>Menschliches Interview <span class="pill thin">only 1 decision</span></td><td><span class="mix" title="1 rejected"><i style="width:100.00%;background:var(--reject)"></i></span></td><td>1</td><td>0</td><td>1</td><td>0</td><td>100%</td><td>0%</td></tr>
-<tr class="total"><td>all steps</td><td><span class="mix" title="8 passed, 13 rejected, 3 opted out, 4 not evaluated"><i style="width:28.57%;background:var(--pass)"></i><i style="width:46.43%;background:var(--reject)"></i><i style="width:10.71%;background:var(--optout)"></i><i style="width:14.29%;background:var(--none)"></i></span></td><td>28</td><td>8</td><td>13</td><td>3</td><td>50%</td><td>29%</td></tr>
-</tbody></table></section>
-<section><h2>The funnel, all jobs combined</h2>
-<p class='sub'>Where candidates are lost, and how thin review coverage gets further down.</p>
-<table><thead><tr><th>step</th><th>mix</th><th>total</th><th>passed</th><th>rejected</th><th>opt-out</th><th>reviewed</th><th>reversed</th></tr></thead><tbody>
-<tr class=""><td>PreScreening</td><td><span class="mix" title="15 passed, 19 rejected, 2 opted out, 4 not evaluated"><i style="width:37.50%;background:var(--pass)"></i><i style="width:47.50%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i><i style="width:10.00%;background:var(--none)"></i></span></td><td>40</td><td>15</td><td>19</td><td>2</td><td>65%</td><td>15%</td></tr>
-<tr class=""><td>AIVoiceInterview</td><td><span class="mix" title="4 passed, 9 rejected, 3 opted out"><i style="width:25.00%;background:var(--pass)"></i><i style="width:56.25%;background:var(--reject)"></i><i style="width:18.75%;background:var(--optout)"></i></span></td><td>16</td><td>4</td><td>9</td><td>3</td><td>62%</td><td>0%</td></tr>
-<tr class=""><td>HumanInterview <span class="pill thin">only 4 decisions</span></td><td><span class="mix" title="3 passed, 1 rejected"><i style="width:75.00%;background:var(--pass)"></i><i style="width:25.00%;background:var(--reject)"></i></span></td><td>4</td><td>3</td><td>1</td><td>0</td><td>100%</td><td>0%</td></tr>
-</tbody></table>
-<ul class='notes'>
-<li>Most candidates are lost at AIVoiceInterview: Paul rejected 69% of the 13 he judged there.</li>
-<li>Review coverage ranges from 62% at AIVoiceInterview to 100% at HumanInterview.</li>
-<li>Disagreement concentrates at PreScreening: 15% of the decisions reviewed there were reversed, out of 4 reversals in total.</li>
-<li>These rates differ by job, so the table above describes the mix of jobs analysed rather than the steps themselves. Act on the per-job table.</li>
+<section><h2>What to do</h2>
+<p class='sub'>One card per job and step. <em>Act now</em> means at least five people are affected; <em>check</em> means the pattern is real but small. Names are the candidates concerned.</p>
+<div class='card act'><span class='pill act'>act now</span><span class='scope'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl</span><ul>
+<li><div class='what'>5 of 15 decisions went through without the recruiter approval this step requires</div><div class='why'>the step is configured HumanInLoop=always_on; recruiters did review the other 10, so notification works and these are the ones missed</div><p class='do'><b>Review these candidates</b>:</p><div class='people'><span class='person'>Aisha Haddad</span><span class='person'>Felix Fischer</span><span class='person'>Lukas Kaya</span><span class='person'>Mehmet Schmidt</span><span class='person'>Nina Lange</span></div></li>
+<li><div class='what'>Recruiters reversed Paul on 4 of the 10 decisions they reviewed</div><div class='why'>40% of the decisions a recruiter compared against Paul&#x27;s were reversed (2 explicit rejections of Paul&#x27;s suggestion, 2 inferred from the recruiter&#x27;s own decision)</div><p class='do'><b>Compare this step&#x27;s conclusion criteria with the listing&#x27;s mandatory requirements; start with the reversed candidates</b>:</p><div class='people'><span class='person'>Aisha Braun</span><span class='person'>Amara Schmidt</span><span class='person'>David Becker</span><span class='person'>Stefan Weber</span></div></li>
+</ul></div>
+<div class='card check'><span class='pill check'>check</span><span class='scope'>Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl</span><ul>
+<li><div class='what'>3 of 19 decisions went through without the recruiter approval this step requires</div><div class='why'>the step is configured HumanInLoop=always_on; recruiters did review the other 16, so notification works and these are the ones missed</div><p class='do'><b>Review these candidates</b>:</p><div class='people'><span class='person'>Fatima Okafor</span><span class='person'>Piotr Kaya</span><span class='person'>Sofia Weber</span></div></li>
+<li><div class='what'>3 rejections cite location / salary, which this listing never asks for</div><div class='why'>for example: Gehaltsvorstellung deutlich ueber dem Budget; Gehaltsvorstellung passt nicht zum Budget der Stelle; Wohnort zu weit entfernt, Umzug nicht moeglich</div><p class='do'><b>Either add the requirement to the listing, or correct the step&#x27;s conclusion criteria; then decide whether these candidates should be re-evaluated</b>:</p><div class='people'><span class='person'>Fatima Okafor</span><span class='person'>Piotr Kaya</span><span class='person'>Sofia Weber</span></div></li>
+</ul></div>
+<h3>Worth watching</h3>
+<p class='muted'>Too few decisions to act on yet (under 10, or fewer than five people). Listed so they are not lost.</p><ul class='watch'>
+<li><strong>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview</strong>: 2 of 7 candidates dropped out here before Paul could judge them.</li>
 </ul>
 </section>
-<section><h2>Why Paul rejected people</h2>
-<h3>Pflegefachkraft (m/w/d) - Intensivstation — 16 rejection(s)</h3>
-<p class='muted'>Paul phrases these 9 different ways across 16 rejections, so they are grouped by topic.</p>
-<div class='reason'><span>certification</span><span>6 · 38%</span><span class='bar'><i style='width:37.5%'></i></span><span class='ex'>e.g. “No driving licence class C provided”</span></div>
-<div class='reason'><span>experience</span><span>4 · 25%</span><span class='bar'><i style='width:25.0%'></i></span><span class='ex'>e.g. “Insufficient years of experience”</span></div>
-<div class='reason'><span>availability</span><span>2 · 12%</span><span class='bar'><i style='width:12.5%'></i></span><span class='ex'>e.g. “Not available for shift work”</span></div>
-<div class='reason'><span>salary</span><span>2 · 12%</span><span class='bar'><i style='width:12.5%'></i></span><span class='ex'>e.g. “Gehaltsvorstellung passt nicht zum Budget der Stelle”</span></div>
-<div class='reason'><span>location</span><span>1 · 6%</span><span class='bar'><i style='width:6.2%'></i></span><span class='ex'>e.g. “Wohnort zu weit entfernt, Umzug nicht moeglich”</span></div>
-<div class='reason'><span>language</span><span>1 · 6%</span><span class='bar'><i style='width:6.2%'></i></span><span class='ex'>e.g. “German language level below B2”</span></div>
-<h3>Sicherheitsmitarbeiter (m/w/d) - Objektschutz — 13 rejection(s)</h3>
-<p class='muted'>Paul phrases these 8 different ways across 13 rejections, so they are grouped by topic.</p>
-<div class='reason'><span>certification</span><span>6 · 46%</span><span class='bar'><i style='width:46.2%'></i></span><span class='ex'>e.g. “no §34a certificate provided”</span></div>
-<div class='reason'><span>language</span><span>3 · 23%</span><span class='bar'><i style='width:23.1%'></i></span><span class='ex'>e.g. “insufficient german, estimated A2”</span></div>
-<div class='reason'><span>availability</span><span>2 · 15%</span><span class='bar'><i style='width:15.4%'></i></span><span class='ex'>e.g. “Keine Bereitschaft zur Nachtschicht”</span></div>
-<div class='reason'><span>experience</span><span>1 · 8%</span><span class='bar'><i style='width:7.7%'></i></span><span class='ex'>e.g. “too little relevant experience”</span></div>
-<div class='reason'><span>other</span><span>1 · 8%</span><span class='bar'><i style='width:7.7%'></i></span><span class='ex'>e.g. “general fit concerns”</span></div>
-<p class='muted'>1 rejection(s) matched no topic (8%). Add their wording to <code>reason_buckets.json</code>.</p>
-</section>
+<section><h2>The numbers</h2>
+<p class='sub'>Counts, per listing and step; every row adds up to its total. Hover a column heading for what it counts.</p>
+<details open><summary>Each job, step by step</summary><div class='body'>
+<div class="legend"><span><i class="swatch" style="background:var(--pass)"></i>passed</span><span><i class="swatch" style="background:var(--reject)"></i>rejected</span><span><i class="swatch" style="background:var(--optout)"></i>opted out</span><span><i class="swatch" style="background:var(--none)"></i>not evaluated</span></div>
+<div class='scroll'><table><thead><tr><th>step</th><th>mix</th><th title='Every decision Paul recorded at this step: passed + rejected + opt-out + none'>total</th><th title='Paul concluded the candidate meets the criteria'>passed</th><th title='Paul concluded the candidate does not meet the criteria'>rejected</th><th title='The candidate stopped responding or declined to continue; Paul never judged them'>opt-out</th><th title='No usable decision: not evaluated yet, or a value the platform does not document (see skipped)'>none</th><th title='Decisions a recruiter opened, out of passed + rejected'>reviewed</th><th title='Reviewed decisions the recruiter disagreed with. Only opened decisions count, and early rejections are rarely opened, so this says how often recruiters disagree when they look, not how often Paul is right'>reversed</th></tr></thead><tbody>
+<tr class='jobhead'><td colspan='9'>Pflegefachkraft (m/w/d) - Intensivstation</td></tr>
+<tr class=""><td>Vorauswahl</td><td><span class="mix" title="8 passed, 11 rejected, 1 opted out"><i style="width:40.00%;background:var(--pass)"></i><i style="width:55.00%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i></span></td><td>20</td><td>8</td><td>11</td><td>1</td><td>0</td><td>16</td><td>0</td></tr>
+<tr class=""><td>KI-Voice-Interview</td><td><span class="mix" title="3 passed, 5 rejected, 1 opted out"><i style="width:33.33%;background:var(--pass)"></i><i style="width:55.56%;background:var(--reject)"></i><i style="width:11.11%;background:var(--optout)"></i></span></td><td>9</td><td>3</td><td>5</td><td>1</td><td>0</td><td>7</td><td>0</td></tr>
+<tr class=""><td>Menschliches Interview</td><td><span class="mix" title="3 passed"><i style="width:100.00%;background:var(--pass)"></i></span></td><td>3</td><td>3</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td></tr>
+<tr class="total"><td>all steps</td><td><span class="mix" title="14 passed, 16 rejected, 2 opted out"><i style="width:43.75%;background:var(--pass)"></i><i style="width:50.00%;background:var(--reject)"></i><i style="width:6.25%;background:var(--optout)"></i></span></td><td>32</td><td>14</td><td>16</td><td>2</td><td>0</td><td>26</td><td>0</td></tr>
+<tr class='jobhead'><td colspan='9'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz</td></tr>
+<tr class=""><td>Vorauswahl</td><td><span class="mix" title="7 passed, 8 rejected, 1 opted out, 4 not evaluated"><i style="width:35.00%;background:var(--pass)"></i><i style="width:40.00%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i><i style="width:20.00%;background:var(--none)"></i></span></td><td>20</td><td>7</td><td>8</td><td>1</td><td>4</td><td>10</td><td>4</td></tr>
+<tr class=""><td>KI-Voice-Interview</td><td><span class="mix" title="1 passed, 4 rejected, 2 opted out"><i style="width:14.29%;background:var(--pass)"></i><i style="width:57.14%;background:var(--reject)"></i><i style="width:28.57%;background:var(--optout)"></i></span></td><td>7</td><td>1</td><td>4</td><td>2</td><td>0</td><td>3</td><td>0</td></tr>
+<tr class=""><td>Menschliches Interview</td><td><span class="mix" title="1 rejected"><i style="width:100.00%;background:var(--reject)"></i></span></td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr class="total"><td>all steps</td><td><span class="mix" title="8 passed, 13 rejected, 3 opted out, 4 not evaluated"><i style="width:28.57%;background:var(--pass)"></i><i style="width:46.43%;background:var(--reject)"></i><i style="width:10.71%;background:var(--optout)"></i><i style="width:14.29%;background:var(--none)"></i></span></td><td>28</td><td>8</td><td>13</td><td>3</td><td>4</td><td>14</td><td>4</td></tr>
+</tbody></table></div></div></details>
+<details><summary>The funnel, all jobs combined</summary><div class='body'>
+<div class='scroll'><table><thead><tr><th>step</th><th>mix</th><th title='Every decision Paul recorded at this step: passed + rejected + opt-out + none'>total</th><th title='Paul concluded the candidate meets the criteria'>passed</th><th title='Paul concluded the candidate does not meet the criteria'>rejected</th><th title='The candidate stopped responding or declined to continue; Paul never judged them'>opt-out</th><th title='No usable decision: not evaluated yet, or a value the platform does not document (see skipped)'>none</th><th title='Decisions a recruiter opened, out of passed + rejected'>reviewed</th><th title='Reviewed decisions the recruiter disagreed with. Only opened decisions count, and early rejections are rarely opened, so this says how often recruiters disagree when they look, not how often Paul is right'>reversed</th></tr></thead><tbody>
+<tr class=""><td>PreScreening</td><td><span class="mix" title="15 passed, 19 rejected, 2 opted out, 4 not evaluated"><i style="width:37.50%;background:var(--pass)"></i><i style="width:47.50%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i><i style="width:10.00%;background:var(--none)"></i></span></td><td>40</td><td>15</td><td>19</td><td>2</td><td>4</td><td>26</td><td>4</td></tr>
+<tr class=""><td>AIVoiceInterview</td><td><span class="mix" title="4 passed, 9 rejected, 3 opted out"><i style="width:25.00%;background:var(--pass)"></i><i style="width:56.25%;background:var(--reject)"></i><i style="width:18.75%;background:var(--optout)"></i></span></td><td>16</td><td>4</td><td>9</td><td>3</td><td>0</td><td>10</td><td>0</td></tr>
+<tr class=""><td>HumanInterview</td><td><span class="mix" title="3 passed, 1 rejected"><i style="width:75.00%;background:var(--pass)"></i><i style="width:25.00%;background:var(--reject)"></i></span></td><td>4</td><td>3</td><td>1</td><td>0</td><td>0</td><td>4</td><td>0</td></tr>
+</tbody></table></div>
+<ul class='notes'>
+<li>PreScreening is where the most candidates leave: 19 rejected and 2 opted out, of the 40 who reached it.</li>
+<li>The strictest step is AIVoiceInterview: Paul rejected 69% of the 13 he judged there.</li>
+<li>Review coverage ranges from 76% at PreScreening to 100% at HumanInterview.</li>
+<li>4 of the 4 reversals in total happened at PreScreening.</li>
+<li>These rates differ by job, so this table describes the mix of jobs analysed rather than the steps themselves. Act on the per-job table.</li>
+</ul>
+</div></details>
+<details><summary>Why Paul rejected people, per job and step</summary><div class='body'>
+<h3>Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl — 11 rejection(s)</h3>
+<p class='muted'>Paul phrases these 7 different ways across 11 rejections, so they are grouped by topic.</p>
+<div class='reason'><span>experience</span><span>3 · 27%</span><span class='bar'><i style='width:27.3%'></i></span><span class='ex'>e.g. “Insufficient years of experience”</span></div>
+<div class='reason'><span>certification</span><span>3 · 27%</span><span class='bar'><i style='width:27.3%'></i></span><span class='ex'>e.g. “No driving licence class C provided”</span></div>
+<div class='reason'><span>availability</span><span>2 · 18%</span><span class='bar'><i style='width:18.2%'></i></span><span class='ex'>e.g. “Not available for shift work”</span></div>
+<div class='reason'><span>salary</span><span>2 · 18%</span><span class='bar'><i style='width:18.2%'></i></span><span class='ex'>e.g. “Gehaltsvorstellung passt nicht zum Budget der Stelle”</span></div>
+<div class='reason'><span>location</span><span>1 · 9%</span><span class='bar'><i style='width:9.1%'></i></span><span class='ex'>e.g. “Wohnort zu weit entfernt, Umzug nicht moeglich”</span></div>
+<h3>Pflegefachkraft (m/w/d) - Intensivstation / KI-Voice-Interview — 5 rejection(s)</h3>
+<p class='muted'>Paul phrases these 3 different ways across 5 rejections, so they are grouped by topic.</p>
+<div class='reason'><span>certification</span><span>3 · 60%</span><span class='bar'><i style='width:60.0%'></i></span><span class='ex'>e.g. “Missing required certification”</span></div>
+<div class='reason'><span>experience</span><span>1 · 20%</span><span class='bar'><i style='width:20.0%'></i></span><span class='ex'>e.g. “Candidate has no prior management experience”</span></div>
+<div class='reason'><span>language</span><span>1 · 20%</span><span class='bar'><i style='width:20.0%'></i></span><span class='ex'>e.g. “German language level below B2”</span></div>
+<h3>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl — 8 rejection(s)</h3>
+<p class='muted'>Paul phrases these 5 different ways across 8 rejections, so they are grouped by topic.</p>
+<div class='reason'><span>certification</span><span>5 · 62%</span><span class='bar'><i style='width:62.5%'></i></span><span class='ex'>e.g. “no §34a certificate provided”</span></div>
+<div class='reason'><span>availability</span><span>1 · 12%</span><span class='bar'><i style='width:12.5%'></i></span><span class='ex'>e.g. “Keine Bereitschaft zur Nachtschicht”</span></div>
+<div class='reason'><span>experience</span><span>1 · 12%</span><span class='bar'><i style='width:12.5%'></i></span><span class='ex'>e.g. “too little relevant experience”</span></div>
+<div class='reason'><span>language</span><span>1 · 12%</span><span class='bar'><i style='width:12.5%'></i></span><span class='ex'>e.g. “insufficient german, estimated A2”</span></div>
+<h3>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview — 4 rejection(s)</h3>
+<p class='muted'>Paul phrases these 4 different ways across 4 rejections, so they are grouped by topic.</p>
+<div class='reason'><span>language</span><span>1 · 25%</span><span class='bar'><i style='width:25.0%'></i></span><span class='ex'>e.g. “Sprachniveau zu niedrig für die Position”</span></div>
+<div class='reason'><span>availability</span><span>1 · 25%</span><span class='bar'><i style='width:25.0%'></i></span><span class='ex'>e.g. “cannot work weekends”</span></div>
+<div class='reason'><span>other</span><span>1 · 25%</span><span class='bar'><i style='width:25.0%'></i></span><span class='ex'>e.g. “general fit concerns”</span></div>
+<div class='reason'><span>certification</span><span>1 · 25%</span><span class='bar'><i style='width:25.0%'></i></span><span class='ex'>e.g. “Sachkundenachweis fehlt”</span></div>
+<p class='muted'>1 rejection(s) matched no topic (25%). Add their wording to <code>reason_buckets.json</code>.</p>
+<h3>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Menschliches Interview — 1 rejection(s)</h3>
+<p class='muted'>Paul reuses the same 1 phrase here, so these are exact counts of what he wrote.</p>
+<div class='reason'><span>insufficient german estimated a2</span><span>1</span><span class='bar'><i style='width:100.0%'></i></span></div>
+</div></details></section>
 <section><h2>What was skipped or looked wrong</h2>
 <details><summary>3 decision(s) used a value the platform does not document</summary><ul>
 <li>Amara Yilmaz on &#x27;Sicherheitsmitarbeiter (m/w/d) - Objektschutz&#x27; at step &#x27;Vorauswahl&#x27;: Paul&#x27;s decision was recorded as &#x27;PendingReview&#x27;, which is not a value the platform documents</li>
@@ -197,12 +211,7 @@ footer{color:var(--ink-3);font-size:12.5px;text-align:center;padding:8px 0 28px}
 <li>Jonas Haddad on &#x27;Sicherheitsmitarbeiter (m/w/d) - Objektschutz&#x27; at step &#x27;Vorauswahl&#x27;: 2 assignment records, kept the most recent one with a decision</li>
 </ul></details>
 </section>
-<section><h2>What this report cannot tell you</h2><ul class='notes'>
-<li>Whether Paul is right. Only reviewed decisions can be checked, and recruiters mostly review candidates who got through. Rejections are the blind spot.</li>
-<li>Much from small numbers. Anything under 10 decisions is marked. Late steps are small by nature, so read those rows as direction rather than measurement.</li>
-<li>Whether a rejection reason is fair. Reasons are grouped by topic and the topic is checked against the step&#x27;s criteria; the reasoning itself is not judged.</li>
-<li>How certain a reversal is. Ones inferred from a recruiter&#x27;s own decision are weaker evidence than an explicit rejection of Paul&#x27;s suggestion; the JSON separates them.</li>
-</ul></section>
+<section><h2>One thing to keep in mind</h2><p>This report shows what Paul decided and where recruiters disagreed with him. It cannot say whether a decision was right: only decisions a recruiter opened can be checked, and those are mostly the candidates who got through. Rejection reasons are grouped and compared with what the listing asks for, not with what the candidate actually offered.</p></section>
 </main></div>
-<footer>Generated 08 September 2026, 10:25 UTC · thresholds and method documented in TECH_NOTE.md</footer>
+<footer>Generated 08 September 2026, 13:43 UTC · thresholds and method documented in TECH_NOTE.md</footer>
 </body></html>

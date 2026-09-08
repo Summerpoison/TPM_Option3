@@ -35,7 +35,7 @@ from analyzer.analysis import (
 )
 from analyzer.fetch import Dataset
 from analyzer.reasons import BucketConfig, summarize
-from analyzer.report import HOW_TO_READ
+from analyzer.report import LIMITATION
 
 #: Validated categorical palette: passed / rejected / opt-out / not evaluated.
 OUTCOME_LIGHT = ("#3178a8", "#c2365c", "#b07d18", "#6f5fa8")
@@ -116,8 +116,10 @@ p{margin:0 0 10px;max-width:80ch}
   text-transform:none;letter-spacing:0;font-weight:560}
 .watch{margin:8px 0 0;padding-left:18px;color:var(--ink-2);font-size:13.5px}
 .watch li{margin:5px 0}
+.scroll{overflow-x:auto;max-width:100%}
 table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
 th,td{padding:8px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th[title]{cursor:help;text-decoration:underline dotted var(--ink-3);text-underline-offset:3px}
 th:first-child,td:first-child{text-align:left;white-space:normal}
 thead th{color:var(--ink-3);font-weight:600;font-size:12px;text-transform:uppercase;
   letter-spacing:.5px;border-bottom:1px solid var(--line)}
@@ -181,34 +183,38 @@ def _mix_bar(cell: Cell) -> str:
     return f'<span class="mix" title="{_e(title)}">{segments}</span>'
 
 
-def _reversed(cell: Cell) -> str:
-    if cell.override_rate is None:
-        return "n/a"
-    return f"{cell.override_rate:.0%}<span class='n'>of {cell.comparable}</span>"
-
-
 def _cell_row(label: str, cell: Cell, css: str = "") -> str:
-    thin = (
-        f' <span class="pill thin">only {cell.total} decision'
-        f'{"" if cell.total == 1 else "s"}</span>' if cell.low_confidence else ""
-    )
     return (
         f'<tr class="{css}">'
-        f"<td>{_e(label)}{thin}</td>"
+        f"<td>{_e(label)}</td>"
         f"<td>{_mix_bar(cell)}</td>"
         f"<td>{cell.total}</td>"
         f"<td>{cell.positive}</td>"
         f"<td>{cell.negative}</td>"
         f"<td>{cell.opt_out}</td>"
-        f"<td>{_pct(cell.review_coverage)}</td>"
-        f"<td>{_reversed(cell)}</td>"
+        f"<td>{cell.unevaluated + cell.unmappable}</td>"
+        f"<td>{cell.reviewed}</td>"
+        f"<td>{cell.overrides}</td>"
         f"</tr>"
     )
 
 
+#: Counts only, so every row adds up: total = passed + rejected + opt-out + none.
+#: Definitions live in the column tooltips rather than a paragraph above.
 HEAD_ROW = (
-    "<thead><tr><th>step</th><th>mix</th><th>total</th><th>passed</th>"
-    "<th>rejected</th><th>opt-out</th><th>reviewed</th><th>reversed</th></tr></thead>"
+    "<thead><tr>"
+    "<th>step</th>"
+    "<th>mix</th>"
+    "<th title='Every decision Paul recorded at this step: passed + rejected + opt-out + none'>total</th>"
+    "<th title='Paul concluded the candidate meets the criteria'>passed</th>"
+    "<th title='Paul concluded the candidate does not meet the criteria'>rejected</th>"
+    "<th title='The candidate stopped responding or declined to continue; Paul never judged them'>opt-out</th>"
+    "<th title='No usable decision: not evaluated yet, or a value the platform does not document (see skipped)'>none</th>"
+    "<th title='Decisions a recruiter opened, out of passed + rejected'>reviewed</th>"
+    "<th title='Reviewed decisions the recruiter disagreed with. Only opened decisions count, and early "
+    "rejections are rarely opened, so this says how often recruiters disagree when they look, not how "
+    "often Paul is right'>reversed</th>"
+    "</tr></thead>"
 )
 
 LEGEND = (
@@ -290,26 +296,27 @@ def render_html(analysis: Analysis, dataset: Dataset, funnel_notes: list[str]) -
 
     # -- the numbers -------------------------------------------------------
     add("<section><h2>The numbers</h2>")
-    add(f"<p class='sub'>{_e(HOW_TO_READ)}</p>")
+    add("<p class='sub'>Counts, per listing and step; every row adds up to its total. "
+        "Hover a column heading for what it counts.</p>")
 
     add("<details open><summary>Each job, step by step</summary><div class='body'>")
     add(LEGEND)
-    add("<table>" + HEAD_ROW + "<tbody>")
+    add("<div class='scroll'><table>" + HEAD_ROW + "<tbody>")
     for job_id, job in sorted(analysis.jobs.items(), key=lambda kv: kv[1].title):
         cells = analysis.by_job(job_id)
         if not cells:
             continue
-        add(f"<tr class='jobhead'><td colspan='8'>{_e(job.title)}</td></tr>")
+        add(f"<tr class='jobhead'><td colspan='9'>{_e(job.title)}</td></tr>")
         for cell in cells:
             add(_cell_row(cell.step_name, cell))
         add(_cell_row("all steps", job_totals(analysis, job_id), css="total"))
-    add("</tbody></table></div></details>")
+    add("</tbody></table></div></div></details>")
 
     add("<details><summary>The funnel, all jobs combined</summary><div class='body'>")
-    add("<table>" + HEAD_ROW + "<tbody>")
+    add("<div class='scroll'><table>" + HEAD_ROW + "<tbody>")
     for category in analysis.categories:
         add(_cell_row(category, category_totals(analysis, category)))
-    add("</tbody></table>")
+    add("</tbody></table></div>")
     if funnel_notes:
         add("<ul class='notes'>")
         for note in funnel_notes:
@@ -328,7 +335,8 @@ def render_html(analysis: Analysis, dataset: Dataset, funnel_notes: list[str]) -
             rendered_any = True
             add(f"<h3>{_e(job.title)} / {_e(cell.step_name)} — {summary.total} rejection(s)</h3>")
             if summary.vocabulary_is_fixed:
-                add(f"<p class='muted'>Paul reuses the same {summary.distinct_exact} phrases here, "
+                phrases = f"{summary.distinct_exact} phrase{'s' if summary.distinct_exact != 1 else ''}"
+                add(f"<p class='muted'>Paul reuses the same {phrases} here, "
                     f"so these are exact counts of what he wrote.</p>")
                 for text, count in summary.exact.most_common(6):
                     add(f"<div class='reason'><span>{_e(text[:52])}</span><span>{count}</span>"
@@ -374,19 +382,7 @@ def render_html(analysis: Analysis, dataset: Dataset, funnel_notes: list[str]) -
         add("</ul></details>")
     add("</section>")
 
-    add("<section><h2>What this report cannot tell you</h2><ul class='notes'>")
-    for line in (
-        "Whether Paul is right. Only reviewed decisions can be checked, and recruiters mostly "
-        "review candidates who got through. Rejections are the blind spot.",
-        f"Much from small numbers. Anything under {LOW_CONFIDENCE_N} decisions is marked. Late "
-        "steps are small by nature, so read those rows as direction rather than measurement.",
-        "Whether a rejection reason is fair. Reasons are grouped by topic and the topic is "
-        "checked against the step's criteria; the reasoning itself is not judged.",
-        "How certain a reversal is. Ones inferred from a recruiter's own decision are weaker "
-        "evidence than an explicit rejection of Paul's suggestion; the JSON separates them.",
-    ):
-        add(f"<li>{_e(line)}</li>")
-    add("</ul></section>")
+    add(f"<section><h2>One thing to keep in mind</h2><p>{_e(LIMITATION)}</p></section>")
 
     add("</main></div>")
     add(f"<footer>Generated {_e(generated)} · thresholds and method documented in "

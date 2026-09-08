@@ -226,7 +226,8 @@ The report is a to-do list with the evidence attached, in that order:
    fix this step's configuration, look at this listing's criteria.
 2. **Worth watching.** Patterns on too few decisions to act on, one line each.
 3. **The numbers.** Per job and step, the funnel, and rejection reasons per step.
-4. **What was skipped or looked wrong**, and what the report cannot tell you.
+4. **What was skipped or looked wrong**, and one closing caveat: the report shows
+   what Paul decided and where recruiters disagreed, not whether he was right.
 
 Priority comes from how many people are affected and how sure we can be, not
 from which rule fired. *Act now* needs at least five people affected; *check*
@@ -235,10 +236,13 @@ So two candidates opting out of seven is a watch item, never a priority — and 
 step where 16 of 20 decisions were reviewed does not get told to check its
 notifications, because the other 16 prove they work. It gets the four names.
 
-* **Percentages always appear next to their n**, and the reversal rate carries
-  its own n because it rests on the reviewed slice, not the row total. Any cell
-  below n=10 is marked low confidence rather than dropped — deep pipeline steps
-  are small by nature.
+* **The tables show counts, not rates.** Every row adds up to its total, so no
+  number appears that is not in the row, and a percentage only ever appears in
+  a finding next to the two counts it came from. Column definitions are
+  tooltips in the HTML and a short key in the text.
+* **Nothing is dropped for being small.** Deep pipeline steps are small by
+  nature; a finding on fewer than ten decisions is listed as worth watching
+  rather than hidden.
 * **Review coverage is measured over reviewable decisions.** An opt-out has
   nothing to approve and an unevaluated step has no decision yet, so neither
   counts as a missed review.

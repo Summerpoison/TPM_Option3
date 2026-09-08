@@ -37,8 +37,19 @@ from analyzer.fetch import Dataset
 RULE = "=" * 78
 THIN = "-" * 78
 COLUMNS = (
-    f"  {'step':<24}{'total':>6}{'passed':>8}{'rejected':>10}"
-    f"{'opt-out':>9}{'reviewed':>10}{'reversed':>13}"
+    f"  {'step':<24}{'total':>6}{'passed':>7}{'rejected':>9}"
+    f"{'opt-out':>8}{'none':>6}{'reviewed':>9}{'reversed':>9}"
+)
+
+#: Column key. Counts only, so every row adds up and no number appears that
+#: is not in the row: total = passed + rejected + opt-out + none.
+COLUMN_KEY = (
+    "  none      no usable decision: the step was not evaluated, or the value recorded",
+    "            is not one the platform documents (listed under 'skipped')",
+    "  reviewed  decisions a recruiter opened, out of passed + rejected",
+    "  reversed  reviewed decisions the recruiter disagreed with. Only opened decisions",
+    "            count, and early rejections are rarely opened, so this says how often",
+    "            recruiters disagree when they look, not how often Paul is right",
 )
 
 
@@ -50,22 +61,11 @@ def _plural(count: int, word: str = "decision") -> str:
     return f"{count} {word}" if count == 1 else f"{count} {word}s"
 
 
-def _confidence(cell: Cell) -> str:
-    return f"   (only {_plural(cell.total)})" if cell.low_confidence else ""
-
-
-def _reversed(cell: Cell) -> str:
-    """The reversal rate rests on a smaller n than the row, so it carries its own."""
-    if cell.override_rate is None:
-        return "n/a"
-    return f"{cell.override_rate:.0%} ({cell.comparable})"
-
-
 def _row(label: str, cell: Cell) -> str:
     return (
-        f"  {label[:22]:<24}{cell.total:>6}{cell.positive:>8}{cell.negative:>10}"
-        f"{cell.opt_out:>9}{_pct(cell.review_coverage):>10}"
-        f"{_reversed(cell):>13}{_confidence(cell)}"
+        f"  {label[:22]:<24}{cell.total:>6}{cell.positive:>7}{cell.negative:>9}"
+        f"{cell.opt_out:>8}{cell.unevaluated + cell.unmappable:>6}"
+        f"{cell.reviewed:>9}{cell.overrides:>9}"
     )
 
 
@@ -129,14 +129,14 @@ def funnel_notes(analysis: Analysis) -> list[str]:
     return notes
 
 
-HOW_TO_READ = (
-    "How to read these tables: every rate belongs to one listing at one step. "
-    "'reviewed' is the share of decisions a recruiter opened, among those that could be "
-    "reviewed (opt-outs and not-yet-evaluated steps are excluded). 'reversed' is the share "
-    "of reviewed decisions the recruiter disagreed with, and the number in brackets is how "
-    "many reviews it rests on. The reversal rate covers only decisions a recruiter opened; "
-    "candidates Paul rejects early are rarely opened, so mistakes there never show up in it. "
-    "Read it as how often recruiters disagree when they look, not as how often Paul is right."
+#: The single caveat worth closing on. Everything else the report cannot do is
+#: either visible in the tables (small numbers) or documented in TECH_NOTE.md.
+LIMITATION = (
+    "This report shows what Paul decided and where recruiters disagreed with him. It "
+    "cannot say whether a decision was right: only decisions a recruiter opened can be "
+    "checked, and those are mostly the candidates who got through. Rejection reasons are "
+    "grouped and compared with what the listing asks for, not with what the candidate "
+    "actually offered."
 )
 
 
@@ -198,7 +198,7 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
     # -- the numbers -------------------------------------------------------
     add("THE NUMBERS")
     add(THIN)
-    out.extend(_wrap(HOW_TO_READ, ""))
+    add("Counts, per listing and step; every row adds up to its total.")
     add("")
     add("Each job, step by step")
     add("")
@@ -212,6 +212,8 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
         for cell in cells:
             add(_row(cell.step_name, cell))
         add(_row("all steps", job_totals(analysis, job_id)))
+    add("")
+    out.extend(COLUMN_KEY)
 
     add("")
     add("The funnel, all jobs combined")
@@ -239,7 +241,8 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
             add("")
             add(f"{job.title} / {cell.step_name}  --  {_plural(summary.total, 'rejection')}")
             if summary.vocabulary_is_fixed:
-                add(f"  Paul reuses the same {summary.distinct_exact} phrases here, so these are exact")
+                add(f"  Paul reuses the same {_plural(summary.distinct_exact, 'phrase')} here, "
+                    f"so these are exact")
                 add("  counts of what he wrote.")
                 for text, count in summary.exact.most_common(6):
                     add(f"    {count:>3}  {text[:64]}")
@@ -284,18 +287,9 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
 
     # -- limitations -------------------------------------------------------
     add("")
-    add("WHAT THIS REPORT CANNOT TELL YOU")
+    add("ONE THING TO KEEP IN MIND")
     add(THIN)
-    add("· Whether Paul is right. Only reviewed decisions can be checked, and recruiters")
-    add("  mostly review candidates who got through. Rejections are the blind spot.")
-    add(f"· Much from small numbers. Anything under {LOW_CONFIDENCE_N} decisions is marked. "
-        f"Late steps are")
-    add("  small by nature, so read those rows as direction rather than measurement.")
-    add("· Whether a rejection reason is fair. The report groups reasons by topic and checks")
-    add("  the topic against the step's criteria; it cannot judge the reasoning itself.")
-    add("· How certain a reversal is. Ones inferred from a recruiter's own decision are")
-    add("  weaker evidence than an explicit rejection of Paul's suggestion; the JSON")
-    add("  output separates the two counts.")
+    out.extend(_wrap(LIMITATION, ""))
     add("")
     add(RULE)
     return "\n".join(out)

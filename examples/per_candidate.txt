@@ -1,40 +1,423 @@
-PER-CANDIDATE DECISIONS
+==============================================================================
+EVERY DECISION, CANDIDATE BY CANDIDATE
 ==============================================================================
 
 Aisha Braun  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
-  step        Vorauswahl (PreScreening)
-  decision    NegativeDecision  -> negative
-  explanation no §34a certificate provided
-  human       RejectPaulDecision  -> override [explicit_reject]
-  assigned    2026-09-08T07:53:21Z
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      no §34a certificate provided
+  recruiter    RejectPaulDecision  ->  override [explicit_reject]
+  recorded     2026-09-08T07:53:21Z
 
 Aisha Haddad  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
-  step        Vorauswahl (PreScreening)
-  decision    PositiveDecision  -> positive
-  explanation Meets the mandatory requirements for this role; proceed to the next step.
-  human       (not reviewed)  -> unreviewed [no_assigner_decision]
-  assigned    2026-09-08T07:53:44Z
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:44Z
 
 Aisha Haddad  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
-  step        KI-Voice-Interview (AIVoiceInterview)
-  decision    NegativeDecision  -> negative
-  explanation Sachkundenachweis fehlt
-  human       ApprovePaulDecision  -> agree [explicit_approve]
-  assigned    2026-09-08T07:53:45Z
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      Sachkundenachweis fehlt
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:45Z
 
 Amara Schmidt  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
-  step        Vorauswahl (PreScreening)
-  decision    PositiveDecision  -> positive
-  explanation Meets the mandatory requirements for this role; proceed to the next step.
-  human       RejectPaulDecision  -> override [explicit_reject]
-  assigned    2026-09-08T07:53:29Z
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    RejectPaulDecision  ->  override [explicit_reject]
+  recorded     2026-09-08T07:53:29Z
 
 Amara Schmidt  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
-  step        KI-Voice-Interview (AIVoiceInterview)
-  decision    NegativeDecision  -> negative
-  explanation cannot work weekends
-  human       NegativeDecision  -> agree [compared_to_suggestion]
-  assigned    2026-09-08T07:53:29Z
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      cannot work weekends
+  recruiter    NegativeDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:53:29Z
 
 Amara Yilmaz  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
-  step        Vorauswahl (PreScreening)
+  step         Vorauswahl (PreScreening)
+  Paul said    PendingReview  ->  unknown
+  because      Decision recorded with a non-standard status value.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:57:07Z
+
+Chiara Weber  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      insufficient german, estimated A2
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:46Z
+
+David Becker  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    NegativeDecision  ->  override [compared_to_suggestion]
+  recorded     2026-09-08T07:53:40Z
+
+David Becker  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:40Z
+
+David Becker  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Menschliches Interview (HumanInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      insufficient german, estimated A2
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:40Z
+
+Elena Okafor  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      no §34a certificate provided
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:23Z
+
+Felix Fischer  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Keine Bereitschaft zur Nachtschicht
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:35Z
+
+Hannah Silva  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      too little relevant experience
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:37Z
+
+Jonas Becker  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    Escalated  ->  unknown
+  because      Decision recorded with a non-standard status value.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:57:06Z
+
+Jonas Haddad  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    Unklar  ->  unknown
+  because      Decision recorded with a non-standard status value.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:57:07Z
+
+Julia Silva  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      no §34a certificate provided
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:25Z
+
+Lukas Fischer  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:22Z
+
+Lukas Fischer  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    OptOutDeclineToTalkWithAI  ->  opt_out
+  because      Candidate did not continue the process.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:22Z
+
+Lukas Kaya  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Sachkundenachweis fehlt
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:38Z
+
+Marie Okafor  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:43Z
+
+Marie Okafor  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      general fit concerns
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:43Z
+
+Mehmet Schmidt  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:26Z
+
+Mehmet Schmidt  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      Sprachniveau zu niedrig für die Position
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:26Z
+
+Mehmet Weber  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    OptOutDeclineToTalkWithAI  ->  opt_out
+  because      Candidate did not continue the process.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:34Z
+
+Nina Lange  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Sachkundenachweis fehlt
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:41Z
+
+Stefan Weber  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    NegativeDecision  ->  override [compared_to_suggestion]
+  recorded     2026-09-08T07:53:31Z
+
+Stefan Weber  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    OptOutDeclineToContinueApplication  ->  opt_out
+  because      Candidate did not continue the process.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:32Z
+
+Tobias Petrova  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step         Vorauswahl (PreScreening)
+  Paul said    (nothing recorded)  ->  none
+  because      Decision recorded with a non-standard status value.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:28Z
+
+Aisha Yilmaz  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:15Z
+
+Aisha Yilmaz  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    OptOutDeclineToTalkWithAI  ->  opt_out
+  because      Candidate did not continue the process.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:54:15Z
+
+Amara Silva  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      No driving licence class C provided
+  recruiter    NegativeDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:54:08Z
+
+Anna Braun  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:03Z
+
+Anna Braun  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:03Z
+
+Anna Braun  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Menschliches Interview (HumanInterview)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    PositiveDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:54:03Z
+
+Anna Okafor  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    PositiveDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:54:10Z
+
+Anna Okafor  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      Missing required certification
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:11Z
+
+David Weber  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Not available for shift work
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:59Z
+
+Elena Lange  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      No driving licence class C provided
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:18Z
+
+Elena Silva  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Candidate has no prior management experience
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:09Z
+
+Fatima Okafor  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      German language level below B2
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:53Z
+
+Fatima Okafor  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Wohnort zu weit entfernt, Umzug nicht moeglich
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:59:45Z
+
+Felix Petrova  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:13Z
+
+Felix Petrova  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      Candidate has no prior management experience
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:13Z
+
+Hannah Lange  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    PositiveDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:54:17Z
+
+Hannah Lange  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      Missing required certification
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:17Z
+
+Leyla Keller  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    PositiveDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:53:56Z
+
+Leyla Keller  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    NegativeDecision  ->  negative
+  because      Missing required certification
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:56Z
+
+Lukas Yilmaz  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    PositiveDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:53:54Z
+
+Lukas Yilmaz  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    PositiveDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:53:55Z
+
+Lukas Yilmaz  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Menschliches Interview (HumanInterview)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:53:55Z
+
+Mehmet Petrova  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Insufficient years of experience
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:19Z
+
+Nina Lange  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    OptOutDeclineToContinueApplication  ->  opt_out
+  because      Candidate did not continue the process.
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:53:57Z
+
+Piotr Kaya  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Insufficient years of experience
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:00Z
+
+Piotr Kaya  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Gehaltsvorstellung passt nicht zum Budget der Stelle
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:59:45Z
+
+Sofia Rossi  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      No driving licence class C provided
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:12Z
+
+Sofia Silva  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Not available for shift work
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:01Z
+
+Sofia Weber  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    NegativeDecision  ->  negative
+  because      Gehaltsvorstellung deutlich ueber dem Budget
+  recruiter    (did not review)  ->  unreviewed [no_assigner_decision]
+  recorded     2026-09-08T07:59:44Z
+
+Viktor Braun  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Vorauswahl (PreScreening)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:05Z
+
+Viktor Braun  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         KI-Voice-Interview (AIVoiceInterview)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    PositiveDecision  ->  agree [compared_to_suggestion]
+  recorded     2026-09-08T07:54:05Z
+
+Viktor Braun  --  Pflegefachkraft (m/w/d) - Intensivstation
+  step         Menschliches Interview (HumanInterview)
+  Paul said    PositiveDecision  ->  positive
+  because      Meets the mandatory requirements for this role; proceed to the next step.
+  recruiter    ApprovePaulDecision  ->  agree [explicit_approve]
+  recorded     2026-09-08T07:54:05Z

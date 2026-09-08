@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T10:25:50.928182+00:00",
+  "generated_at": "2026-09-08T13:43:31.301612+00:00",
   "api_requests": 51,
   "jobs": [
     {
@@ -143,6 +143,92 @@
       ]
     }
   ],
+  "what_to_do": [
+    {
+      "priority": "act",
+      "job_id": "182760",
+      "job_title": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz",
+      "step_id": "01a08001-c76e-71ee-9566-3e3c7db2929f",
+      "step_name": "Vorauswahl",
+      "people_affected": 9,
+      "items": [
+        {
+          "priority": "act",
+          "kind": "review",
+          "what": "5 of 15 decisions went through without the recruiter approval this step requires",
+          "why": "the step is configured HumanInLoop=always_on; recruiters did review the other 10, so notification works and these are the ones missed",
+          "action": "Review these candidates",
+          "candidates": [
+            "Aisha Haddad",
+            "Felix Fischer",
+            "Lukas Kaya",
+            "Mehmet Schmidt",
+            "Nina Lange"
+          ],
+          "based_on": 15
+        },
+        {
+          "priority": "check",
+          "kind": "listing",
+          "what": "Recruiters reversed Paul on 4 of the 10 decisions they reviewed",
+          "why": "40% of the decisions a recruiter compared against Paul's were reversed (2 explicit rejections of Paul's suggestion, 2 inferred from the recruiter's own decision)",
+          "action": "Compare this step's conclusion criteria with the listing's mandatory requirements; start with the reversed candidates",
+          "candidates": [
+            "Aisha Braun",
+            "Amara Schmidt",
+            "David Becker",
+            "Stefan Weber"
+          ],
+          "based_on": 10
+        }
+      ]
+    },
+    {
+      "priority": "check",
+      "job_id": "182761",
+      "job_title": "Pflegefachkraft (m/w/d) - Intensivstation",
+      "step_id": "01a08002-50f7-761f-a14b-8e5361a83ba8",
+      "step_name": "Vorauswahl",
+      "people_affected": 3,
+      "items": [
+        {
+          "priority": "check",
+          "kind": "review",
+          "what": "3 of 19 decisions went through without the recruiter approval this step requires",
+          "why": "the step is configured HumanInLoop=always_on; recruiters did review the other 16, so notification works and these are the ones missed",
+          "action": "Review these candidates",
+          "candidates": [
+            "Fatima Okafor",
+            "Piotr Kaya",
+            "Sofia Weber"
+          ],
+          "based_on": 19
+        },
+        {
+          "priority": "check",
+          "kind": "listing",
+          "what": "3 rejections cite location / salary, which this listing never asks for",
+          "why": "for example: Gehaltsvorstellung deutlich ueber dem Budget; Gehaltsvorstellung passt nicht zum Budget der Stelle; Wohnort zu weit entfernt, Umzug nicht moeglich",
+          "action": "Either add the requirement to the listing, or correct the step's conclusion criteria; then decide whether these candidates should be re-evaluated",
+          "candidates": [
+            "Fatima Okafor",
+            "Piotr Kaya",
+            "Sofia Weber"
+          ],
+          "based_on": 11
+        }
+      ]
+    }
+  ],
+  "worth_watching": [
+    {
+      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview",
+      "kind": "contact",
+      "what": "2 of 7 candidates dropped out here before Paul could judge them",
+      "why": "they stopped responding, declined to continue, or declined to speak to Paul; counted as opt-outs, separately from the rejection rate",
+      "based_on": 7
+    }
+  ],
   "by_job_and_step": [
     {
       "job_id": "182761",
@@ -158,13 +244,16 @@
       "unmappable": 0,
       "rejection_rate": 0.5789473684210527,
       "opt_out_rate": 0.05,
+      "reviewable": 19,
       "reviewed": 16,
       "unreviewed": 4,
-      "review_coverage": 0.8,
+      "review_coverage": 0.8421052631578947,
+      "approval_gap": 3,
       "reversals": 0,
       "reversals_explicit": 0,
       "reversals_inferred": 0,
       "reversal_rate": 0.0,
+      "reversal_rate_based_on": 16,
       "low_confidence": false,
       "step_requires_review": true,
       "reason_topics": {
@@ -195,13 +284,16 @@
       "unmappable": 0,
       "rejection_rate": 0.625,
       "opt_out_rate": 0.1111111111111111,
+      "reviewable": 8,
       "reviewed": 7,
       "unreviewed": 2,
-      "review_coverage": 0.7777777777777778,
+      "review_coverage": 0.875,
+      "approval_gap": 1,
       "reversals": 0,
       "reversals_explicit": 0,
       "reversals_inferred": 0,
       "reversal_rate": 0.0,
+      "reversal_rate_based_on": 7,
       "low_confidence": true,
       "step_requires_review": false,
       "reason_topics": {
@@ -226,13 +318,16 @@
       "unmappable": 0,
       "rejection_rate": 0.0,
       "opt_out_rate": 0.0,
+      "reviewable": 3,
       "reviewed": 3,
       "unreviewed": 0,
       "review_coverage": 1.0,
+      "approval_gap": 0,
       "reversals": 0,
       "reversals_explicit": 0,
       "reversals_inferred": 0,
       "reversal_rate": 0.0,
+      "reversal_rate_based_on": 3,
       "low_confidence": true,
       "step_requires_review": true,
       "reason_topics": {},
@@ -253,13 +348,16 @@
       "unmappable": 3,
       "rejection_rate": 0.5333333333333333,
       "opt_out_rate": 0.05,
+      "reviewable": 15,
       "reviewed": 10,
       "unreviewed": 10,
-      "review_coverage": 0.5,
+      "review_coverage": 0.6666666666666666,
+      "approval_gap": 5,
       "reversals": 4,
       "reversals_explicit": 2,
       "reversals_inferred": 2,
       "reversal_rate": 0.4,
+      "reversal_rate_based_on": 10,
       "low_confidence": false,
       "step_requires_review": true,
       "reason_topics": {
@@ -285,13 +383,16 @@
       "unmappable": 0,
       "rejection_rate": 0.8,
       "opt_out_rate": 0.2857142857142857,
+      "reviewable": 5,
       "reviewed": 3,
       "unreviewed": 4,
-      "review_coverage": 0.42857142857142855,
+      "review_coverage": 0.6,
+      "approval_gap": 2,
       "reversals": 0,
       "reversals_explicit": 0,
       "reversals_inferred": 0,
       "reversal_rate": 0.0,
+      "reversal_rate_based_on": 3,
       "low_confidence": true,
       "step_requires_review": false,
       "reason_topics": {
@@ -317,13 +418,16 @@
       "unmappable": 0,
       "rejection_rate": 1.0,
       "opt_out_rate": 0.0,
+      "reviewable": 1,
       "reviewed": 1,
       "unreviewed": 0,
       "review_coverage": 1.0,
+      "approval_gap": 0,
       "reversals": 0,
       "reversals_explicit": 0,
       "reversals_inferred": 0,
       "reversal_rate": 0.0,
+      "reversal_rate_based_on": 1,
       "low_confidence": true,
       "step_requires_review": true,
       "reason_topics": {
@@ -331,62 +435,6 @@
       },
       "reason_vocabulary_is_fixed": true,
       "reasons_citing_unstated_requirements": []
-    }
-  ],
-  "findings": [
-    {
-      "priority": "high",
-      "scope": "Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl",
-      "what": "This step requires recruiter approval, but 4 of 20 decision(s) did not get it",
-      "why": "the step is configured HumanInLoop=always_on, so every decision should be approved by a recruiter; 16 of 20 (80%) were",
-      "action": "Check that recruiters are being notified, or change the step to always_off if approval is not wanted.",
-      "based_on_decisions": 20,
-      "low_confidence": false
-    },
-    {
-      "priority": "high",
-      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl",
-      "what": "Recruiters reversed Paul on 40% of the decisions they reviewed here",
-      "why": "a recruiter disagreed with Paul on 4 of the 10 decisions they opened (2 where they explicitly rejected Paul's suggestion, 2 inferred from their own decision)",
-      "action": "Compare this step's conclusion criteria with the listing's mandatory requirements.",
-      "based_on_decisions": 20,
-      "low_confidence": false
-    },
-    {
-      "priority": "high",
-      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl",
-      "what": "This step requires recruiter approval, but 10 of 20 decision(s) did not get it",
-      "why": "the step is configured HumanInLoop=always_on, so every decision should be approved by a recruiter; 10 of 20 (50%) were",
-      "action": "Check that recruiters are being notified, or change the step to always_off if approval is not wanted.",
-      "based_on_decisions": 20,
-      "low_confidence": false
-    },
-    {
-      "priority": "medium",
-      "scope": "Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl",
-      "what": "3 rejection(s) name a requirement this listing never asks for",
-      "why": "for example: Gehaltsvorstellung deutlich ueber dem Budget; Gehaltsvorstellung passt nicht zum Budget der Stelle",
-      "action": "Either add the requirement to the listing, or correct the step's conclusion criteria.",
-      "based_on_decisions": 11,
-      "low_confidence": false
-    },
-    {
-      "priority": "medium",
-      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview",
-      "what": "29% of candidates dropped out here before Paul could judge them",
-      "why": "2 of 7 stopped responding, declined to continue, or declined to speak to Paul. They are counted as opt-outs, separately from the rejection rate.",
-      "action": "Look at how and when candidates are contacted at this step, rather than at the criteria.",
-      "based_on_decisions": 7,
-      "low_confidence": true
-    },
-    {
-      "priority": "low",
-      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl",
-      "what": "3 decision(s) used a status this tool does not recognise",
-      "why": "a value was recorded, but it is not one the platform documents",
-      "action": "See the data-quality section for the exact values and candidates.",
-      "based_on_decisions": 20,
-      "low_confidence": false
     }
   ],
   "skipped_or_suspect": {
