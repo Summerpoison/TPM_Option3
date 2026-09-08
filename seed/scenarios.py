@@ -112,9 +112,14 @@ RAGGED_REASONS = [
 ]
 
 # Cites a criterion the listing does not contain -- the anomaly case.
+# Chosen to fall in concept buckets the listing never mentions (salary,
+# location). A reason inside a bucket the job DOES use -- a driving licence on
+# a role asking for a nursing qualification, both `certification` -- is real
+# drift too, but bucket-level matching cannot see it. That limitation is
+# stated in reasons.cites_no_criterion and in the report.
 OFF_CRITERIA_REASONS = [
-    ReasonSpec("No driving licence class C provided", "other", in_job_criteria=False),
-    ReasonSpec("Candidate has no prior management experience", "other", in_job_criteria=False),
+    ReasonSpec("Gehaltsvorstellung deutlich ueber dem Budget", "salary", in_job_criteria=False),
+    ReasonSpec("Wohnort zu weit entfernt, Umzug nicht moeglich", "location", in_job_criteria=False),
 ]
 
 

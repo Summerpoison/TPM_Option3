@@ -1,0 +1,411 @@
+{
+  "generated_at": "2026-09-08T08:04:47.175029+00:00",
+  "requests": 51,
+  "jobs": [
+    {
+      "job_id": "182761",
+      "external_id": "saa-seed-22",
+      "title": "Pflegefachkraft (m/w/d) - Intensivstation",
+      "steps": [
+        {
+          "step_id": "01a08002-50f4-77c2-8036-c724bdb29549",
+          "name": "Neu",
+          "category": "New",
+          "order": 1,
+          "produces_decisions": false,
+          "has_agent": false,
+          "human_in_loop": null
+        },
+        {
+          "step_id": "01a08002-50f7-761f-a14b-8e5361a83ba8",
+          "name": "Vorauswahl",
+          "category": "PreScreening",
+          "order": 2,
+          "produces_decisions": true,
+          "has_agent": true,
+          "human_in_loop": "always_on"
+        },
+        {
+          "step_id": "01a08002-50f9-7efe-aa17-97b564a3b820",
+          "name": "KI-Voice-Interview",
+          "category": "AIVoiceInterview",
+          "order": 3,
+          "produces_decisions": true,
+          "has_agent": true,
+          "human_in_loop": "always_off"
+        },
+        {
+          "step_id": "01a08002-50fc-7b55-8323-8bd5b0c9b48a",
+          "name": "Menschliches Interview",
+          "category": "HumanInterview",
+          "order": 4,
+          "produces_decisions": true,
+          "has_agent": true,
+          "human_in_loop": "always_on"
+        },
+        {
+          "step_id": "01a08002-50ff-7671-bc2a-428348afb492",
+          "name": "Teamdiskussion/Endgültige Entscheidung",
+          "category": "TeamDiscussion",
+          "order": 5,
+          "produces_decisions": false,
+          "has_agent": false,
+          "human_in_loop": null
+        },
+        {
+          "step_id": "01a08002-5102-70c7-9291-107c0416bd36",
+          "name": "Ablehnen",
+          "category": "Rejected",
+          "order": 6,
+          "produces_decisions": false,
+          "has_agent": false,
+          "human_in_loop": null
+        },
+        {
+          "step_id": "01a08002-5104-7a8e-ae22-927c50317f49",
+          "name": "Erledigt",
+          "category": "TeamDiscussion",
+          "order": 7,
+          "produces_decisions": false,
+          "has_agent": false,
+          "human_in_loop": null
+        }
+      ]
+    },
+    {
+      "job_id": "182760",
+      "external_id": "saa-seed-21",
+      "title": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz",
+      "steps": [
+        {
+          "step_id": "01a08001-c76b-7630-a88e-2fff57354450",
+          "name": "Neu",
+          "category": "New",
+          "order": 1,
+          "produces_decisions": false,
+          "has_agent": false,
+          "human_in_loop": null
+        },
+        {
+          "step_id": "01a08001-c76e-71ee-9566-3e3c7db2929f",
+          "name": "Vorauswahl",
+          "category": "PreScreening",
+          "order": 2,
+          "produces_decisions": true,
+          "has_agent": true,
+          "human_in_loop": "always_on"
+        },
+        {
+          "step_id": "01a08001-c770-79cc-b2fc-d08d846f7f09",
+          "name": "KI-Voice-Interview",
+          "category": "AIVoiceInterview",
+          "order": 3,
+          "produces_decisions": true,
+          "has_agent": true,
+          "human_in_loop": "always_off"
+        },
+        {
+          "step_id": "01a08001-c773-708f-8519-6332b36e29a9",
+          "name": "Menschliches Interview",
+          "category": "HumanInterview",
+          "order": 4,
+          "produces_decisions": true,
+          "has_agent": true,
+          "human_in_loop": "always_on"
+        },
+        {
+          "step_id": "01a08001-c775-7739-b66a-12b5ea81f246",
+          "name": "Teamdiskussion/Endgültige Entscheidung",
+          "category": "TeamDiscussion",
+          "order": 5,
+          "produces_decisions": false,
+          "has_agent": false,
+          "human_in_loop": null
+        },
+        {
+          "step_id": "01a08001-c777-7c58-9b86-0b96a181bbcb",
+          "name": "Ablehnen",
+          "category": "Rejected",
+          "order": 6,
+          "produces_decisions": false,
+          "has_agent": false,
+          "human_in_loop": null
+        },
+        {
+          "step_id": "01a08001-c77a-71f8-b075-41d56d057af1",
+          "name": "Erledigt",
+          "category": "TeamDiscussion",
+          "order": 7,
+          "produces_decisions": false,
+          "has_agent": false,
+          "human_in_loop": null
+        }
+      ]
+    }
+  ],
+  "cells": [
+    {
+      "job_id": "182761",
+      "job_title": "Pflegefachkraft (m/w/d) - Intensivstation",
+      "step_id": "01a08002-50f7-761f-a14b-8e5361a83ba8",
+      "step_name": "Vorauswahl",
+      "step_category": "PreScreening",
+      "n": 20,
+      "positive": 8,
+      "negative": 11,
+      "opt_out": 1,
+      "unevaluated": 0,
+      "unmappable": 0,
+      "rejection_rate": 0.5789473684210527,
+      "opt_out_rate": 0.05,
+      "reviewed": 16,
+      "unreviewed": 4,
+      "review_coverage": 0.8,
+      "overrides": 0,
+      "explicit_overrides": 0,
+      "inferred_overrides": 0,
+      "override_rate": 0.0,
+      "low_confidence": false,
+      "requires_review": true,
+      "reason_buckets": {
+        "experience": 3,
+        "availability": 2,
+        "certification": 3,
+        "salary": 2,
+        "location": 1
+      },
+      "reason_vocabulary_is_fixed": false,
+      "off_criteria_reasons": [
+        "Gehaltsvorstellung passt nicht zum Budget der Stelle",
+        "Wohnort zu weit entfernt, Umzug nicht moeglich",
+        "Gehaltsvorstellung deutlich ueber dem Budget"
+      ]
+    },
+    {
+      "job_id": "182761",
+      "job_title": "Pflegefachkraft (m/w/d) - Intensivstation",
+      "step_id": "01a08002-50f9-7efe-aa17-97b564a3b820",
+      "step_name": "KI-Voice-Interview",
+      "step_category": "AIVoiceInterview",
+      "n": 9,
+      "positive": 3,
+      "negative": 5,
+      "opt_out": 1,
+      "unevaluated": 0,
+      "unmappable": 0,
+      "rejection_rate": 0.625,
+      "opt_out_rate": 0.1111111111111111,
+      "reviewed": 7,
+      "unreviewed": 2,
+      "review_coverage": 0.7777777777777778,
+      "overrides": 0,
+      "explicit_overrides": 0,
+      "inferred_overrides": 0,
+      "override_rate": 0.0,
+      "low_confidence": true,
+      "requires_review": false,
+      "reason_buckets": {
+        "certification": 3,
+        "experience": 1,
+        "language": 1
+      },
+      "reason_vocabulary_is_fixed": false,
+      "off_criteria_reasons": []
+    },
+    {
+      "job_id": "182761",
+      "job_title": "Pflegefachkraft (m/w/d) - Intensivstation",
+      "step_id": "01a08002-50fc-7b55-8323-8bd5b0c9b48a",
+      "step_name": "Menschliches Interview",
+      "step_category": "HumanInterview",
+      "n": 3,
+      "positive": 3,
+      "negative": 0,
+      "opt_out": 0,
+      "unevaluated": 0,
+      "unmappable": 0,
+      "rejection_rate": 0.0,
+      "opt_out_rate": 0.0,
+      "reviewed": 3,
+      "unreviewed": 0,
+      "review_coverage": 1.0,
+      "overrides": 0,
+      "explicit_overrides": 0,
+      "inferred_overrides": 0,
+      "override_rate": 0.0,
+      "low_confidence": true,
+      "requires_review": true,
+      "reason_buckets": {},
+      "reason_vocabulary_is_fixed": true,
+      "off_criteria_reasons": []
+    },
+    {
+      "job_id": "182760",
+      "job_title": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz",
+      "step_id": "01a08001-c76e-71ee-9566-3e3c7db2929f",
+      "step_name": "Vorauswahl",
+      "step_category": "PreScreening",
+      "n": 20,
+      "positive": 7,
+      "negative": 8,
+      "opt_out": 1,
+      "unevaluated": 1,
+      "unmappable": 3,
+      "rejection_rate": 0.5333333333333333,
+      "opt_out_rate": 0.05,
+      "reviewed": 10,
+      "unreviewed": 10,
+      "review_coverage": 0.5,
+      "overrides": 4,
+      "explicit_overrides": 2,
+      "inferred_overrides": 2,
+      "override_rate": 0.4,
+      "low_confidence": false,
+      "requires_review": true,
+      "reason_buckets": {
+        "certification": 5,
+        "availability": 1,
+        "experience": 1,
+        "language": 1
+      },
+      "reason_vocabulary_is_fixed": false,
+      "off_criteria_reasons": []
+    },
+    {
+      "job_id": "182760",
+      "job_title": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz",
+      "step_id": "01a08001-c770-79cc-b2fc-d08d846f7f09",
+      "step_name": "KI-Voice-Interview",
+      "step_category": "AIVoiceInterview",
+      "n": 7,
+      "positive": 1,
+      "negative": 4,
+      "opt_out": 2,
+      "unevaluated": 0,
+      "unmappable": 0,
+      "rejection_rate": 0.8,
+      "opt_out_rate": 0.2857142857142857,
+      "reviewed": 3,
+      "unreviewed": 4,
+      "review_coverage": 0.42857142857142855,
+      "overrides": 0,
+      "explicit_overrides": 0,
+      "inferred_overrides": 0,
+      "override_rate": 0.0,
+      "low_confidence": true,
+      "requires_review": false,
+      "reason_buckets": {
+        "language": 1,
+        "availability": 1,
+        "other": 1,
+        "certification": 1
+      },
+      "reason_vocabulary_is_fixed": false,
+      "off_criteria_reasons": []
+    },
+    {
+      "job_id": "182760",
+      "job_title": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz",
+      "step_id": "01a08001-c773-708f-8519-6332b36e29a9",
+      "step_name": "Menschliches Interview",
+      "step_category": "HumanInterview",
+      "n": 1,
+      "positive": 0,
+      "negative": 1,
+      "opt_out": 0,
+      "unevaluated": 0,
+      "unmappable": 0,
+      "rejection_rate": 1.0,
+      "opt_out_rate": 0.0,
+      "reviewed": 1,
+      "unreviewed": 0,
+      "review_coverage": 1.0,
+      "overrides": 0,
+      "explicit_overrides": 0,
+      "inferred_overrides": 0,
+      "override_rate": 0.0,
+      "low_confidence": true,
+      "requires_review": true,
+      "reason_buckets": {
+        "language": 1
+      },
+      "reason_vocabulary_is_fixed": true,
+      "off_criteria_reasons": []
+    }
+  ],
+  "anomalies": [
+    {
+      "severity": "high",
+      "scope": "Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl",
+      "headline": "Step requires human review, but most decisions went through unreviewed",
+      "detail": "the agent is configured HumanInLoop=always_on, yet only 16 of 20 decisions (80%) were reviewed",
+      "action": "Check that reviewers are being notified, or relax the step's HumanInLoop setting.",
+      "n": 20,
+      "low_confidence": false
+    },
+    {
+      "severity": "high",
+      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl",
+      "headline": "Humans reverse the AI on 40% of reviewed decisions here",
+      "detail": "4 of 10 reviewed decisions were reversed by a human (40%); 2 explicit, 2 inferred from an independent decision",
+      "action": "Review this step's conclusion criteria against the listing's mandatory requirements.",
+      "n": 20,
+      "low_confidence": false
+    },
+    {
+      "severity": "high",
+      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl",
+      "headline": "Step requires human review, but most decisions went through unreviewed",
+      "detail": "the agent is configured HumanInLoop=always_on, yet only 10 of 20 decisions (50%) were reviewed",
+      "action": "Check that reviewers are being notified, or relax the step's HumanInLoop setting.",
+      "n": 20,
+      "low_confidence": false
+    },
+    {
+      "severity": "medium",
+      "scope": "Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl",
+      "headline": "3 rejection(s) cite a requirement this job never states",
+      "detail": "for example: Gehaltsvorstellung deutlich ueber dem Budget; Gehaltsvorstellung passt nicht zum Budget der Stelle",
+      "action": "Either add the requirement to the listing, or correct the step's conclusion criteria.",
+      "n": 11,
+      "low_confidence": false
+    },
+    {
+      "severity": "medium",
+      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview",
+      "headline": "29% of candidates dropped out at this step rather than being judged",
+      "detail": "2 of 7 withdrew (no answer, declined to continue, or declined to talk to the AI). These are not rejections and are excluded from the rejection rate.",
+      "action": "A channel or format problem rather than a screening one: check messaging and timing.",
+      "n": 7,
+      "low_confidence": true
+    },
+    {
+      "severity": "low",
+      "scope": "Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl",
+      "headline": "3 decision value(s) could not be interpreted",
+      "detail": "present but outside the platform's documented decision vocabulary",
+      "action": "See the data-quality section for the exact values and candidates.",
+      "n": 20,
+      "low_confidence": false
+    }
+  ],
+  "data_quality": {
+    "job_failures": [],
+    "candidate_failures": [],
+    "malformed_decisions": [
+      "Amara Yilmaz on job 182760 step 'Vorauswahl': unmappable PaulDecision 'PendingReview'",
+      "Jonas Becker on job 182760 step 'Vorauswahl': unmappable PaulDecision 'Escalated'",
+      "Jonas Haddad on job 182760 step 'Vorauswahl': unmappable PaulDecision 'Unklar'"
+    ],
+    "superseded_records": [
+      "Piotr Kaya on job 182761 step 01a08002-50f7-761f-a14b-8e5361a83ba8: 2 assignment records, using the latest with a decision",
+      "Fatima Okafor on job 182761 step 01a08002-50f7-761f-a14b-8e5361a83ba8: 2 assignment records, using the latest with a decision",
+      "Sofia Weber on job 182761 step 01a08002-50f7-761f-a14b-8e5361a83ba8: 2 assignment records, using the latest with a decision",
+      "Amara Yilmaz on job 182760 step 01a08001-c76e-71ee-9566-3e3c7db2929f: 2 assignment records, using the latest with a decision",
+      "Jonas Becker on job 182760 step 01a08001-c76e-71ee-9566-3e3c7db2929f: 2 assignment records, using the latest with a decision",
+      "Jonas Haddad on job 182760 step 01a08001-c76e-71ee-9566-3e3c7db2929f: 2 assignment records, using the latest with a decision"
+    ],
+    "steps_without_agent": [],
+    "skipped_records": []
+  }
+}

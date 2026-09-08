@@ -1,0 +1,123 @@
+==============================================================================
+SCREENING ACCURACY ANALYZER
+generated 2026-09-08 08:04 UTC  |  2 job(s)  |  60 AI decisions  |  51 API requests
+==============================================================================
+
+SUMMARY
+------------------------------------------------------------------------------
+The AI judged 51 candidates and rejected 29 of them (57%).
+A further 5 candidate(s) withdrew before being judged. They are counted separately, not as rejections.
+A human reviewed 40 of 60 decisions (67%) and reversed the AI on 4 of them.
+
+Override rate measures agreement on the decisions a human actually looked at.
+It is not accuracy: candidates rejected early are rarely reviewed, so genuine
+false rejections are systematically under-counted. See LIMITATIONS.
+
+FINDINGS
+------------------------------------------------------------------------------
+[HIGH  ] Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl
+         Step requires human review, but most decisions went through unreviewed
+         Why: the agent is configured HumanInLoop=always_on, yet only 16 of 20 decisions (80%) were reviewed
+         Do:  Check that reviewers are being notified, or relax the step's HumanInLoop setting.
+
+[HIGH  ] Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl
+         Humans reverse the AI on 40% of reviewed decisions here
+         Why: 4 of 10 reviewed decisions were reversed by a human (40%); 2 explicit, 2 inferred from an independent decision
+         Do:  Review this step's conclusion criteria against the listing's mandatory requirements.
+
+[HIGH  ] Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl
+         Step requires human review, but most decisions went through unreviewed
+         Why: the agent is configured HumanInLoop=always_on, yet only 10 of 20 decisions (50%) were reviewed
+         Do:  Check that reviewers are being notified, or relax the step's HumanInLoop setting.
+
+[MEDIUM] Pflegefachkraft (m/w/d) - Intensivstation / Vorauswahl
+         3 rejection(s) cite a requirement this job never states
+         Why: for example: Gehaltsvorstellung deutlich ueber dem Budget; Gehaltsvorstellung passt nicht zum Budget der Stelle
+         Do:  Either add the requirement to the listing, or correct the step's conclusion criteria.
+
+[MEDIUM] Sicherheitsmitarbeiter (m/w/d) - Objektschutz / KI-Voice-Interview
+         29% of candidates dropped out at this step rather than being judged  (low confidence, n=7)
+         Why: 2 of 7 withdrew (no answer, declined to continue, or declined to talk to the AI). These are not rejections and are excluded from the rejection rate.
+         Do:  A channel or format problem rather than a screening one: check messaging and timing.
+
+[LOW   ] Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl
+         3 decision value(s) could not be interpreted
+         Why: present but outside the platform's documented decision vocabulary
+         Do:  See the data-quality section for the exact values and candidates.
+
+BY JOB AND PIPELINE STEP
+------------------------------------------------------------------------------
+step                         n  positive  rejected  opt-out  reviewed  override
+
+Pflegefachkraft (m/w/d) - Intensivstation  [saa-seed-22]
+  Vorauswahl                20         8        11        1       80%        0%
+  KI-Voice-Interview         9         3         5        1       78%        0%  (low confidence, n=9)
+  Menschliches Interview     3         3         0        0      100%        0%  (low confidence, n=3)
+  TOTAL                     32        14        16        2       81%        0%
+
+Sicherheitsmitarbeiter (m/w/d) - Objektschutz  [saa-seed-21]
+  Vorauswahl                20         7         8        1       50%       40%
+  KI-Voice-Interview         7         1         4        2       43%        0%  (low confidence, n=7)
+  Menschliches Interview     1         0         1        0      100%        0%  (low confidence, n=1)
+  TOTAL                     28         8        13        3       50%       29%
+
+BY PIPELINE STEP, ACROSS JOBS
+------------------------------------------------------------------------------
+Channel-level view: opt-out and review coverage are properties of the step,
+not of any one listing. Rejection rates are shown per job above, because
+averaging them across different listings describes the mix, not the stage.
+
+  PreScreening            40 decisions   opt-out   5%   reviewed  65%   override  15%
+  AIVoiceInterview        16 decisions   opt-out  19%   reviewed  62%   override   0%
+  HumanInterview           4 decisions   opt-out   0%   reviewed 100%   override   0%  (low confidence, n=4)
+
+MOST COMMON REJECTION REASONS
+------------------------------------------------------------------------------
+
+Pflegefachkraft (m/w/d) - Intensivstation  --  16 rejection(s)
+  Explanations are free text (9 distinct phrasings across 16 rejections), so they are grouped by keyword.
+      6  certification    38%   e.g. "No driving licence class C provided"
+      4  experience       25%   e.g. "Insufficient years of experience"
+      2  availability     12%   e.g. "Not available for shift work"
+      2  salary           12%   e.g. "Gehaltsvorstellung passt nicht zum Budget de"
+      1  location          6%   e.g. "Wohnort zu weit entfernt, Umzug nicht moegli"
+      1  language          6%   e.g. "German language level below B2"
+
+Sicherheitsmitarbeiter (m/w/d) - Objektschutz  --  13 rejection(s)
+  Explanations are free text (8 distinct phrasings across 13 rejections), so they are grouped by keyword.
+      6  certification    46%   e.g. "no §34a certificate provided"
+      3  language         23%   e.g. "insufficient german, estimated A2"
+      2  availability     15%   e.g. "Keine Bereitschaft zur Nachtschicht"
+      1  experience        8%   e.g. "too little relevant experience"
+      1  other             8%   e.g. "general fit concerns"
+  1 reason(s) matched no category (8%). Add their wording to reason_buckets.json.
+
+DATA QUALITY
+------------------------------------------------------------------------------
+3 decision values that could not be interpreted:
+    - Amara Yilmaz on job 182760 step 'Vorauswahl': unmappable PaulDecision 'PendingReview'
+    - Jonas Becker on job 182760 step 'Vorauswahl': unmappable PaulDecision 'Escalated'
+    - Jonas Haddad on job 182760 step 'Vorauswahl': unmappable PaulDecision 'Unklar'
+6 candidates with more than one record for a step:
+    - Piotr Kaya on job 182761 step 01a08002-50f7-761f-a14b-8e5361a83ba8: 2 assignment records, using the latest with a decision
+    - Fatima Okafor on job 182761 step 01a08002-50f7-761f-a14b-8e5361a83ba8: 2 assignment records, using the latest with a decision
+    - Sofia Weber on job 182761 step 01a08002-50f7-761f-a14b-8e5361a83ba8: 2 assignment records, using the latest with a decision
+    - Amara Yilmaz on job 182760 step 01a08001-c76e-71ee-9566-3e3c7db2929f: 2 assignment records, using the latest with a decision
+    - Jonas Becker on job 182760 step 01a08001-c76e-71ee-9566-3e3c7db2929f: 2 assignment records, using the latest with a decision
+    ... and 1 more
+
+LIMITATIONS
+------------------------------------------------------------------------------
+* Selection bias. Humans review candidates who reach the review step. Anyone
+  rejected earlier is rarely looked at, so the override rate understates false
+  rejections. Read it as agreement on the reviewed slice, not as accuracy.
+* Small cells. Anything below n=10 is marked low confidence. Deep
+  pipeline steps are small by nature -- that is what a funnel does.
+* Reason matching is at concept level. A rejection citing a different specific
+  requirement inside a category the job does use will not be flagged.
+* Overrides inferred from an independent human decision are less certain than
+  explicit rejections of the AI's suggestion; the counts are shown separately.
+
+==============================================================================
+
+JSON written to examples/report.json

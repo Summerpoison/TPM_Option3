@@ -1,0 +1,40 @@
+PER-CANDIDATE DECISIONS
+==============================================================================
+
+Aisha Braun  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step        Vorauswahl (PreScreening)
+  decision    NegativeDecision  -> negative
+  explanation no §34a certificate provided
+  human       RejectPaulDecision  -> override [explicit_reject]
+  assigned    2026-09-08T07:53:21Z
+
+Aisha Haddad  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step        Vorauswahl (PreScreening)
+  decision    PositiveDecision  -> positive
+  explanation Meets the mandatory requirements for this role; proceed to the next step.
+  human       (not reviewed)  -> unreviewed [no_assigner_decision]
+  assigned    2026-09-08T07:53:44Z
+
+Aisha Haddad  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step        KI-Voice-Interview (AIVoiceInterview)
+  decision    NegativeDecision  -> negative
+  explanation Sachkundenachweis fehlt
+  human       ApprovePaulDecision  -> agree [explicit_approve]
+  assigned    2026-09-08T07:53:45Z
+
+Amara Schmidt  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step        Vorauswahl (PreScreening)
+  decision    PositiveDecision  -> positive
+  explanation Meets the mandatory requirements for this role; proceed to the next step.
+  human       RejectPaulDecision  -> override [explicit_reject]
+  assigned    2026-09-08T07:53:29Z
+
+Amara Schmidt  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step        KI-Voice-Interview (AIVoiceInterview)
+  decision    NegativeDecision  -> negative
+  explanation cannot work weekends
+  human       NegativeDecision  -> agree [compared_to_suggestion]
+  assigned    2026-09-08T07:53:29Z
+
+Amara Yilmaz  --  Sicherheitsmitarbeiter (m/w/d) - Objektschutz
+  step        Vorauswahl (PreScreening)

@@ -1,0 +1,40 @@
+{
+  "_comment": [
+    "Keyword buckets for rejection-reason aggregation (tier 2).",
+    "A reason is matched against these in order; the first bucket with a keyword",
+    "appearing anywhere in the normalised text wins. Unmatched reasons land in",
+    "'other', and the report says so -- a large 'other' share means this file is",
+    "incomplete, not that the reasons were unclear.",
+    "Keywords are matched after normalisation: lowercased, accents folded",
+    "(ue/ae/oe and umlauts both work), punctuation stripped. Add German and",
+    "English spellings for the same concept.",
+    "Edit this file rather than the code when a client's agent uses different",
+    "wording -- that is the whole point of it being config."
+  ],
+  "buckets": {
+    "certification": [
+      "certificat", "certification", "certificate", "qualification",
+      "sachkunde", "sachkundeprufung", "sachkundenachweis", "34a",
+      "nachweis", "zertifikat", "ausbildung", "abschluss", "licence", "license"
+    ],
+    "language": [
+      "language", "german", "deutsch", "deutschkenntnisse", "sprachniveau",
+      "sprachkenntnisse", "sprach", "b1", "b2", "a2", "c1", "niveau"
+    ],
+    "experience": [
+      "experience", "erfahrung", "berufserfahrung", "jahre", "years",
+      "praxis", "senior", "junior"
+    ],
+    "availability": [
+      "availability", "available", "schicht", "schichtdienst", "nachtschicht",
+      "nacht", "wochenende", "weekend", "shift", "verfugbar", "bereitschaft"
+    ],
+    "location": [
+      "location", "standort", "umzug", "relocation", "entfernung", "anfahrt",
+      "commute", "wohnort"
+    ],
+    "salary": [
+      "salary", "gehalt", "gehaltsvorstellung", "verguetung", "compensation"
+    ]
+  }
+}
