@@ -1,6 +1,6 @@
 ==============================================================================
 SCREENING ACCURACY REPORT
-Paul's screening decisions  ·  08 September 2026, 09:20 UTC
+Paul's screening decisions  ·  08 September 2026, 10:25 UTC
 ==============================================================================
 
 Analysed 2 job(s), 40 candidate(s), 60 decision(s).
@@ -11,7 +11,7 @@ Analysed 2 job(s), 40 candidate(s), 60 decision(s).
 
 WHAT PAUL DECIDED
 ------------------------------------------------------------------------------
-Paul judged 51 candidate(s): 22 passed, 29 were rejected (57% rejected).
+Paul reached a decision 51 time(s) across 40 candidate(s): 22 passed, 29 were rejected (57% rejected).
 Another 5 candidate(s) are counted as opt-outs: they stopped responding or declined to
 continue, so Paul never judged them. They are excluded from the rejection rate above.
 
@@ -142,5 +142,7 @@ WHAT THIS REPORT CANNOT TELL YOU
   output separates the two counts.
 
 ==============================================================================
+
+HTML written to examples/report.html
 
 JSON written to examples/report.json

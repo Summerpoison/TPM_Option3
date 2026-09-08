@@ -183,7 +183,12 @@ value is 100% and the allowance is for timing.
 
 ### Not implemented
 
-* HTML output — CLI and JSON were the higher-value pair for a batch tool
+* Sorting in the HTML tables. It shipped and was removed: the tables interleave
+  job-heading rows with data rows, and any client-side reorder filed a step
+  under the wrong job — the exact misattribution the (job, step) design exists
+  to prevent. Making it work needs a job column on every row so each row stands
+  alone; the tables are small and already in pipeline order, so the JSON output
+  covers slicing instead. The page now carries no JavaScript at all.
 * Tier-3 LLM classification — deliberate, see README
 * Recreating the pipeline template from code — the verified payloads are
   committed as fixtures, but the template is a documented manual step

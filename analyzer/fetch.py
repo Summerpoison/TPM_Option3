@@ -327,16 +327,20 @@ class Fetcher:
             step = job.step(step_id)
             category = str(chosen.get("StepCategory") or (step.category if step else ""))
             step_label = str(chosen.get("StepName") or (step.name if step else category) or step_id)
-            if len(entries) > 1:
-                self.quality.superseded_records.append(
-                    f"{name} on '{job.title}' at step '{step_label}': "
-                    f"{len(entries)} assignment records, kept the most recent one with a decision"
-                )
 
             if step and not step.produces_decisions:
                 continue  # terminal or state step: not an AI decision
             if not step and category not in DECISION_CATEGORIES:
                 continue
+
+            # Reported only for steps we actually analyse. Warning about
+            # duplicates on a step whose records are discarded anyway would send
+            # the reader checking something that affects no number in the report.
+            if len(entries) > 1:
+                self.quality.superseded_records.append(
+                    f"{name} on '{job.title}' at step '{step_label}': "
+                    f"{len(entries)} assignment records, kept the most recent one with a decision"
+                )
 
             raw = chosen.get("PaulDecision")
             outcome = normalize_outcome(raw)

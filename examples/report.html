@@ -78,11 +78,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
 th,td{padding:8px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
 th:first-child,td:first-child{text-align:left;white-space:normal}
 thead th{color:var(--ink-3);font-weight:600;font-size:12px;text-transform:uppercase;
-  letter-spacing:.5px;cursor:pointer;user-select:none;border-bottom:1px solid var(--line)}
-thead th:hover{color:var(--ink)}
-thead th::after{content:"";opacity:.45;font-size:10px;margin-left:5px}
-thead th[data-dir="asc"]::after{content:"▲"}
-thead th[data-dir="desc"]::after{content:"▼"}
+  letter-spacing:.5px;border-bottom:1px solid var(--line)}
 tbody tr:hover{background:var(--page)}
 tr.total td{font-weight:640;border-bottom:2px solid var(--line)}
 tr.jobhead td{padding-top:16px;font-weight:640;border-bottom:none;color:var(--ink)}
@@ -110,10 +106,9 @@ details[open] summary::before{content:"▾ "}
 details ul{margin:10px 0 4px;padding-left:20px;color:var(--ink-2);font-size:13.5px}
 details li{margin:4px 0}
 footer{color:var(--ink-3);font-size:12.5px;text-align:center;padding:8px 0 28px}
-@media print{.wash{background:none}section{break-inside:avoid;box-shadow:none}
-  thead th{cursor:default}}
+@media print{.wash{background:none}section{break-inside:avoid;box-shadow:none}}
 </style></head><body><div class='wash'>
-<header class='bar'><h1>Screening Accuracy Report <span class='dot'>·</span> Paul's decisions</h1><div class='meta'>08 September 2026, 09:58 UTC</div></header><main>
+<header class='bar'><h1>Screening Accuracy Report <span class='dot'>·</span> Paul's decisions</h1><div class='meta'>08 September 2026, 10:25 UTC</div></header><main>
 <section><h2>What was analysed</h2>
 <p class='sub'>2 job(s), 40 candidate(s), 60 decision(s) that Paul recorded at a screening step.</p>
 <ul class='jobs'>
@@ -122,7 +117,7 @@ footer{color:var(--ink-3);font-size:12.5px;text-align:center;padding:8px 0 28px}
 </ul></section>
 <section><h2>What Paul decided</h2>
 <div class='tiles'>
-<div class='tile'><div class='n'>51</div><div class='k'>candidates judged</div></div>
+<div class='tile'><div class='n'>51</div><div class='k'>decisions Paul concluded <span class='of'>(across 40 candidates)</span></div></div>
 <div class='tile'><div class='n' style='color:var(--reject)'>57%</div><div class='k'>rejected <span class='of'>(29 of 51)</span></div></div>
 <div class='tile'><div class='n' style='color:var(--optout)'>5</div><div class='k'>opted out before judgement</div></div>
 <div class='tile'><div class='n'>67%</div><div class='k'>reviewed by a recruiter <span class='of'>(40 of 60)</span></div></div>
@@ -141,26 +136,26 @@ footer{color:var(--ink-3);font-size:12.5px;text-align:center;padding:8px 0 28px}
 <div class='finding low'><span class='pill low'>low priority</span><span class='scope'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz / Vorauswahl</span><div class='what'>3 decision(s) used a status this tool does not recognise</div><dl><dt>Why</dt><dd>a value was recorded, but it is not one the platform documents</dd><dt>Action</dt><dd>See the data-quality section for the exact values and candidates.</dd></dl></div>
 </section>
 <section><h2>Each job, step by step</h2>
-<p class='sub'>The view to act on: every rate here belongs to one listing at one step. <em>Reviewed</em> is the share a recruiter opened; <em>reversed</em> is the share of those they disagreed with. Click a column to sort.</p>
+<p class='sub'>The view to act on: every rate here belongs to one listing at one step. <em>Reviewed</em> is the share a recruiter opened; <em>reversed</em> is the share of those they disagreed with.</p>
 <div class="legend"><span><i class="swatch" style="background:var(--pass)"></i>passed</span><span><i class="swatch" style="background:var(--reject)"></i>rejected</span><span><i class="swatch" style="background:var(--optout)"></i>opted out</span><span><i class="swatch" style="background:var(--none)"></i>not evaluated</span></div>
-<table data-sortable><thead><tr><th>step</th><th>mix</th><th>total</th><th>passed</th><th>rejected</th><th>opt-out</th><th>reviewed</th><th>reversed</th></tr></thead><tbody>
+<table><thead><tr><th>step</th><th>mix</th><th>total</th><th>passed</th><th>rejected</th><th>opt-out</th><th>reviewed</th><th>reversed</th></tr></thead><tbody>
 <tr class='jobhead'><td colspan='8'>Pflegefachkraft (m/w/d) - Intensivstation</td></tr>
-<tr class=""><td data-sort="0">Vorauswahl</td><td data-sort="20"><span class="mix" title="8 passed, 11 rejected, 1 opted out"><i style="width:40.00%;background:var(--pass)"></i><i style="width:55.00%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i></span></td><td data-sort="20">20</td><td data-sort="8">8</td><td data-sort="11">11</td><td data-sort="1">1</td><td data-sort="0.8000">80%</td><td data-sort="0.0000">0%</td></tr>
-<tr class=""><td data-sort="0">KI-Voice-Interview <span class="pill thin">only 9 decisions</span></td><td data-sort="9"><span class="mix" title="3 passed, 5 rejected, 1 opted out"><i style="width:33.33%;background:var(--pass)"></i><i style="width:55.56%;background:var(--reject)"></i><i style="width:11.11%;background:var(--optout)"></i></span></td><td data-sort="9">9</td><td data-sort="3">3</td><td data-sort="5">5</td><td data-sort="1">1</td><td data-sort="0.7778">78%</td><td data-sort="0.0000">0%</td></tr>
-<tr class=""><td data-sort="0">Menschliches Interview <span class="pill thin">only 3 decisions</span></td><td data-sort="3"><span class="mix" title="3 passed"><i style="width:100.00%;background:var(--pass)"></i></span></td><td data-sort="3">3</td><td data-sort="3">3</td><td data-sort="0">0</td><td data-sort="0">0</td><td data-sort="1.0000">100%</td><td data-sort="0.0000">0%</td></tr>
-<tr class="total"><td data-sort="0">all steps</td><td data-sort="32"><span class="mix" title="14 passed, 16 rejected, 2 opted out"><i style="width:43.75%;background:var(--pass)"></i><i style="width:50.00%;background:var(--reject)"></i><i style="width:6.25%;background:var(--optout)"></i></span></td><td data-sort="32">32</td><td data-sort="14">14</td><td data-sort="16">16</td><td data-sort="2">2</td><td data-sort="0.8125">81%</td><td data-sort="0.0000">0%</td></tr>
+<tr class=""><td>Vorauswahl</td><td><span class="mix" title="8 passed, 11 rejected, 1 opted out"><i style="width:40.00%;background:var(--pass)"></i><i style="width:55.00%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i></span></td><td>20</td><td>8</td><td>11</td><td>1</td><td>80%</td><td>0%</td></tr>
+<tr class=""><td>KI-Voice-Interview <span class="pill thin">only 9 decisions</span></td><td><span class="mix" title="3 passed, 5 rejected, 1 opted out"><i style="width:33.33%;background:var(--pass)"></i><i style="width:55.56%;background:var(--reject)"></i><i style="width:11.11%;background:var(--optout)"></i></span></td><td>9</td><td>3</td><td>5</td><td>1</td><td>78%</td><td>0%</td></tr>
+<tr class=""><td>Menschliches Interview <span class="pill thin">only 3 decisions</span></td><td><span class="mix" title="3 passed"><i style="width:100.00%;background:var(--pass)"></i></span></td><td>3</td><td>3</td><td>0</td><td>0</td><td>100%</td><td>0%</td></tr>
+<tr class="total"><td>all steps</td><td><span class="mix" title="14 passed, 16 rejected, 2 opted out"><i style="width:43.75%;background:var(--pass)"></i><i style="width:50.00%;background:var(--reject)"></i><i style="width:6.25%;background:var(--optout)"></i></span></td><td>32</td><td>14</td><td>16</td><td>2</td><td>81%</td><td>0%</td></tr>
 <tr class='jobhead'><td colspan='8'>Sicherheitsmitarbeiter (m/w/d) - Objektschutz</td></tr>
-<tr class=""><td data-sort="0">Vorauswahl</td><td data-sort="20"><span class="mix" title="7 passed, 8 rejected, 1 opted out, 4 not evaluated"><i style="width:35.00%;background:var(--pass)"></i><i style="width:40.00%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i><i style="width:20.00%;background:var(--none)"></i></span></td><td data-sort="20">20</td><td data-sort="7">7</td><td data-sort="8">8</td><td data-sort="1">1</td><td data-sort="0.5000">50%</td><td data-sort="0.4000">40%</td></tr>
-<tr class=""><td data-sort="0">KI-Voice-Interview <span class="pill thin">only 7 decisions</span></td><td data-sort="7"><span class="mix" title="1 passed, 4 rejected, 2 opted out"><i style="width:14.29%;background:var(--pass)"></i><i style="width:57.14%;background:var(--reject)"></i><i style="width:28.57%;background:var(--optout)"></i></span></td><td data-sort="7">7</td><td data-sort="1">1</td><td data-sort="4">4</td><td data-sort="2">2</td><td data-sort="0.4286">43%</td><td data-sort="0.0000">0%</td></tr>
-<tr class=""><td data-sort="0">Menschliches Interview <span class="pill thin">only 1 decision</span></td><td data-sort="1"><span class="mix" title="1 rejected"><i style="width:100.00%;background:var(--reject)"></i></span></td><td data-sort="1">1</td><td data-sort="0">0</td><td data-sort="1">1</td><td data-sort="0">0</td><td data-sort="1.0000">100%</td><td data-sort="0.0000">0%</td></tr>
-<tr class="total"><td data-sort="0">all steps</td><td data-sort="28"><span class="mix" title="8 passed, 13 rejected, 3 opted out, 4 not evaluated"><i style="width:28.57%;background:var(--pass)"></i><i style="width:46.43%;background:var(--reject)"></i><i style="width:10.71%;background:var(--optout)"></i><i style="width:14.29%;background:var(--none)"></i></span></td><td data-sort="28">28</td><td data-sort="8">8</td><td data-sort="13">13</td><td data-sort="3">3</td><td data-sort="0.5000">50%</td><td data-sort="0.2857">29%</td></tr>
+<tr class=""><td>Vorauswahl</td><td><span class="mix" title="7 passed, 8 rejected, 1 opted out, 4 not evaluated"><i style="width:35.00%;background:var(--pass)"></i><i style="width:40.00%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i><i style="width:20.00%;background:var(--none)"></i></span></td><td>20</td><td>7</td><td>8</td><td>1</td><td>50%</td><td>40%</td></tr>
+<tr class=""><td>KI-Voice-Interview <span class="pill thin">only 7 decisions</span></td><td><span class="mix" title="1 passed, 4 rejected, 2 opted out"><i style="width:14.29%;background:var(--pass)"></i><i style="width:57.14%;background:var(--reject)"></i><i style="width:28.57%;background:var(--optout)"></i></span></td><td>7</td><td>1</td><td>4</td><td>2</td><td>43%</td><td>0%</td></tr>
+<tr class=""><td>Menschliches Interview <span class="pill thin">only 1 decision</span></td><td><span class="mix" title="1 rejected"><i style="width:100.00%;background:var(--reject)"></i></span></td><td>1</td><td>0</td><td>1</td><td>0</td><td>100%</td><td>0%</td></tr>
+<tr class="total"><td>all steps</td><td><span class="mix" title="8 passed, 13 rejected, 3 opted out, 4 not evaluated"><i style="width:28.57%;background:var(--pass)"></i><i style="width:46.43%;background:var(--reject)"></i><i style="width:10.71%;background:var(--optout)"></i><i style="width:14.29%;background:var(--none)"></i></span></td><td>28</td><td>8</td><td>13</td><td>3</td><td>50%</td><td>29%</td></tr>
 </tbody></table></section>
 <section><h2>The funnel, all jobs combined</h2>
 <p class='sub'>Where candidates are lost, and how thin review coverage gets further down.</p>
-<table data-sortable><thead><tr><th>step</th><th>mix</th><th>total</th><th>passed</th><th>rejected</th><th>opt-out</th><th>reviewed</th><th>reversed</th></tr></thead><tbody>
-<tr class=""><td data-sort="0">PreScreening</td><td data-sort="40"><span class="mix" title="15 passed, 19 rejected, 2 opted out, 4 not evaluated"><i style="width:37.50%;background:var(--pass)"></i><i style="width:47.50%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i><i style="width:10.00%;background:var(--none)"></i></span></td><td data-sort="40">40</td><td data-sort="15">15</td><td data-sort="19">19</td><td data-sort="2">2</td><td data-sort="0.6500">65%</td><td data-sort="0.1538">15%</td></tr>
-<tr class=""><td data-sort="0">AIVoiceInterview</td><td data-sort="16"><span class="mix" title="4 passed, 9 rejected, 3 opted out"><i style="width:25.00%;background:var(--pass)"></i><i style="width:56.25%;background:var(--reject)"></i><i style="width:18.75%;background:var(--optout)"></i></span></td><td data-sort="16">16</td><td data-sort="4">4</td><td data-sort="9">9</td><td data-sort="3">3</td><td data-sort="0.6250">62%</td><td data-sort="0.0000">0%</td></tr>
-<tr class=""><td data-sort="0">HumanInterview <span class="pill thin">only 4 decisions</span></td><td data-sort="4"><span class="mix" title="3 passed, 1 rejected"><i style="width:75.00%;background:var(--pass)"></i><i style="width:25.00%;background:var(--reject)"></i></span></td><td data-sort="4">4</td><td data-sort="3">3</td><td data-sort="1">1</td><td data-sort="0">0</td><td data-sort="1.0000">100%</td><td data-sort="0.0000">0%</td></tr>
+<table><thead><tr><th>step</th><th>mix</th><th>total</th><th>passed</th><th>rejected</th><th>opt-out</th><th>reviewed</th><th>reversed</th></tr></thead><tbody>
+<tr class=""><td>PreScreening</td><td><span class="mix" title="15 passed, 19 rejected, 2 opted out, 4 not evaluated"><i style="width:37.50%;background:var(--pass)"></i><i style="width:47.50%;background:var(--reject)"></i><i style="width:5.00%;background:var(--optout)"></i><i style="width:10.00%;background:var(--none)"></i></span></td><td>40</td><td>15</td><td>19</td><td>2</td><td>65%</td><td>15%</td></tr>
+<tr class=""><td>AIVoiceInterview</td><td><span class="mix" title="4 passed, 9 rejected, 3 opted out"><i style="width:25.00%;background:var(--pass)"></i><i style="width:56.25%;background:var(--reject)"></i><i style="width:18.75%;background:var(--optout)"></i></span></td><td>16</td><td>4</td><td>9</td><td>3</td><td>62%</td><td>0%</td></tr>
+<tr class=""><td>HumanInterview <span class="pill thin">only 4 decisions</span></td><td><span class="mix" title="3 passed, 1 rejected"><i style="width:75.00%;background:var(--pass)"></i><i style="width:25.00%;background:var(--reject)"></i></span></td><td>4</td><td>3</td><td>1</td><td>0</td><td>100%</td><td>0%</td></tr>
 </tbody></table>
 <ul class='notes'>
 <li>Most candidates are lost at AIVoiceInterview: Paul rejected 69% of the 13 he judged there.</li>
@@ -209,31 +204,5 @@ footer{color:var(--ink-3);font-size:12.5px;text-align:center;padding:8px 0 28px}
 <li>How certain a reversal is. Ones inferred from a recruiter&#x27;s own decision are weaker evidence than an explicit rejection of Paul&#x27;s suggestion; the JSON separates them.</li>
 </ul></section>
 </main></div>
-<footer>Generated 08 September 2026, 09:58 UTC · thresholds and method documented in TECH_NOTE.md</footer>
-<script>
-document.querySelectorAll('table[data-sortable]').forEach(function(table){
-  table.querySelectorAll('thead th').forEach(function(th, index){
-    th.addEventListener('click', function(){
-      var dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
-      table.querySelectorAll('thead th').forEach(function(o){ delete o.dataset.dir; });
-      th.dataset.dir = dir;
-      var body = table.querySelector('tbody');
-      // Job headings and totals are structure, not data: keep them out of the sort.
-      var rows = Array.prototype.filter.call(body.rows, function(r){
-        return !r.classList.contains('jobhead') && !r.classList.contains('total');
-      });
-      rows.sort(function(a, b){
-        var x = a.cells[index], y = b.cells[index];
-        var av = x.dataset.sort !== undefined ? parseFloat(x.dataset.sort) : x.textContent.trim();
-        var bv = y.dataset.sort !== undefined ? parseFloat(y.dataset.sort) : y.textContent.trim();
-        if (typeof av === 'number' || !isNaN(av) && !isNaN(bv)) {
-          av = parseFloat(av); bv = parseFloat(bv);
-          return dir === 'asc' ? av - bv : bv - av;
-        }
-        return dir === 'asc' ? String(av).localeCompare(bv) : String(bv).localeCompare(av);
-      });
-      rows.forEach(function(r){ body.appendChild(r); });
-    });
-  });
-});
-</script></body></html>
+<footer>Generated 08 September 2026, 10:25 UTC · thresholds and method documented in TECH_NOTE.md</footer>
+</body></html>

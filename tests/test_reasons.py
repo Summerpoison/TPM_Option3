@@ -100,3 +100,29 @@ class TestCitesNoCriterion:
         """
         criteria = "Abgeschlossene Ausbildung, Zertifikat erforderlich"
         assert not cites_no_criterion("No driving licence provided", criteria, CONFIG)
+
+
+class TestBlankExplanationsDoNotSkewTheDenominators:
+    """Rejections with no text are reported separately, not counted as evidence
+    that the buckets are fine."""
+
+    def test_other_share_ignores_rejections_with_no_text(self):
+        # 2 of the 4 rejections that HAVE text matched nothing -> 50%, not 25%.
+        summary = summarize(["general fit concerns", "vibes", "Missing certificate",
+                             "German level low", "", "   ", "", ""], CONFIG)
+        assert summary.missing == 4
+        assert summary.classifiable == 4
+        assert summary.other_share == 0.5
+
+    def test_a_pile_of_blanks_cannot_hide_an_incomplete_bucket_config(self):
+        summary = summarize(["unmatched reason"] * 4 + [""] * 16, CONFIG)
+        assert summary.other_share == 1.0        # every reason with text is unmatched
+        assert summary.buckets["other"] == 4
+
+    def test_vocabulary_check_ignores_blanks_too(self):
+        summary = summarize(["Missing required certification"] * 4 + [""] * 20, CONFIG)
+        assert summary.vocabulary_is_fixed       # 1 distinct across 4 real rejections
+
+    def test_all_blank_is_not_a_division_by_zero(self):
+        summary = summarize(["", "  "], CONFIG)
+        assert summary.classifiable == 0 and summary.other_share == 0.0

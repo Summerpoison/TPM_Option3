@@ -95,6 +95,17 @@ class ReasonSummary:
         return len(self.exact)
 
     @property
+    def classifiable(self) -> int:
+        """Rejections that carried text, so could be counted or bucketed.
+
+        Rejections with no explanation are counted in `missing` and reported
+        separately. They are excluded from the denominators below, because both
+        answer questions about the wording Paul used -- and a rejection with no
+        wording cannot make the vocabulary look better or the buckets worse.
+        """
+        return self.total - self.missing
+
+    @property
     def vocabulary_is_fixed(self) -> bool:
         """True when exact counting is genuinely informative.
 
@@ -103,15 +114,16 @@ class ReasonSummary:
         one distinct string per two rejections, and no more than 12 in total.
         Below three rejections there is nothing to judge, so we say nothing.
         """
-        if self.total < 3:
+        if self.classifiable < 3:
             return True
-        return (self.distinct_exact / self.total) <= 0.5 and self.distinct_exact <= 12
+        return (self.distinct_exact / self.classifiable) <= 0.5 and self.distinct_exact <= 12
 
     @property
     def other_share(self) -> float:
-        if not self.total:
+        """Share of the rejections that HAD text and still matched no bucket."""
+        if not self.classifiable:
             return 0.0
-        return self.buckets.get(OTHER, 0) / self.total
+        return self.buckets.get(OTHER, 0) / self.classifiable
 
     def top(self, limit: int = 5) -> list[tuple[str, int]]:
         return self.buckets.most_common(limit)

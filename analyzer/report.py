@@ -141,8 +141,11 @@ def render_text(analysis: Analysis, dataset: Dataset) -> str:
     add("WHAT PAUL DECIDED")
     add(THIN)
     if judged:
-        add(f"Paul judged {judged} candidate(s): {positive} passed, {negative} were rejected "
-            f"({negative / judged:.0%} rejected).")
+        # `judged` counts DECISIONS, not people: one candidate is judged again at
+        # each step they reach. Saying "candidates" here produced a number larger
+        # than the candidate pool.
+        add(f"Paul reached a decision {judged} time(s) across {candidates} candidate(s): "
+            f"{positive} passed, {negative} were rejected ({negative / judged:.0%} rejected).")
     if opt_out:
         add(f"Another {opt_out} candidate(s) are counted as opt-outs: they stopped responding "
             f"or declined to")

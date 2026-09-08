@@ -1,8 +1,8 @@
 """Self-contained HTML report.
 
 One file, no CDN, no framework, no dependencies — it has to open from a file://
-URL on a laptop with no network. Inline CSS, a few lines of vanilla JS for table
-sorting and the collapsible sections.
+URL on a laptop with no network. Inline CSS; the collapsible sections are native
+<details>, so the page carries no JavaScript at all.
 
 Visual language follows the platform's own UI: dark header, lime accent, a warm
 pastel wash behind white rounded cards, and status pills shaped like the ones in
@@ -106,11 +106,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
 th,td{padding:8px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
 th:first-child,td:first-child{text-align:left;white-space:normal}
 thead th{color:var(--ink-3);font-weight:600;font-size:12px;text-transform:uppercase;
-  letter-spacing:.5px;cursor:pointer;user-select:none;border-bottom:1px solid var(--line)}
-thead th:hover{color:var(--ink)}
-thead th::after{content:"";opacity:.45;font-size:10px;margin-left:5px}
-thead th[data-dir="asc"]::after{content:"▲"}
-thead th[data-dir="desc"]::after{content:"▼"}
+  letter-spacing:.5px;border-bottom:1px solid var(--line)}
 tbody tr:hover{background:var(--page)}
 tr.total td{font-weight:640;border-bottom:2px solid var(--line)}
 tr.jobhead td{padding-top:16px;font-weight:640;border-bottom:none;color:var(--ink)}
@@ -138,37 +134,14 @@ details[open] summary::before{content:"▾ "}
 details ul{margin:10px 0 4px;padding-left:20px;color:var(--ink-2);font-size:13.5px}
 details li{margin:4px 0}
 footer{color:var(--ink-3);font-size:12.5px;text-align:center;padding:8px 0 28px}
-@media print{.wash{background:none}section{break-inside:avoid;box-shadow:none}
-  thead th{cursor:default}}
+@media print{.wash{background:none}section{break-inside:avoid;box-shadow:none}}
 """
 
-JS = """
-document.querySelectorAll('table[data-sortable]').forEach(function(table){
-  table.querySelectorAll('thead th').forEach(function(th, index){
-    th.addEventListener('click', function(){
-      var dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
-      table.querySelectorAll('thead th').forEach(function(o){ delete o.dataset.dir; });
-      th.dataset.dir = dir;
-      var body = table.querySelector('tbody');
-      // Job headings and totals are structure, not data: keep them out of the sort.
-      var rows = Array.prototype.filter.call(body.rows, function(r){
-        return !r.classList.contains('jobhead') && !r.classList.contains('total');
-      });
-      rows.sort(function(a, b){
-        var x = a.cells[index], y = b.cells[index];
-        var av = x.dataset.sort !== undefined ? parseFloat(x.dataset.sort) : x.textContent.trim();
-        var bv = y.dataset.sort !== undefined ? parseFloat(y.dataset.sort) : y.textContent.trim();
-        if (typeof av === 'number' || !isNaN(av) && !isNaN(bv)) {
-          av = parseFloat(av); bv = parseFloat(bv);
-          return dir === 'asc' ? av - bv : bv - av;
-        }
-        return dir === 'asc' ? String(av).localeCompare(bv) : String(bv).localeCompare(av);
-      });
-      rows.forEach(function(r){ body.appendChild(r); });
-    });
-  });
-});
-"""
+#: The tables interleave job-heading rows with data rows, so any client-side
+#: reorder files a step under the wrong job. Sorting was removed rather than
+#: patched: these tables are small and already ordered by pipeline position,
+#: which is the order a reader wants. The JSON output is there for slicing.
+JS = ""
 
 
 def _e(text: object) -> str:
@@ -177,10 +150,6 @@ def _e(text: object) -> str:
 
 def _pct(value: float | None) -> str:
     return "n/a" if value is None else f"{value:.0%}"
-
-
-def _sort(value: float | None) -> str:
-    return f' data-sort="{-1 if value is None else value:.4f}"'
 
 
 def _mix_bar(cell: Cell) -> str:
@@ -209,14 +178,14 @@ def _cell_row(label: str, cell: Cell, css: str = "") -> str:
     )
     return (
         f'<tr class="{css}">'
-        f'<td data-sort="0">{_e(label)}{thin}</td>'
-        f'<td data-sort="{cell.total}">{_mix_bar(cell)}</td>'
-        f'<td data-sort="{cell.total}">{cell.total}</td>'
-        f'<td data-sort="{cell.positive}">{cell.positive}</td>'
-        f'<td data-sort="{cell.negative}">{cell.negative}</td>'
-        f'<td data-sort="{cell.opt_out}">{cell.opt_out}</td>'
-        f'<td{_sort(cell.review_coverage)}>{_pct(cell.review_coverage)}</td>'
-        f'<td{_sort(cell.override_rate)}>{_pct(cell.override_rate)}</td>'
+        f"<td>{_e(label)}{thin}</td>"
+        f"<td>{_mix_bar(cell)}</td>"
+        f"<td>{cell.total}</td>"
+        f"<td>{cell.positive}</td>"
+        f"<td>{cell.negative}</td>"
+        f"<td>{cell.opt_out}</td>"
+        f"<td>{_pct(cell.review_coverage)}</td>"
+        f"<td>{_pct(cell.override_rate)}</td>"
         f"</tr>"
     )
 
@@ -275,7 +244,11 @@ def render_html(analysis: Analysis, dataset: Dataset, funnel_notes: list[str]) -
     # -- what Paul decided -------------------------------------------------
     add("<section><h2>What Paul decided</h2>")
     add("<div class='tiles'>")
-    add(f"<div class='tile'><div class='n'>{judged}</div><div class='k'>candidates judged</div></div>")
+    # `judged` counts decisions, not people -- a candidate is judged again at
+    # each step they reach, so this is routinely larger than the candidate pool.
+    add(f"<div class='tile'><div class='n'>{judged}</div>"
+        f"<div class='k'>decisions Paul concluded "
+        f"<span class='of'>(across {candidates} candidates)</span></div></div>")
     if judged:
         add(f"<div class='tile'><div class='n' style='color:var(--reject)'>"
             f"{negative / judged:.0%}</div><div class='k'>rejected "
@@ -326,9 +299,9 @@ def render_html(analysis: Analysis, dataset: Dataset, funnel_notes: list[str]) -
     add("<section><h2>Each job, step by step</h2>")
     add("<p class='sub'>The view to act on: every rate here belongs to one listing at one "
         "step. <em>Reviewed</em> is the share a recruiter opened; <em>reversed</em> is the "
-        "share of those they disagreed with. Click a column to sort.</p>")
+        "share of those they disagreed with.</p>")
     add(LEGEND)
-    add("<table data-sortable>" + HEAD_ROW + "<tbody>")
+    add("<table>" + HEAD_ROW + "<tbody>")
     for job_id, job in sorted(analysis.jobs.items(), key=lambda kv: kv[1].title):
         cells = analysis.by_job(job_id)
         if not cells:
@@ -343,7 +316,7 @@ def render_html(analysis: Analysis, dataset: Dataset, funnel_notes: list[str]) -
     add("<section><h2>The funnel, all jobs combined</h2>")
     add("<p class='sub'>Where candidates are lost, and how thin review coverage gets "
         "further down.</p>")
-    add("<table data-sortable>" + HEAD_ROW + "<tbody>")
+    add("<table>" + HEAD_ROW + "<tbody>")
     for category in analysis.categories:
         add(_cell_row(category, category_totals(analysis, category)))
     add("</tbody></table>")
@@ -428,5 +401,5 @@ def render_html(analysis: Analysis, dataset: Dataset, funnel_notes: list[str]) -
     add("</main></div>")
     add(f"<footer>Generated {_e(generated)} · thresholds and method documented in "
         f"TECH_NOTE.md</footer>")
-    add(f"<script>{JS}</script></body></html>")
+    add("</body></html>")
     return "\n".join(parts)

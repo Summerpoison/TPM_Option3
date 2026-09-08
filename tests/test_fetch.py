@@ -120,3 +120,24 @@ class TestAgreementWiring:
             job(), "slug", "Ann", [entry(decision="PositiveDecision")]
         )[0]
         assert record.agreement is Agreement.UNREVIEWED
+
+
+class TestDuplicateNoteScope:
+    """Duplicate records are only worth reporting for steps we analyse."""
+
+    def test_duplicates_on_an_analysed_step_are_reported(self, fetcher):
+        history = [entry(decision="PositiveDecision"),
+                   entry(decision="NegativeDecision", assigned_at="2026-01-02T00:00:00Z")]
+        fetcher._records_from_history(job(), "slug", "Ann", history)
+        assert len(fetcher.quality.superseded_records) == 1
+
+    def test_duplicates_on_a_terminal_step_are_not_reported(self, fetcher):
+        """Its records are discarded, so a warning would send the reader
+        chasing something that affects no number in the report."""
+        steps = [step("s9", "Rejected", 6)]
+        history = [entry("s9", "NegativeDecision", category="Rejected"),
+                   entry("s9", "NegativeDecision", category="Rejected",
+                         assigned_at="2026-01-02T00:00:00Z")]
+        records = fetcher._records_from_history(job(steps), "slug", "Ann", history)
+        assert records == []
+        assert fetcher.quality.superseded_records == []
