@@ -93,8 +93,6 @@ p{margin:0 0 10px;max-width:80ch}
   border-radius:6px;padding:1px 6px;margin-left:7px}
 .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 12px;
   background:var(--surface)}
-.card.act{border-left:4px solid var(--act)}
-.card.check{border-left:4px solid var(--check)}
 .card .scope{font-weight:600;margin-left:9px}
 .card ul{margin:10px 0 0;padding:0;list-style:none}
 .card li{padding:8px 0 4px;border-top:1px solid var(--line)}
