@@ -139,20 +139,20 @@ class TestAnomalies:
             + [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 5
         )
         anomalies = analyse(dataset(records), CONFIG).anomalies
-        assert any("reverse the AI" in a.headline for a in anomalies)
+        assert any("reversed Paul" in a.headline for a in anomalies)
 
     def test_agreement_does_not_fire_the_override_flag(self):
         """The control case: a healthy step must produce no finding."""
         records = [record(agreement=Agreement.AGREE, basis="explicit_approve")] * 20
         anomalies = analyse(dataset(records), CONFIG).anomalies
-        assert not any("reverse the AI" in a.headline for a in anomalies)
+        assert not any("reversed Paul" in a.headline for a in anomalies)
 
     def test_unreviewed_only_flagged_when_the_step_requires_review(self):
         records = [record(agreement=Agreement.UNREVIEWED)] * 20
         off = analyse(dataset(records, jobs=[job(steps=[step(hil="always_off")])]), CONFIG)
         on = analyse(dataset(records, jobs=[job(steps=[step(hil="always_on")])]), CONFIG)
-        assert not any("requires human review" in a.headline for a in off.anomalies)
-        assert any("requires human review" in a.headline for a in on.anomalies)
+        assert not any("requires recruiter approval" in a.headline for a in off.anomalies)
+        assert any("requires recruiter approval" in a.headline for a in on.anomalies)
 
     def test_opt_out_cluster_is_flagged_as_a_channel_problem(self):
         records = [record(outcome=Outcome.OPT_OUT)] * 5 + [record(outcome=Outcome.POSITIVE)] * 5
@@ -165,11 +165,11 @@ class TestAnomalies:
         steps = [step(negative_criteria="Zertifikat fehlt oder Sprachniveau zu niedrig")]
         records = [record(explanation="Gehaltsvorstellung zu hoch")] * 3
         anomalies = analyse(dataset(records, jobs=[job(steps=steps)]), CONFIG).anomalies
-        assert any("never states" in a.headline for a in anomalies)
+        assert any("never asks for" in a.headline for a in anomalies)
 
     def test_unmappable_values_are_flagged(self):
         records = [record(outcome=Outcome.UNKNOWN)] * 2
-        assert any("could not be interpreted" in a.headline
+        assert any("does not recognise" in a.headline
                    for a in analyse(dataset(records), CONFIG).anomalies)
 
     def test_every_anomaly_carries_an_action_and_a_number(self):

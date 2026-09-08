@@ -260,19 +260,19 @@ def detect_anomalies(analysis: Analysis) -> list[Anomaly]:
         rate = cell.override_rate
         if rate is not None and rate >= HIGH_OVERRIDE_RATE:
             detail = (
-                f"{cell.overrides} of {cell.agreements.get(Agreement.AGREE, 0) + cell.overrides} "
-                f"reviewed decisions were reversed by a human ({rate:.0%})"
+                f"a recruiter disagreed with Paul on {cell.overrides} of the "
+                f"{cell.agreements.get(Agreement.AGREE, 0) + cell.overrides} decisions they opened"
             )
             if cell.inferred_overrides:
                 detail += (
-                    f"; {cell.explicit_overrides} explicit, "
-                    f"{cell.inferred_overrides} inferred from an independent decision"
+                    f" ({cell.explicit_overrides} where they explicitly rejected Paul's "
+                    f"suggestion, {cell.inferred_overrides} inferred from their own decision)"
                 )
             found.append(Anomaly(
                 severity="high", scope=where,
-                headline=f"Humans reverse the AI on {rate:.0%} of reviewed decisions here",
+                headline=f"Recruiters reversed Paul on {rate:.0%} of the decisions they reviewed here",
                 detail=detail,
-                action="Review this step's conclusion criteria against the listing's mandatory requirements.",
+                action="Compare this step's conclusion criteria with the listing's mandatory requirements.",
                 n=cell.total, low_confidence=cell.low_confidence,
             ))
 
@@ -280,12 +280,15 @@ def detect_anomalies(analysis: Analysis) -> list[Anomaly]:
         if cell.requires_review and coverage is not None and coverage < LOW_REVIEW_WHEN_REQUIRED:
             found.append(Anomaly(
                 severity="high", scope=where,
-                headline="Step requires human review, but most decisions went through unreviewed",
-                detail=(
-                    f"the agent is configured HumanInLoop=always_on, yet only "
-                    f"{cell.reviewed} of {cell.total} decisions ({coverage:.0%}) were reviewed"
+                headline=(
+                    f"This step requires recruiter approval, but "
+                    f"{cell.total - cell.reviewed} of {cell.total} decision(s) did not get it"
                 ),
-                action="Check that reviewers are being notified, or relax the step's HumanInLoop setting.",
+                detail=(
+                    f"the step is configured HumanInLoop=always_on, so every decision should be "
+                    f"approved by a recruiter; {cell.reviewed} of {cell.total} ({coverage:.0%}) were"
+                ),
+                action="Check that recruiters are being notified, or change the step to always_off if approval is not wanted.",
                 n=cell.total, low_confidence=cell.low_confidence,
             ))
 
@@ -293,13 +296,13 @@ def detect_anomalies(analysis: Analysis) -> list[Anomaly]:
         if opt_out is not None and opt_out >= HIGH_OPT_OUT_RATE:
             found.append(Anomaly(
                 severity="medium", scope=where,
-                headline=f"{opt_out:.0%} of candidates dropped out at this step rather than being judged",
+                headline=f"{opt_out:.0%} of candidates dropped out here before Paul could judge them",
                 detail=(
-                    f"{cell.opt_out} of {cell.total} withdrew (no answer, declined to continue, "
-                    f"or declined to talk to the AI). These are not rejections and are excluded "
+                    f"{cell.opt_out} of {cell.total} stopped responding, declined to continue, or "
+                    f"declined to speak to Paul. They are counted as opt-outs, separately "
                     f"from the rejection rate."
                 ),
-                action="A channel or format problem rather than a screening one: check messaging and timing.",
+                action="Look at how and when candidates are contacted at this step, rather than at the criteria.",
                 n=cell.total, low_confidence=cell.low_confidence,
             ))
 
@@ -307,7 +310,7 @@ def detect_anomalies(analysis: Analysis) -> list[Anomaly]:
             examples = "; ".join(sorted(set(cell.off_criteria))[:2])
             found.append(Anomaly(
                 severity="medium", scope=where,
-                headline=f"{len(cell.off_criteria)} rejection(s) cite a requirement this job never states",
+                headline=f"{len(cell.off_criteria)} rejection(s) name a requirement this listing never asks for",
                 detail=f"for example: {examples}",
                 action="Either add the requirement to the listing, or correct the step's conclusion criteria.",
                 n=cell.negative, low_confidence=cell.low_confidence,
@@ -317,7 +320,7 @@ def detect_anomalies(analysis: Analysis) -> list[Anomaly]:
         if summary and summary.total >= 5 and summary.other_share >= LARGE_OTHER_SHARE:
             found.append(Anomaly(
                 severity="low", scope=where,
-                headline=f"{summary.other_share:.0%} of rejection reasons matched no known category",
+                headline=f"{summary.other_share:.0%} of rejection reasons did not match any known topic",
                 detail=f"{summary.buckets.get('other', 0)} of {summary.total} fell into 'other'",
                 action="Add the missing wording to reason_buckets.json; this is a gap in the config, not the data.",
                 n=summary.total, low_confidence=cell.low_confidence,
@@ -326,8 +329,8 @@ def detect_anomalies(analysis: Analysis) -> list[Anomaly]:
         if cell.unmappable:
             found.append(Anomaly(
                 severity="low", scope=where,
-                headline=f"{cell.unmappable} decision value(s) could not be interpreted",
-                detail="present but outside the platform's documented decision vocabulary",
+                headline=f"{cell.unmappable} decision(s) used a status this tool does not recognise",
+                detail="a value was recorded, but it is not one the platform documents",
                 action="See the data-quality section for the exact values and candidates.",
                 n=cell.total, low_confidence=cell.low_confidence,
             ))

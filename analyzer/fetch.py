@@ -216,7 +216,7 @@ class Fetcher:
             agent = self._agent(job_id, str(step_id)) if category in DECISION_CATEGORIES else None
             if category in DECISION_CATEGORIES and agent is None:
                 self.quality.steps_without_agent.append(
-                    f"job {job_id} step '{step.get('Name')}' ({category}) has no agent configured"
+                    f"step '{step.get('Name')}' ({category}) has no agent configured"
                 )
             configs.append(
                 StepConfig(
@@ -298,7 +298,7 @@ class Fetcher:
                     )
                 )
             except ApiError as exc:
-                self.quality.candidate_failures.append(f"{name} on job {job.job_id}: {exc}")
+                self.quality.candidate_failures.append(f"{name} on '{job.title}': {exc}")
                 continue
             collected.extend(self._records_from_history(job, str(slug), name, history))
         return collected
@@ -323,14 +323,16 @@ class Fetcher:
             entries.sort(key=lambda e: str(e.get("AssignedAt") or ""))
             decided = [e for e in entries if (e.get("PaulDecision") or "").strip()]
             chosen = (decided or entries)[-1]
-            if len(entries) > 1:
-                self.quality.superseded_records.append(
-                    f"{name} on job {job.job_id} step {step_id}: "
-                    f"{len(entries)} assignment records, using the latest with a decision"
-                )
 
             step = job.step(step_id)
             category = str(chosen.get("StepCategory") or (step.category if step else ""))
+            step_label = str(chosen.get("StepName") or (step.name if step else category) or step_id)
+            if len(entries) > 1:
+                self.quality.superseded_records.append(
+                    f"{name} on '{job.title}' at step '{step_label}': "
+                    f"{len(entries)} assignment records, kept the most recent one with a decision"
+                )
+
             if step and not step.produces_decisions:
                 continue  # terminal or state step: not an AI decision
             if not step and category not in DECISION_CATEGORIES:
@@ -340,8 +342,9 @@ class Fetcher:
             outcome = normalize_outcome(raw)
             if outcome is Outcome.UNKNOWN:
                 self.quality.malformed_decisions.append(
-                    f"{name} on job {job.job_id} step "
-                    f"'{chosen.get('StepName') or category}': unmappable PaulDecision {raw!r}"
+                    f"{name} on '{job.title}' at step '{step_label}': "
+                    f"Paul's decision was recorded as {raw!r}, which is not a value "
+                    f"the platform documents"
                 )
             result = derive_agreement(
                 chosen.get("AssignerDecision"),
